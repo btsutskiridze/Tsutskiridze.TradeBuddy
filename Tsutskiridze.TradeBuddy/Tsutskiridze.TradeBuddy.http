@@ -1,0 +1,6 @@
+@Tsutskiridze.TradeBuddy_HostAddress = http://localhost:5214
+
+GET {{Tsutskiridze.TradeBuddy_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
