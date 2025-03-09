@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Tsutskiridze.Bloom.Core;
 using Tsutskiridze.Bloom.Core.Common.Options;
+using Tsutskiridze.Bloom.Core.Configurations;
 using Tsutskiridze.Bloom.Core.Secrets;
+using Tsutskiridze.TradeBuddy.Jobs;
+using Tsutskiridze.TradeBuddy.Services.Stocks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +29,13 @@ builder.Services.AddBloom((opt) =>
         }
     };
 });
+
+builder.Services.AddTransient<AlphaVantageService>();
+builder.Services.ConfigureBloomServices((s) =>
+{
+    s.AddJob<StockBuddyJob>();
+});
+
 
 var app = builder.Build();
 

@@ -4,20 +4,18 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>9d121aa8-7094-4f53-b5cd-a21e80f56ac6</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-	<PackageReference Include="Tsutskiridze.Bloom.Core" Version="1.0.8" />
+	<PackageReference Include="Tsutskiridze.Bloom.Core" Version="1.0.9" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\AlphaVantage\" />
-    <Folder Include="Jobs\" />
     <Folder Include="Services\News\" />
-    <Folder Include="Services\Stocks\" />
   </ItemGroup>
 
 </Project>
