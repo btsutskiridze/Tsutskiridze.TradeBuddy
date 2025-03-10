@@ -21,9 +21,31 @@ namespace Tsutskiridze.TradeBuddy.Jobs
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            //var quote = await _fmp.GetStockQuote("RCAT");
-            //var prevDayPrices = await _alphaVantage.GetStockPrevDaysClosePrices("RCAT", 5);
-            //var annualReport = await _alphaVantage.GetStockLastAnnualReport("RCAT");
+            string symbol = "RCAT";
+
+            //var quote = await _fmp.GetStockQuote(symbol);
+            //var stockOverview = await _alphaVantage.GetStockOverviewAsync(symbol);
+            //var prevDayPrices = await _alphaVantage.GetStockPrevDaysClosePrices(symbol, 10);
+            //var annualReport = await _alphaVantage.GetStockLastAnnualReport(symbol);
+
+            //if (quote == null || stockOverview == null || prevDayPrices == null || annualReport == null)
+            //{
+            //    return;
+            //}
+
+            //var stock = new Stock
+            //{
+            //    Name = stockOverview.Name,
+            //    Symbol = symbol,
+            //    ReturnOnEquityTTM = stockOverview.ReturnOnEquityTTM,
+            //    PriceToSalesRatioTTM = stockOverview.PriceToSalesRatioTTM,
+            //    QuarterlyRevenueGrowthYOY = stockOverview.QuarterlyRevenueGrowthYOY,
+            //    Quote = quote,
+            //    PrevDays = prevDayPrices,
+            //    AnnualReport = annualReport
+            //};
+
+            //Console.WriteLine(JsonConvert.SerializeObject(stock, Formatting.Indented));
 
         }
     }

@@ -30,7 +30,19 @@ namespace Tsutskiridze.TradeBuddy.Services.Stocks
             return _mapper.Map<AnnualReport>(report);
         }
 
-        public async Task<List<StockDayPrice>> GetStockPrevDaysClosePrices(string symbol, int days)
+        public async Task<StockOverview?> GetStockOverviewAsync(string symbol)
+        {
+            var response = await _client.GetAsync($"query?function=OVERVIEW&symbol={symbol}&apikey={_apiKey}");
+            response.EnsureSuccessStatusCode();
+
+            var stockOverview = JsonConvert.DeserializeObject<StockOverview>(
+                await response.Content.ReadAsStringAsync()
+            );
+
+            return stockOverview;
+        }
+
+        public async Task<List<StockDayPrice>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
         {
             var response = await _client.GetAsync($"query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={_apiKey}");
             response.EnsureSuccessStatusCode();
@@ -45,10 +57,10 @@ namespace Tsutskiridze.TradeBuddy.Services.Stocks
             }
 
             var prices = data.Prices
-                .Take(days)
+                .Take(days ?? data.Prices.Count)
                 .Select(x => new StockDayPrice
                 {
-                    Date = DateTime.Parse(x.Key),
+                    Date = DateTime.Parse(x.Key).ToString("yyyy-MM-dd"),
                     Open = x.Value.Open,
                     High = x.Value.High,
                     Low = x.Value.Low,

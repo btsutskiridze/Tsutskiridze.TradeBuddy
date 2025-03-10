@@ -3,7 +3,7 @@
 
     public class StockDayPrice
     {
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
         public string Open { get; set; }
         public string High { get; set; }
         public string Low { get; set; }

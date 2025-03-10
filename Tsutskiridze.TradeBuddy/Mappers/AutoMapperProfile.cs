@@ -12,10 +12,15 @@ namespace Tsutskiridze.TradeBuddy.Mappers
             CreateMap<AnnualReportDto, AnnualReport>();
 
             CreateMap<StockQuoteDto, StockQuote>()
-                .ForMember(
-                    dest => dest.Timestamp,
-                    opt => opt.MapFrom(src => DateTimeOffset.FromUnixTimeSeconds(long.Parse(src.Timestamp)).DateTime)
-                );
+                .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src =>
+                    DateTimeOffset
+                        .FromUnixTimeSeconds(long.Parse(src.Timestamp))
+                        .UtcDateTime
+                        .ToString("yyyy-MM-ddTHH:mm:ssZ")
+                ))
+                .ForMember(dest => dest.EarningsAnnouncement, opt => opt.MapFrom(src =>
+                    src.EarningsAnnouncement.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                ));
         }
     }
 }
