@@ -6,7 +6,6 @@ namespace Tsutskiridze.TradeBuddy.Services.Stocks
 {
     public class FMPService
     {
-        private const string _baseUrl = "https://financialmodelingprep.com/api";
         private static readonly string _apiKey = SecretsManager.GetSecret("Fmp:ApiKey");
         private readonly HttpClient _client;
         private readonly IMapper _mapper;

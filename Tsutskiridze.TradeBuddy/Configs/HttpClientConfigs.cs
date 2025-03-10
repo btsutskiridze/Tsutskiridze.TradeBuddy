@@ -1,4 +1,5 @@
-﻿using Tsutskiridze.TradeBuddy.Services.Stocks;
+﻿using Tsutskiridze.TradeBuddy.Services.News;
+using Tsutskiridze.TradeBuddy.Services.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Configs
 {
@@ -17,8 +18,31 @@ namespace Tsutskiridze.TradeBuddy.Configs
                 client.BaseAddress = new Uri(SecretsManager.GetSecret("Fmp:BaseUrl"));
             });
 
+            services.AddHttpClient<RedditService>(client =>
+            {
+                client.BaseAddress = new Uri(SecretsManager.GetSecret("Reddit:BaseUrl"));
+                client.DefaultRequestHeaders.Add("User-Agent", "TradeBuddy");
+            });
+
+            services.AddHttpClient<FinnhubService>(client =>
+            {
+                client.BaseAddress = new Uri(SecretsManager.GetSecret("Finnhub:BaseUrl"));
+            });
+
+            services.AddHttpClient<YahooSraper>(client =>
+            {
+                client.BaseAddress = new Uri(SecretsManager.GetSecret("Yahoo:BaseUrl"));
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+                client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
+                client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/web");
+            });
+
+
+            services.AddHttpClient<GoogleScraper>(client =>
+            {
+            });
+
             return services;
         }
-
     }
 }
