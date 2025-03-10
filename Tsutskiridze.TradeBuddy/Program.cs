@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Tsutskiridze.Bloom.Core;
 using Tsutskiridze.Bloom.Core.Common.Options;
 using Tsutskiridze.Bloom.Core.Configurations;
-using Tsutskiridze.Bloom.Core.Secrets;
+using Tsutskiridze.TradeBuddy.Configs;
 using Tsutskiridze.TradeBuddy.Jobs;
-using Tsutskiridze.TradeBuddy.Services.Stocks;
+using Tsutskiridze.TradeBuddy.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +30,9 @@ builder.Services.AddBloom((opt) =>
     };
 });
 
-builder.Services.AddTransient<AlphaVantageService>();
+builder.Services.AddHttpClientConfigs();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+
 builder.Services.ConfigureBloomServices((s) =>
 {
     s.AddJob<StockBuddyJob>();

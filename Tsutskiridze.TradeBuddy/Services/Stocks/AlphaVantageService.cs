@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Tsutskiridze.Bloom.Core.Secrets;
 using Tsutskiridze.TradeBuddy.DTOs.AlphaVantage;
 using Tsutskiridze.TradeBuddy.Models.AlphaVantage;
 
@@ -7,29 +6,33 @@ namespace Tsutskiridze.TradeBuddy.Services.Stocks
 {
     public class AlphaVantageService
     {
-        private static readonly HttpClient client = new HttpClient();
-        private static readonly string ApiKey = SecretsManager.GetSecret("alphaVantage:apiKey");
+        private static readonly string _apiKey = SecretsManager.GetSecret("alphaVantage:apiKey");
+        private readonly HttpClient _client;
+        private readonly IMapper _mapper;
 
-        private const string BaseUrl = "https://www.alphavantage.co/query";
-
-        public async Task<AnnualReportDto?> GetStockLastAnnualReport(string symbol)
+        public AlphaVantageService(HttpClient client, IMapper mapper)
         {
-            string url = $"{BaseUrl}?function=INCOME_STATEMENT&symbol={symbol}&apikey={ApiKey}";
-            var response = await client.GetAsync(url);
+            _client = client;
+            _mapper = mapper;
+        }
+
+        public async Task<AnnualReport?> GetStockLastAnnualReport(string symbol)
+        {
+            var response = await _client.GetAsync($"query?function=INCOME_STATEMENT&symbol={symbol}&apikey={_apiKey}");
             response.EnsureSuccessStatusCode();
 
             var data = JsonConvert.DeserializeObject<AnnualReportsResponse>(
                 await response.Content.ReadAsStringAsync()
             );
 
-            return data?.AnnualReports.First();
+            var report = data?.AnnualReports?.FirstOrDefault();
+
+            return _mapper.Map<AnnualReport>(report);
         }
 
         public async Task<List<StockDayPrice>> GetStockPrevDaysClosePrices(string symbol, int days)
         {
-            string url = $"{BaseUrl}?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={ApiKey}";
-
-            var response = await client.GetAsync(url);
+            var response = await _client.GetAsync($"query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={_apiKey}");
             response.EnsureSuccessStatusCode();
 
             var data = JsonConvert.DeserializeObject<DayPriceResponse>(
