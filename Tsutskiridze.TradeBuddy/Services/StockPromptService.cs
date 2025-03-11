@@ -29,6 +29,15 @@ namespace Tsutskiridze.TradeBuddy.Services
 
             if (quote.Result == null || stockOverview.Result == null || prevDayPrices.Result == null || annualReport.Result == null)
             {
+                Console.WriteLine($"Failed to fetch stock data for {symbol}");
+                Console.WriteLine($"Quote: {quote.Result}");
+                Console.WriteLine($"StockOverview: {stockOverview.Result}");
+                Console.WriteLine($"PrevDayPrices: {prevDayPrices.Result}");
+                Console.WriteLine($"AnnualReport: {annualReport.Result}");
+                Console.WriteLine($"AllNews: {allNews.Result}");
+
+                //todo: fix alphavantage service
+
                 throw new Exception("Failed to fetch stock data");
             }
 
