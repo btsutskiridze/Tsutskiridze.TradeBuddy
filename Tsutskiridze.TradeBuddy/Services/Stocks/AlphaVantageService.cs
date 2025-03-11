@@ -30,7 +30,7 @@ namespace Tsutskiridze.TradeBuddy.Services.Stocks
             return _mapper.Map<AnnualReport>(report);
         }
 
-        public async Task<StockOverview?> GetStockOverviewAsync(string symbol)
+        public async Task<StockOverview?> GetStockOverview(string symbol)
         {
             var response = await _client.GetAsync($"query?function=OVERVIEW&symbol={symbol}&apikey={_apiKey}");
             response.EnsureSuccessStatusCode();

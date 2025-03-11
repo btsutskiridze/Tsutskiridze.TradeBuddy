@@ -1,42 +1,47 @@
 ﻿using Microsoft.Playwright;
-using Tsutskiridze.TradeBuddy.DTOs.GoogleNews;
+using Tsutskiridze.TradeBuddy.DTOs.Google;
 
 namespace Tsutskiridze.TradeBuddy.Services.News
 {
     public class GoogleScraper
     {
         private readonly HttpClient _httpClient;
-
-        public GoogleScraper(HttpClient httpClient)
+        private readonly ILogger<GoogleScraper> _logger;
+        public GoogleScraper(HttpClient httpClient, ILogger<GoogleScraper> logger)
         {
             _httpClient = httpClient;
+            _logger = logger;
         }
 
-        public async Task<List<GoogleNews>> GetNewsAsync(string symbol)
+        public async Task<List<GoogleNews>?> GetNewsAsync(string symbol, int? limit = null)
         {
-            // set timer to calculate time taken for the operation
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-
             using var playwright = await Playwright.CreateAsync();
             await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
-                Headless = true // Change to false for debugging
+                Headless = true
             });
 
             var searcUrl = $"https://www.google.com/search?q={symbol}&tbm=nws&tbs=sbd:1&hl=en";
-
-            Console.WriteLine("Launching browser...");
-            Console.WriteLine("searching for: " + searcUrl);
 
             var page = await browser.NewPageAsync();
             await page.GotoAsync(searcUrl,
                 new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
 
-            Console.WriteLine("Navigating to Google News...");
-            // Wait for news articles to load
-            await page.WaitForSelectorAsync("div.SoaBEf");
+            try
+            {
+                _logger.LogInformation("Parsing Google News for {Symbol}", symbol);
+                return await ParseNewsAsync(page, limit);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to parse Google News");
+                return null;
+            }
+        }
 
-            Console.WriteLine("Scraping news articles...");
+        private static async Task<List<GoogleNews>?> ParseNewsAsync(IPage page, int? limit)
+        {
+            await page.WaitForSelectorAsync("div.SoaBEf");
 
             var newsList = new List<GoogleNews>();
 
@@ -50,7 +55,6 @@ namespace Tsutskiridze.TradeBuddy.Services.News
 
                 if (titleDiv == null || urlAnchor == null || summaryDiv == null || publishTimeDiv == null)
                 {
-                    Console.WriteLine("Failed to scrape news article.");
                     continue;
                 }
 
@@ -68,31 +72,22 @@ namespace Tsutskiridze.TradeBuddy.Services.News
                     Title = title,
                     Url = url,
                     Summary = summary,
-                    PublishTime = ParsePublishTime(publishTime).ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    PublishTime = ParsePublishTime(publishTime)
                 });
 
-                Console.WriteLine();
-                Console.WriteLine($"Title: {title}");
-                Console.WriteLine($"URL: {url}");
-                Console.WriteLine($"Summary: {summary}");
-                Console.WriteLine($"Publish Time: {ParsePublishTime(publishTime):yyyy-MM-ddTHH:mm:ssZ}");
-                Console.WriteLine();
+                if (newsList.Count >= limit)
+                {
+                    break;
+                }
             }
 
-            watch.Stop();
-
-            Console.WriteLine($"Time taken: {watch.Elapsed.TotalSeconds} s");
-            Console.WriteLine("Scraping complete.");
-
-            return newsList;
+            return newsList.Count > 0 ? newsList : null;
         }
-        
-        public static DateTime ParsePublishTime(string publishTime)
+
+        private static string ParsePublishTime(string publishTime)
         {
-            // Check if it's a relative time string (contains "ago")
             if (publishTime.ToLowerInvariant().Contains("ago"))
             {
-                // Split the string into parts (e.g., "12 hours ago" becomes ["12", "hours", "ago"])
                 var parts = publishTime.Split(' ');
                 if (parts.Length >= 3 && int.TryParse(parts[0], out int value))
                 {
@@ -100,28 +95,24 @@ namespace Tsutskiridze.TradeBuddy.Services.News
                     string unit = parts[1].ToLowerInvariant();
 
                     if (unit.StartsWith("hour"))
-                        return now.AddHours(-value);
+                        return now.AddHours(-value).ToString("yyyy-MM-ddTHH:mm:ssZ");
                     else if (unit.StartsWith("day"))
-                        return now.AddDays(-value);
+                        return now.AddDays(-value).ToString("yyyy-MM-ddTHH:mm:ssZ");
                     else if (unit.StartsWith("week"))
-                        return now.AddDays(-7 * value);
+                        return now.AddDays(-7 * value).ToString("yyyy-MM-ddTHH:mm:ssZ");
                     else if (unit.StartsWith("minute"))
-                        return now.AddMinutes(-value);
+                        return now.AddMinutes(-value).ToString("yyyy-MM-ddTHH:mm:ssZ");
                     // Add additional units if needed.
                 }
             }
             else
             {
-                // Try parsing as an absolute date. For complex formats, you might need to specify a custom format.
-                // For example, for "March 10, 2025 at 02:44 pm EDT", you might do:
-                // "MMMM dd, yyyy 'at' hh:mm tt zzz" but note that "EDT" is not directly parseable by DateTime.Parse.
-                // You may need to remove or map the timezone abbreviation first.
                 if (DateTime.TryParse(publishTime, out DateTime absoluteDate))
-                    return absoluteDate;
+                    return absoluteDate.ToString("yyyy-MM-ddTHH:mm:ssZ");
             }
 
             // Fallback: return MinValue if parsing fails.
-            return DateTime.MinValue;
+            return publishTime;
         }
     }
 }

@@ -24,27 +24,38 @@ namespace Tsutskiridze.TradeBuddy.Services.News
                 return null;
             }
 
-            return json["data"]["children"]
-                .Where(post =>
-                    post["data"]["score"].Value<int>() >= 5 && post["data"]["num_comments"].Value<int>() >= 5
-                    && DateTimeOffset.FromUnixTimeSeconds(post["data"]["created_utc"].Value<long>()).DateTime > DateTime.Now.AddDays(-1)
-                )
-                .Take(limit ?? 5)
-                .Select(post =>
-                {
-                    string body = post["data"]["selftext"].Value<string>();
+            var posts = new List<RedditPost>();
 
-                    return new RedditPost
+            foreach (var item in json["data"]["children"])
+            {
+                try
+                {
+                    if (item["data"]["score"].Value<int>() >= 5 && item["data"]["num_comments"].Value<int>() >= 5)
                     {
-                        Title = post["data"]["title"].Value<string>(),
-                        Url = post["data"]["url"].Value<string>(),
-                        Body = body.Length > 250 ? body.Substring(0, 250) + "..." : body,
-                        Score = post["data"]["score"].Value<int>(),
-                        CommentsCount = post["data"]["num_comments"].Value<int>(),
-                        CreateTime = DateTimeOffset.FromUnixTimeSeconds(post["data"]["created_utc"].Value<long>()).ToString("yyyy-MM-ddTHH:mm:ssZ")
-                    };
-                })
-                .ToList();
+                        string body = item["data"]["selftext"].Value<string>();
+                        posts.Add(new RedditPost
+                        {
+                            Title = item["data"]["title"].Value<string>(),
+                            Url = item["data"]["url"].Value<string>(),
+                            Body = body.Length > 250 ? body.Substring(0, 250) + "..." : body,
+                            Score = item["data"]["score"].Value<int>(),
+                            CommentsCount = item["data"]["num_comments"].Value<int>(),
+                            CreateTime = DateTimeOffset.FromUnixTimeSeconds(item["data"]["created_utc"].Value<long>()).ToString("yyyy-MM-ddTHH:mm:ssZ")
+                        });
+                    }
+                }
+                catch (Exception)
+                {
+                }
+
+                if (posts.Count >= limit)
+                {
+                    break;
+                }
+            }
+
+            return posts.Count > 0 ? posts : null;
+
         }
 
 

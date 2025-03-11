@@ -14,9 +14,9 @@ namespace Tsutskiridze.TradeBuddy.Services.News
             _client = client;
         }
 
-        public async Task<List<FinnhubNews>?> GetCompanyNewsAsync(string symbol, string from, string to, int? limit = null)
+        public async Task<List<FinnhubNews>?> GetCompanyNewsAsync(string symbol, DateTime from, DateTime to, int? limit = null)
         {
-            var response = await _client.GetAsync($"api/v1/company-news?symbol={symbol}&from={from}&to={to}&token={_apiKey}");
+            var response = await _client.GetAsync($"api/v1/company-news?symbol={symbol}&from={from:yyyy-MM-dd}&to={to:yyyy-MM-dd}&token={_apiKey}");
             response.EnsureSuccessStatusCode();
 
             var json = JArray.Parse(await response.Content.ReadAsStringAsync());
@@ -26,21 +26,34 @@ namespace Tsutskiridze.TradeBuddy.Services.News
                 return null;
             }
 
-            return json
-                .Take(limit ?? 5)
-                .Select(news =>
+            var newsList = new List<FinnhubNews>();
+
+            foreach (var item in json)
+            {
+                try
                 {
-                    return new FinnhubNews
+
+                    newsList.Add(new FinnhubNews
                     {
-                        Category = news["category"].Value<string>(),
-                        Title = news["headline"].Value<string>(),
-                        Source = news["source"].Value<string>(),
-                        Summary = news["summary"].Value<string>(),
-                        Url = news["url"].Value<string>(),
-                        CreateTime = DateTimeOffset.FromUnixTimeSeconds(news["datetime"].Value<long>()).ToString("yyyy-MM-ddTHH:mm:ssZ")
-                    };
-                })
-                .ToList();
+                        Category = item["category"].Value<string>(),
+                        Title = item["headline"].Value<string>(),
+                        Source = item["source"].Value<string>(),
+                        Summary = item["summary"].Value<string>(),
+                        Url = item["url"].Value<string>(),
+                        CreateTime = DateTimeOffset.FromUnixTimeSeconds(item["datetime"].Value<long>()).ToString("yyyy-MM-ddTHH:mm:ssZ")
+                    });
+                }
+                catch (Exception)
+                {
+                }
+
+                if (newsList.Count >= limit)
+                {
+                    break;
+                }
+            }
+
+            return newsList.Count > 0 ? newsList : null;
         }
 
     }

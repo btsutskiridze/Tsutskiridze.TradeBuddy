@@ -1,5 +1,8 @@
 ﻿using Newtonsoft.Json;
+using System.Diagnostics;
 using Tsutskiridze.Bloom.Core.Infrastructure.Jobs;
+using Tsutskiridze.TradeBuddy.DTOs.Helpers;
+using Tsutskiridze.TradeBuddy.Models;
 using Tsutskiridze.TradeBuddy.Services.News;
 using Tsutskiridze.TradeBuddy.Services.Stocks;
 
@@ -14,56 +17,59 @@ namespace Tsutskiridze.TradeBuddy.Jobs
 
         private readonly AlphaVantageService _alphaVantage;
         private readonly FMPService _fmp;
-        private readonly RedditService _reddit;
-        private readonly FinnhubService _finnhub;
-        private readonly YahooSraper _yahooSraper;
-        private readonly GoogleScraper _googleScraper;
-
-        public StockBuddyJob(AlphaVantageService alphaVantage, FMPService fmp, RedditService reddit, FinnhubService finnhub, YahooSraper yahooSraper, GoogleScraper googleScraper)
+        private readonly NewsService _news;
+        public StockBuddyJob(AlphaVantageService alphaVantage, FMPService fmp, NewsService news)
         {
             _alphaVantage = alphaVantage;
             _fmp = fmp;
-            _reddit = reddit;
-            _finnhub = finnhub;
-            _yahooSraper = yahooSraper;
-            _googleScraper = googleScraper;
+            _news = news;
         }
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             string symbol = "RCAT";
 
-            //var quote = await _fmp.GetStockQuote(symbol);
-            //var stockOverview = await _alphaVantage.GetStockOverviewAsync(symbol);
-            //var prevDayPrices = await _alphaVantage.GetStockPrevDaysClosePrices(symbol, 10);
-            //var annualReport = await _alphaVantage.GetStockLastAnnualReport(symbol);
-            //var redditNews = await _reddit.GetTopPostsAsync(symbol, "new", 3);
-            //var finnhubNews = await _finnhub.GetCompanyNewsAsync(symbol, DateTime.Now.AddDays(-5).ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd"), 3);
-            //var yahooNews = await _yahooSraper.GetNewsAsync(symbol);
+            var watch = Stopwatch.StartNew();
 
-            var googleNews = await _googleScraper.GetNewsAsync(symbol);
+            var quote = _fmp.GetStockQuote(symbol);
+            var stockOverview = _alphaVantage.GetStockOverview(symbol);
+            var prevDayPrices = _alphaVantage.GetStockPrevDaysClosePrices(symbol, 10);
+            var annualReport = _alphaVantage.GetStockLastAnnualReport(symbol);
+            var allNews = _news.GetAllNews(symbol, 2);
 
-            Console.WriteLine(JsonConvert.SerializeObject(googleNews, Formatting.Indented));
+            await Task.WhenAll(quote, stockOverview, prevDayPrices, annualReport, allNews);
 
-            //if (quote == null || stockOverview == null || prevDayPrices == null || annualReport == null)
-            //{
-            //    return;
-            //}
+            if (quote.Result == null || stockOverview.Result == null || prevDayPrices.Result == null || annualReport.Result == null)
+            {
+                return;
+            }
 
-            //var stock = new Stock
-            //{
-            //    Name = stockOverview.Name,
-            //    Symbol = symbol,
-            //    ReturnOnEquityTTM = stockOverview.ReturnOnEquityTTM,
-            //    PriceToSalesRatioTTM = stockOverview.PriceToSalesRatioTTM,
-            //    QuarterlyRevenueGrowthYOY = stockOverview.QuarterlyRevenueGrowthYOY,
-            //    Quote = quote,
-            //    PrevDays = prevDayPrices,
-            //    AnnualReport = annualReport
-            //};
+            var stock = new Stock
+            {
+                Name = stockOverview.Result.Name,
+                Symbol = symbol,
+                ReturnOnEquityTTM = stockOverview.Result.ReturnOnEquityTTM,
+                PriceToSalesRatioTTM = stockOverview.Result.PriceToSalesRatioTTM,
+                QuarterlyRevenueGrowthYOY = stockOverview.Result.QuarterlyRevenueGrowthYOY,
+                Quote = quote.Result,
+                PrevDays = prevDayPrices.Result,
+                AnnualReport = annualReport.Result,
+                News = allNews.Result
+            };
 
-            //Console.WriteLine(JsonConvert.SerializeObject(stock, Formatting.Indented));
+            var prompt = new StockPrompt
+            {
+                AnalysisRequest = StockPromptParams.AnalysisRequest,
+                InvestmentHorizon = StockPromptParams.InvestmentHorizon,
+                ResponseStructure = StockPromptParams.ResponseStructure,
+                Stock = stock
+            };
 
+            Console.WriteLine(JsonConvert.SerializeObject(prompt, Formatting.Indented));
+
+            watch.Stop();
+
+            Console.WriteLine($"Execution Time: {watch.Elapsed.TotalSeconds} s");
         }
     }
 }

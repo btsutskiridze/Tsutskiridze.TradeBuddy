@@ -37,10 +37,9 @@ namespace Tsutskiridze.TradeBuddy.Configs
                 client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/web");
             });
 
+            services.AddHttpClient<GoogleScraper>();
 
-            services.AddHttpClient<GoogleScraper>(client =>
-            {
-            });
+            services.AddTransient<NewsService>();
 
             return services;
         }
