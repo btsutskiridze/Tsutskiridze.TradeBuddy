@@ -28,9 +28,20 @@ builder.Services.AddBloom((opt) =>
             });
         }
     };
+
+    opt.JsonSerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+        WriteIndented = false,
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+    };
 });
 
 builder.Services.AddHttpClientConfigs();
+
+builder.Services.AddServiceConfigs();
+
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 builder.Services.ConfigureBloomServices((s) =>

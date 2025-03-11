@@ -1,6 +1,6 @@
 ﻿using Tsutskiridze.TradeBuddy.Models;
 
-namespace Tsutskiridze.TradeBuddy.DTOs.Helpers
+namespace Tsutskiridze.TradeBuddy.Helpers
 {
     public static class StockPromptParams
     {

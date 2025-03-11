@@ -1,4 +1,5 @@
-﻿using Tsutskiridze.TradeBuddy.Services.News;
+﻿using Tsutskiridze.TradeBuddy.Services.AI;
+using Tsutskiridze.TradeBuddy.Services.News;
 using Tsutskiridze.TradeBuddy.Services.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Configs
@@ -39,7 +40,7 @@ namespace Tsutskiridze.TradeBuddy.Configs
 
             services.AddHttpClient<GoogleScraper>();
 
-            services.AddTransient<NewsService>();
+            services.AddHttpClient<GeminiService>();
 
             return services;
         }

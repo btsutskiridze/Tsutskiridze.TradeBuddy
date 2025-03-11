@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Text.Json;
 using Tsutskiridze.Bloom.Core.Infrastructure.Jobs;
-using Tsutskiridze.TradeBuddy.DTOs.Helpers;
-using Tsutskiridze.TradeBuddy.Models;
-using Tsutskiridze.TradeBuddy.Services.News;
-using Tsutskiridze.TradeBuddy.Services.Stocks;
+using Tsutskiridze.TradeBuddy.Helpers;
+using Tsutskiridze.TradeBuddy.Services;
+using Tsutskiridze.TradeBuddy.Services.AI;
 
 namespace Tsutskiridze.TradeBuddy.Jobs
 {
@@ -15,61 +15,27 @@ namespace Tsutskiridze.TradeBuddy.Jobs
         public int Attempts => 1;
         public bool RunOnStart => true;
 
-        private readonly AlphaVantageService _alphaVantage;
-        private readonly FMPService _fmp;
-        private readonly NewsService _news;
-        public StockBuddyJob(AlphaVantageService alphaVantage, FMPService fmp, NewsService news)
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+        private readonly StockPromptService _stockPromptService;
+        private readonly GeminiService _geminiService;
+        public StockBuddyJob(StockPromptService stockPromptService, IOptions<JsonSerializerOptions> jsonSerializerOptions, GeminiService geminiService)
         {
-            _alphaVantage = alphaVantage;
-            _fmp = fmp;
-            _news = news;
+            _stockPromptService = stockPromptService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _geminiService = geminiService;
         }
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            string symbol = "RCAT";
-
             var watch = Stopwatch.StartNew();
 
-            var quote = _fmp.GetStockQuote(symbol);
-            var stockOverview = _alphaVantage.GetStockOverview(symbol);
-            var prevDayPrices = _alphaVantage.GetStockPrevDaysClosePrices(symbol, 10);
-            var annualReport = _alphaVantage.GetStockLastAnnualReport(symbol);
-            var allNews = _news.GetAllNews(symbol, 2);
+            var stockPrompt = await _stockPromptService.GetStockPrompt(Stocks.RCAT);
 
-            await Task.WhenAll(quote, stockOverview, prevDayPrices, annualReport, allNews);
-
-            if (quote.Result == null || stockOverview.Result == null || prevDayPrices.Result == null || annualReport.Result == null)
-            {
-                return;
-            }
-
-            var stock = new Stock
-            {
-                Name = stockOverview.Result.Name,
-                Symbol = symbol,
-                ReturnOnEquityTTM = stockOverview.Result.ReturnOnEquityTTM,
-                PriceToSalesRatioTTM = stockOverview.Result.PriceToSalesRatioTTM,
-                QuarterlyRevenueGrowthYOY = stockOverview.Result.QuarterlyRevenueGrowthYOY,
-                Quote = quote.Result,
-                PrevDays = prevDayPrices.Result,
-                AnnualReport = annualReport.Result,
-                News = allNews.Result
-            };
-
-            var prompt = new StockPrompt
-            {
-                AnalysisRequest = StockPromptParams.AnalysisRequest,
-                InvestmentHorizon = StockPromptParams.InvestmentHorizon,
-                ResponseStructure = StockPromptParams.ResponseStructure,
-                Stock = stock
-            };
-
-            Console.WriteLine(JsonConvert.SerializeObject(prompt, Formatting.Indented));
+            await _geminiService.Ask(JsonSerializer.Serialize(stockPrompt, _jsonSerializerOptions));
 
             watch.Stop();
-
             Console.WriteLine($"Execution Time: {watch.Elapsed.TotalSeconds} s");
         }
+
     }
 }
