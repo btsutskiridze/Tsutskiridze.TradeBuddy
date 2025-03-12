@@ -29,7 +29,7 @@ namespace Tsutskiridze.TradeBuddy.Jobs
         {
             var watch = Stopwatch.StartNew();
 
-            var stockPrompt = await _stockPromptService.GetStockPrompt(Stocks.RCAT);
+            var stockPrompt = await _stockPromptService.GetStockPrompt(Stocks.MVST);
 
             Console.WriteLine("========================================");
             Console.WriteLine($"Stock Prompt: {JsonSerializer.Serialize(stockPrompt, _jsonSerializerOptions)}");

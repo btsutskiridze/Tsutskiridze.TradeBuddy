@@ -54,7 +54,6 @@ namespace Tsutskiridze.TradeBuddy.Services.AI
 
                 foreach (var property in properties)
                 {
-                    Console.WriteLine(property.Name);
                     var propertySchema = IsClass(property.PropertyType)
                         ? GenerateSchema(property.PropertyType.GetProperties(), context)
                         : context.Generator.Generate(property.PropertyType);
