@@ -8,19 +8,19 @@ namespace Tsutskiridze.TradeBuddy.Helpers
         public static readonly string AnalysisRequest = "Analyze the given stock data, financial statements, and market sentiment to determine whether now is a good time to BUY, SELL, or HOLD RCAT. Consider price trends, trading volume, earnings, and recent news sentiment in your response.";
         public static readonly StockAnalysis ResponseStructure = new()
         {
-            CurrentPrice = "$2.56",
+            CurrentPrice = "price-with-currency",
             NewsSentimentAnalysis = new NewsSentimentAnalysis
             {
-                Google = "50% Positive",
-                Reddit = "30% Negative",
-                Yahoo = "Neutral",
-                Finnhub = "60% Positive"
+                Google = "positive-negative-neutral with percentage",
+                Reddit = "positive-negative-neutral with percentage",
+                Yahoo = "positive-negative-neutral with percentage",
+                Finnhub = "positive-negative-neutral with percentage"
             },
-            AiAnalysis = "SELL (85% Confidence)",
+            AiAnalysis = "SELL-HOLD-BUY with confidence percentage",
             Reasoning = [
-                "Stock is in a downward trend.",
-                "News sentiment is mixed.",
-                "Earnings report on March 17 could increase volatility."
+                "short-reasoning",
+                "short-reasoning",
+                "short-reasoning"
             ]
         };
 

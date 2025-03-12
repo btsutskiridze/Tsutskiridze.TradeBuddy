@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Tsutskiridze.TradeBuddy.Services.AI
 {
-    public class GeminiService
+    public class GeminiService : IAIService
     {
         private static readonly string _apiKey = SecretsManager.GetSecret("AI:Gemini:ApiKey");
         private static readonly string _modelID = SecretsManager.GetSecret("AI:Gemini:ModelID");
@@ -17,7 +17,7 @@ namespace Tsutskiridze.TradeBuddy.Services.AI
             _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
-        public async Task<string> Ask(string prompt)
+        public async Task<T?> Ask<T>(string prompt)
         {
             var request = new
             {
@@ -41,7 +41,9 @@ namespace Tsutskiridze.TradeBuddy.Services.AI
             Console.WriteLine(await response.Content.ReadAsStringAsync());
             Console.WriteLine("===============================================");
 
-            return await response.Content.ReadAsStringAsync();
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            return JsonSerializer.Deserialize<T>(responseJson, _jsonSerializerOptions);
         }
 
         public async Task<string> CountTokens(string prompt)

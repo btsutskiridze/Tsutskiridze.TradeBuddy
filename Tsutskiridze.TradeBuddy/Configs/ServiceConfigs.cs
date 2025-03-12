@@ -1,4 +1,5 @@
 ﻿using Tsutskiridze.TradeBuddy.Services;
+using Tsutskiridze.TradeBuddy.Services.AI;
 using Tsutskiridze.TradeBuddy.Services.News;
 
 namespace Tsutskiridze.TradeBuddy.Configs
@@ -11,6 +12,8 @@ namespace Tsutskiridze.TradeBuddy.Configs
             services.AddTransient<NewsService>();
 
             services.AddTransient<StockPromptService>();
+
+            services.AddTransient<IAIService, OpenAiService>();
 
             return services;
         }
