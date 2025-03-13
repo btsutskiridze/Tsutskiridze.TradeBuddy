@@ -3,6 +3,7 @@ using Newtonsoft.Json.Schema.Generation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace Tsutskiridze.TradeBuddy.Services.JsSchema
 {
@@ -38,6 +39,11 @@ namespace Tsutskiridze.TradeBuddy.Services.JsSchema
 
             foreach (var property in properties)
             {
+                if (property.GetCustomAttributes(typeof(JsonIgnoreAttribute), true).Any())
+                {
+                    continue;
+                }
+
                 var propertySchema = IsClass(property.PropertyType)
                     ? GenerateSchema(property.PropertyType.GetProperties(), context)
                     : context.Generator.Generate(property.PropertyType);

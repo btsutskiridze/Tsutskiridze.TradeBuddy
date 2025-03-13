@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Tsutskiridze.TradeBuddy.Models
 {
@@ -36,6 +37,9 @@ namespace Tsutskiridze.TradeBuddy.Models
             [Required]
             [Description("Overall news sentiment")]
             public OveralNewsAnalysis newsOverall { get; set; }
+
+            [JsonIgnore]
+            public double ExecutionTime { get; set; }
         }
 
         public class BenchmarkMetrics
