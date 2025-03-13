@@ -15,6 +15,8 @@ namespace Tsutskiridze.TradeBuddy.Configs
 
             services.AddTransient<StockAnalysisService>();
 
+            services.AddTransient<TelegramService>();
+
             services.AddTransient<IAIService, OpenAiService>();
 
             return services;

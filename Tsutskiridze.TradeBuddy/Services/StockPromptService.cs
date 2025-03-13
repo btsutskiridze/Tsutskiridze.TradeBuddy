@@ -17,7 +17,7 @@ namespace Tsutskiridze.TradeBuddy.Services
             _news = news;
         }
 
-        public async Task<StockPrompt> GetStockPrompt(string symbol)
+        public async Task<StockPrompt?> GetStockPrompt(string symbol)
         {
             var quote = _fmp.GetStockQuote(symbol);
             var stockOverview = _alphaVantage.GetStockOverview(symbol);
@@ -30,7 +30,7 @@ namespace Tsutskiridze.TradeBuddy.Services
             if (quote.Result == null || stockOverview.Result == null || prevDayPrices.Result == null || annualReport.Result == null)
             {
                 //todo: fix alphavantage service
-                throw new Exception("Failed to fetch stock data");
+                return null;
             }
 
             var stock = new StockDetails
