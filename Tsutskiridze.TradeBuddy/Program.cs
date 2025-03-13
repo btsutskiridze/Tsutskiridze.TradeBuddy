@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Tsutskiridze.Bloom.Core;
 using Tsutskiridze.Bloom.Core.Common.Options;
 using Tsutskiridze.Bloom.Core.Configurations;
@@ -32,9 +34,9 @@ builder.Services.AddBloom((opt) =>
     opt.JsonSerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = false,
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 });
 
