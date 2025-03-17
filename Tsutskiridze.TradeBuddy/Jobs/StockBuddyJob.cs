@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Tsutskiridze.Bloom.Core.Infrastructure.Jobs;
+﻿using Tsutskiridze.Bloom.Core.Infrastructure.Jobs;
 using Tsutskiridze.TradeBuddy.Services;
 
 namespace Tsutskiridze.TradeBuddy.Jobs
@@ -19,21 +18,21 @@ namespace Tsutskiridze.TradeBuddy.Jobs
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            var result = await _stockAnalysis.ExecuteStockAnalysis("AMZN");
+            //    var result = await _stockAnalysis.ExecuteStockAnalysis("PLTR");
 
-            if (result == null)
-            {
-                Console.WriteLine("Stock analysis returned null");
-                return;
-            }
+            //    if (result == null)
+            //    {
+            //        Console.WriteLine("Stock analysis returned null");
+            //        return;
+            //    }
 
-            Console.WriteLine("==========================");
-            Console.WriteLine(result.TelegramMessage);
-            Console.WriteLine("==========================");
+            //    Console.WriteLine("==========================");
+            //    Console.WriteLine(result.TelegramMessage);
+            //    Console.WriteLine("==========================");
 
-            Console.WriteLine("==========================");
-            Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));
-            Console.WriteLine("==========================");
+            //    Console.WriteLine("==========================");
+            //    Console.WriteLine(JsonConvert.SerializeObject(result, Formatting.Indented));
+            //    Console.WriteLine("==========================");
         }
     }
 }

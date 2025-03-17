@@ -4,18 +4,17 @@ namespace Tsutskiridze.TradeBuddy.Services
 {
     public class TelegramService
     {
-        private static readonly string _botToken = SecretsManager.GetSecret("Telegram:BotToken");
         private static readonly string _groupChatID = SecretsManager.GetSecret("Telegram:GroupChatID");
 
-        private readonly TelegramBotClient _botClient;
+        private readonly ITelegramBotClient _botClient;
         private readonly ILogger<TelegramService> _logger;
-        public TelegramService(ILogger<TelegramService> logger)
+        public TelegramService(ILogger<TelegramService> logger, ITelegramBotClient botClient)
         {
             _logger = logger;
-            _botClient = new TelegramBotClient(_botToken);
+            _botClient = botClient;
         }
 
-        public TelegramBotClient GetBotClient()
+        public ITelegramBotClient GetBotClient()
         {
             return _botClient;
         }
