@@ -2,7 +2,13 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+
+# Create user and group
+RUN groupadd -g 1001 app && useradd -m -u 1001 -g app app
+
+# Switch to the non-root user
 USER app
+
 WORKDIR /app
 EXPOSE 8080
 
@@ -26,4 +32,5 @@ RUN dotnet publish "./Tsutskiridze.TradeBuddy.csproj" -c $BUILD_CONFIGURATION -o
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
