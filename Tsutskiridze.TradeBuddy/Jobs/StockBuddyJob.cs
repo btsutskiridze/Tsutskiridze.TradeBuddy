@@ -1,5 +1,6 @@
 ﻿using Tsutskiridze.Bloom.Core.Infrastructure.Jobs;
 using Tsutskiridze.TradeBuddy.Services;
+using Tsutskiridze.TradeBuddy.Services.News;
 
 namespace Tsutskiridze.TradeBuddy.Jobs
 {
@@ -11,13 +12,17 @@ namespace Tsutskiridze.TradeBuddy.Jobs
         public bool RunOnStart => true;
 
         private readonly StockAnalysisService _stockAnalysis;
-        public StockBuddyJob(StockAnalysisService stockAnalysis)
+        private readonly GoogleScraper _googleScraper;
+        public StockBuddyJob(StockAnalysisService stockAnalysis, GoogleScraper googleScraper)
         {
             _stockAnalysis = stockAnalysis;
+            _googleScraper = googleScraper;
         }
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            await _googleScraper.GetNewsAsync("PLTR", 5);
+
             //    var result = await _stockAnalysis.ExecuteStockAnalysis("PLTR");
 
             //    if (result == null)

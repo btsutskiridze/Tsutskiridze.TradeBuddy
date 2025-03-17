@@ -33,4 +33,8 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
+RUN dotnet tool install --global Microsoft.Playwright.CLI
+ENV PATH="${PATH}:/root/.dotnet/tools"
+RUN playwright install chromium
+
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
