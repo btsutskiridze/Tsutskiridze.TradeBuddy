@@ -17,7 +17,7 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj", "Tsutskiridze.TradeBuddy/"]
+COPY ["Tsutskiridze.TradeBuddy.csproj", "Tsutskiridze.TradeBuddy/"]
 RUN dotnet restore "./Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj"
 COPY . .
 WORKDIR "/src/Tsutskiridze.TradeBuddy"
