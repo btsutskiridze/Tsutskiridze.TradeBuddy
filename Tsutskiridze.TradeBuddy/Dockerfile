@@ -4,7 +4,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
 # Create user and group
-RUN groupadd -g 1001 app && useradd -m -u 1001 -g app app
+RUN getent group app || groupadd -g 1001 app && getent passwd app || useradd -m -u 1001 -g app app
 
 # Switch to the non-root user
 USER app
