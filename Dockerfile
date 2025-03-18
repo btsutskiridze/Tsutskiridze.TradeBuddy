@@ -33,9 +33,9 @@ RUN dotnet tool restore && \
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Create a non-root user and group for better security
-RUN groupadd -g 1001 app && \
-    useradd -m -u 1001 -g app app
+# Create a non-root user and group safely: only add them if they don't already exist.
+RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
+    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
 
 # Install OS-level dependencies required by Chromium and Playwright
 RUN apt-get update && apt-get install -y \
