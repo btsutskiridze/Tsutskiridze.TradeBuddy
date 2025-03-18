@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using Tsutskiridze.TradeBuddy.DTOs.Reddit;
+using System.Text;
+using System.Text.Json;
 
 namespace Tsutskiridze.TradeBuddy.Services.News
 {
@@ -15,6 +17,11 @@ namespace Tsutskiridze.TradeBuddy.Services.News
         public async Task<List<RedditPost>?> GetTopPostsAsync(string keyword, string sortType, int? limit = null)
         {
             var response = await _client.GetAsync($"search.json?q={keyword}&sort={sortType}&type=posts");
+
+            Console.WriteLine("===============================================");
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+            Console.WriteLine("===============================================");
+
             response.EnsureSuccessStatusCode();
 
             var json = JObject.Parse(await response.Content.ReadAsStringAsync());
