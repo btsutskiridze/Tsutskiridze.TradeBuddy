@@ -31,7 +31,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
 
             var searcUrl = $"https://www.reddit.com/search??q={symbol}&sort=new&type=posts";
 
-            _logger.LogDebug("searchUrl ==> {searchUrl}", searcUrl);
+            _logger.LogInformation("searchUrl ==> {searchUrl}", searcUrl);
 
             var context = await browser.NewContextAsync(new BrowserNewContextOptions
             {
@@ -44,21 +44,21 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             await page.GotoAsync(searcUrl,
                 new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
 
-            try
-            {
-                // Example: if there's a button with text "I agree" or "Accept all"
-                var acceptAllButton = page.Locator("button[aria-label='Accept all']").First;
-                if (await acceptAllButton.IsVisibleAsync())
-                {
-                    await acceptAllButton.ClickAsync();
-                    await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-                }
-            }
-            catch (Exception ex)
-            {
-                // If not found or something else fails, just log and continue
-                _logger.LogError("Consent popup not found or click failed: {err}", ex.Message);
-            }
+            //try
+            //{
+            //    // Example: if there's a button with text "I agree" or "Accept all"
+            //    var acceptAllButton = page.Locator("button[aria-label='Accept all']").First;
+            //    if (await acceptAllButton.IsVisibleAsync())
+            //    {
+            //        await acceptAllButton.ClickAsync();
+            //        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    // If not found or something else fails, just log and continue
+            //    _logger.LogError("Consent popup not found or click failed: {err}", ex.Message);
+            //}
 
 
             // Log the page's HTML content (be aware this can be large)
