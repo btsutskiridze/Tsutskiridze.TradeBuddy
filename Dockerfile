@@ -1,25 +1,64 @@
 # Stage 1: Build
-FROM mcr.microsoft.com/dotnet/sdk:8.0-focal AS build
+FROM mcr.microsoft.com/playwright:focal AS build
 WORKDIR /src
-COPY Tsutskiridze.TradeBuddy.sln .
+
+# Set PATH so that dotnet global tools (like Playwright CLI) are available
+ENV PATH="/root/.dotnet/tools:${PATH}"
+
+# Install .NET SDK 8.0
+RUN apt-get update && apt-get install -y wget && \
+    wget https://dot.net/v1/dotnet-install.sh && \
+    chmod +x dotnet-install.sh && \
+    ./dotnet-install.sh --version 8.0.100 --install-dir /usr/share/dotnet && \
+    ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet && \
+    rm dotnet-install.sh
+
+# Copy only the solution and project files first to leverage Docker caching for dependency restoration
+COPY Tsutskiridze.TradeBuddy.sln . 
 COPY Tsutskiridze.TradeBuddy/*.csproj Tsutskiridze.TradeBuddy/
+
+# Restore dependencies – this layer will be cached as long as your project files remain unchanged
 RUN dotnet restore Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj
+
+# Now copy the remaining source code (this step invalidates the cache for later layers if code changes)
 COPY Tsutskiridze.TradeBuddy/ Tsutskiridze.TradeBuddy/
+
 WORKDIR /src/Tsutskiridze.TradeBuddy
+
+# Build and publish the application
 RUN dotnet publish -c Release -o /app/build
 
 # Stage 2: Runtime
-FROM mcr.microsoft.com/playwright:focal AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Copy the published app from build
-COPY --from=build /app/build .
-
-# (Optional) create a non-root user if you’d like
+# Create a non-root user and group safely: only add them if they don't already exist.
 RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
     if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
 
+# Install OS-level dependencies required by Chromium and Playwright
+RUN apt-get update && apt-get install -y \
+    libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
+    libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
+    libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 \
+    libxfixes3 libxkbcommon0 && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy the published application from the build stage
+COPY --from=build /app/build .
+
+# Copy the Playwright browser binaries from the Playwright image
+COPY --from=build /ms-playwright /app/ms-playwright
+
+# Adjust permissions so the non-root user can access everything
+RUN chown -R app:app /app
+
+# Set the environment variable to point to the downloaded browsers
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
+
+# Switch to the non-root user
 USER app
 
+# Expose the desired port and set the application entrypoint
 EXPOSE 80
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
