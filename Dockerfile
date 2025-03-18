@@ -18,12 +18,10 @@ WORKDIR /src/Tsutskiridze.TradeBuddy
 RUN dotnet publish -c Release -o /app/build
 RUN dotnet tool restore
 
-# Install Playwright CLI globally and add it to PATH
+# Install Playwright for browser automation (if needed)
 RUN dotnet tool install --global Microsoft.Playwright.CLI
-ENV PATH="$PATH:/root/.dotnet/tools"
-
-# Install Chromium for Playwright
-RUN dotnet playwright install chromium
+ENV PATH="${PATH}:/root/.dotnet/tools"
+RUN playwright install chromium
 
 # Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
