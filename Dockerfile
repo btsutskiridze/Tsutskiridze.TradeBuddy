@@ -16,14 +16,21 @@ WORKDIR /src/Tsutskiridze.TradeBuddy
 
 # Build and publish
 RUN dotnet publish -c Release -o /app/build
-
-# Install Playwright dependencies
 RUN dotnet tool restore
+
+# Install Playwright CLI globally and add it to PATH
+RUN dotnet tool install --global Microsoft.Playwright.CLI
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Install Chromium for Playwright
 RUN dotnet playwright install chromium
 
 # Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
+
+# Create a non-root user and group
+RUN getent group app || groupadd -g 1001 app && getent passwd app || useradd -m -u 1001 -g app app
 
 # Install Chromium dependencies
 RUN apt-get update && apt-get install -y \
@@ -32,8 +39,12 @@ RUN apt-get update && apt-get install -y \
     libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy built output
+# Copy built output and set correct permissions
 COPY --from=build /app/build .
+RUN chown -R app:app /app
+
+# Switch to the non-root user
+USER app
 
 # Expose port
 EXPOSE 80
