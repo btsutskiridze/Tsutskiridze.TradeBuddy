@@ -23,6 +23,8 @@ namespace Tsutskiridze.TradeBuddy.Services.News
 
             var searcUrl = $"https://www.google.com/search?q={symbol}&tbm=nws&tbs=sbd:1&hl=en";
 
+            _logger.LogInformation("searchUrl ==> {searchUrl}", searcUrl);
+            
             var page = await browser.NewPageAsync();
             await page.GotoAsync(searcUrl,
                 new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
