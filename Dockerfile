@@ -39,24 +39,21 @@ RUN apt-get update && apt-get install -y \
     libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Switch to root for Playwright installation in runtime stage
-USER root
-RUN dotnet tool install --global Microsoft.Playwright.CLI
-ENV PATH="${PATH}:/root/.dotnet/tools"
-RUN playwright install chromium
-
-# Copy built output and adjust permissions
+# Copy built application
 COPY --from=build /app/build .
-RUN chown -R app:app /app
 
-# Optionally set the PLAYWRIGHT_BROWSERS_PATH if needed:
+# Copy Playwright's browser binaries from the build stage
+COPY --from=build /root/.cache/ms-playwright /root/.cache/ms-playwright
+
+# Adjust permissions for both the app and the copied browser binaries
+RUN chown -R app:app /app /root/.cache/ms-playwright
+
+# Set the environment variable so Playwright knows where to look
 ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
 
-# Switch to non-root user
+# Switch to the non-root user
 USER app
 
-# Expose port
+# Expose port and start the application
 EXPOSE 80
-
-# Start the application
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
