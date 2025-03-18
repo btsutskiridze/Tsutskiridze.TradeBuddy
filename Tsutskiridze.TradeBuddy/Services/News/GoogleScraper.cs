@@ -42,7 +42,7 @@ namespace Tsutskiridze.TradeBuddy.Services.News
                 var acceptAllButton = page.Locator("button[aria-label='Accept all']");
                 if (await acceptAllButton.IsVisibleAsync())
                 {
-                    await acceptAllButton.ClickAsync();
+                    await acceptAllButton.First.ClickAsync();
                     await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
                 }
 
