@@ -20,14 +20,17 @@ WORKDIR /src/Tsutskiridze.TradeBuddy
 # Install prerequisites needed by the Playwright CLI
 RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
 
-# Restore and install the Playwright CLI and download Chromium
-# Create a tool manifest (if not already created), then restore and install the Playwright CLI, and download Chromium
+# Ensure that the Microsoft.Playwright package is added and the project is built.
+# This is required so that the Playwright CLI can function properly.
+RUN dotnet add package Microsoft.Playwright && dotnet build
+
+# Create a tool manifest and install the Playwright CLI, then download Chromium.
 RUN dotnet new tool-manifest && \
     dotnet tool restore && \
     dotnet tool install Microsoft.Playwright.CLI && \
-    dotnet tool run playwright install chromium
+    dotnet playwright install chromium
 
-# Set the environment variable so Playwright knows where the browsers are (cached under the SDK user home)
+# Set the environment variable so Playwright knows where the browsers are (cached under the SDK user's home)
 ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
 
 # Expose port 80 (or whichever port your app listens on)
