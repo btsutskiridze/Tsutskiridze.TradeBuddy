@@ -22,9 +22,8 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         {
             try
             {
-
-                var posts = await _reddit.GetTopPostsAsync(symbol, "new", 5);
-                return Ok(posts);
+                await _reddit.GetPostsAsync(symbol, "new", 5);
+                return Ok();
             }
             catch (Exception ex)
             {
