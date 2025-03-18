@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists
 RUN dotnet new tool-manifest && \
     dotnet tool restore && \
     dotnet tool install Microsoft.Playwright.CLI && \
-    dotnet playwright install chromium
+    dotnet tool run playwright install chromium
 
 # Set the environment variable so Playwright knows where the browsers are (cached under the SDK user home)
 ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
