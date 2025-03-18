@@ -40,9 +40,11 @@ RUN getent group app || groupadd -g 1001 app && \
 # Install OS-level Chromium dependencies (including wget and unzip for Playwright)
 RUN apt-get update && apt-get install -y \
     libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
-    libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 libxfixes3 libxkbcommon0 \
-    libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 wget unzip && \
-    rm -rf /var/lib/apt/lists/* \
+    libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
+    libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 \
+    libxfixes3 libxkbcommon0 \
+    wget unzip && \
+    rm -rf /var/lib/apt/lists/*
     
 # Copy the built application and the Playwright browser binaries from the build stage
 COPY --from=build /app/build .
