@@ -39,13 +39,12 @@ namespace Tsutskiridze.TradeBuddy.Services.News
             try
             {
                 // Example: if there's a button with text "I agree" or "Accept all"
-                var acceptAllButton = page.Locator("button[aria-label='Accept all']");
+                var acceptAllButton = page.Locator("button[aria-label='Accept all']").First;
                 if (await acceptAllButton.IsVisibleAsync())
                 {
-                    await acceptAllButton.First.ClickAsync();
+                    await acceptAllButton.ClickAsync();
                     await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
                 }
-
             }
             catch (Exception ex)
             {
