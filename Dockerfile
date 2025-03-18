@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Ensure correct files are copied
+# Copy solution and project files
 COPY Tsutskiridze.TradeBuddy.sln ./
 COPY Tsutskiridze.TradeBuddy/*.csproj Tsutskiridze.TradeBuddy/
 
@@ -14,15 +14,20 @@ COPY Tsutskiridze.TradeBuddy/ Tsutskiridze.TradeBuddy/
 
 WORKDIR /src/Tsutskiridze.TradeBuddy
 
-# Build and publish
+# Build and publish the application
 RUN dotnet publish -c Release -o /app/build
 RUN dotnet tool restore
 
-# Install Playwright for browser automation (if needed)
+# Install prerequisites for Playwright
 RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
+
+# Install the Playwright CLI and download Chromium
 RUN dotnet tool install --global Microsoft.Playwright.CLI
 ENV PATH="${PATH}:/root/.dotnet/tools"
 RUN playwright install chromium
+
+# Copy Playwright's browser binaries to a folder that we can later use in runtime
+RUN cp -R /root/.cache/ms-playwright /app/ms-playwright
 
 # Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
@@ -32,28 +37,26 @@ WORKDIR /app
 RUN getent group app || groupadd -g 1001 app && \
     getent passwd app || useradd -m -u 1001 -g app app
 
-# Install Chromium dependencies (including wget and unzip for Playwright)
+# Install OS-level Chromium dependencies (including wget and unzip for Playwright)
 RUN apt-get update && apt-get install -y \
     libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
     libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
     libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy built application
+# Copy the built application and the Playwright browser binaries from the build stage
 COPY --from=build /app/build .
+COPY --from=build /app/ms-playwright /app/ms-playwright
 
-# Copy Playwright's browser binaries from the build stage
-COPY --from=build /root/.cache/ms-playwright /root/.cache/ms-playwright
+# Adjust permissions so the non-root user can access everything
+RUN chown -R app:app /app
 
-# Adjust permissions for both the app and the copied browser binaries
-RUN chown -R app:app /app /root/.cache/ms-playwright
-
-# Set the environment variable so Playwright knows where to look
-ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
+# Set environment variable to point to the downloaded browsers
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
 
 # Switch to the non-root user
 USER app
 
-# Expose port and start the application
+# Expose port and set entrypoint
 EXPOSE 80
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
