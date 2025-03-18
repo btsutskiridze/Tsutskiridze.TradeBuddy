@@ -17,14 +17,8 @@ namespace Tsutskiridze.TradeBuddy.Services.News
         public async Task<List<RedditPost>?> GetTopPostsAsync(string keyword, string sortType, int? limit = null)
         {
             var response = await _client.GetAsync($"search.json?q={keyword}&sort={sortType}&type=posts");
-
-            // Read the response content once and store it in a variable
-            var rawContent = await response.Content.ReadAsStringAsync();
-
-            // Log the raw response
-            Console.WriteLine("===============================================");
-            Console.WriteLine(rawContent);
-            Console.WriteLine("===============================================");
+            
+            response.EnsureSuccessStatusCode();
 
             var json = JObject.Parse(await response.Content.ReadAsStringAsync());
 
