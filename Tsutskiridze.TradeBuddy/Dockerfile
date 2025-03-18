@@ -17,6 +17,15 @@ RUN dotnet restore "./Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj"
 WORKDIR "/src/Tsutskiridze.TradeBuddy"
 COPY . .
 
+
+# Create a non-root user and group safely: only add them if they don't already exist.
+RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
+    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
+
+    
+USER app
+
+
 RUN dotnet build "./Tsutskiridze.TradeBuddy.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
@@ -28,12 +37,6 @@ RUN dotnet publish "./Tsutskiridze.TradeBuddy.csproj" -c $BUILD_CONFIGURATION -o
 FROM base AS final
 WORKDIR /app
 
-# Create a non-root user and group safely: only add them if they don't already exist.
-RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
-    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
-
-
-USER app
 
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
