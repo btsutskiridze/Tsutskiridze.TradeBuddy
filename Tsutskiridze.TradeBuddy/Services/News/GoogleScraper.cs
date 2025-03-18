@@ -36,6 +36,24 @@ namespace Tsutskiridze.TradeBuddy.Services.News
             await page.GotoAsync(searcUrl,
                 new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
 
+            try
+            {
+                // Example: if there's a button with text "I agree" or "Accept all"
+                var acceptAllButton = page.Locator("button:has-text('Accept all')");
+                if (await acceptAllButton.IsVisibleAsync())
+                {
+                    await acceptAllButton.ClickAsync();
+                    // Optional: wait for any page reload or network idle
+                    await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                }
+            }
+            catch (Exception ex)
+            {
+                // If not found or something else fails, just log and continue
+                _logger.LogError("Consent popup not found or click failed: {err}", ex.Message);
+            }
+
+            
             // Log the page's HTML content (be aware this can be large)
             var pageContent = await page.ContentAsync();
             _logger.LogDebug("Page HTML content:\n{pageContent}", pageContent);
