@@ -21,8 +21,10 @@ WORKDIR /src/Tsutskiridze.TradeBuddy
 RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
 
 # Restore and install the Playwright CLI and download Chromium
-RUN dotnet tool restore && \
-    dotnet tool install --global Microsoft.Playwright.CLI && \
+# Create a tool manifest (if not already created), then restore and install the Playwright CLI, and download Chromium
+RUN dotnet new tool-manifest && \
+    dotnet tool restore && \
+    dotnet tool install Microsoft.Playwright.CLI && \
     playwright install chromium
 
 # Set the environment variable so Playwright knows where the browsers are (cached under the SDK user home)
