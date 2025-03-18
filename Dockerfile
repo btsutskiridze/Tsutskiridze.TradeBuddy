@@ -19,6 +19,7 @@ RUN dotnet publish -c Release -o /app/build
 RUN dotnet tool restore
 
 # Install Playwright for browser automation (if needed)
+RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
 RUN dotnet tool install --global Microsoft.Playwright.CLI
 ENV PATH="${PATH}:/root/.dotnet/tools"
 RUN playwright install chromium
@@ -40,6 +41,9 @@ RUN apt-get update && apt-get install -y \
 # Copy built output and set correct permissions
 COPY --from=build /app/build .
 RUN chown -R app:app /app
+
+# Optionally set the PLAYWRIGHT_BROWSERS_PATH if needed:
+ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
 
 # Switch to the non-root user
 USER app
