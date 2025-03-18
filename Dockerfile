@@ -1,63 +1,67 @@
-# Stage 1: Build
+########################################
+# Stage 1: Build and Publish the App
+########################################
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Set PATH so that dotnet global tools (like Playwright CLI) are available
+# Ensure dotnet global tools are available
 ENV PATH="/root/.dotnet/tools:${PATH}"
 
-# Copy only the solution and project files first to leverage Docker caching for dependency restoration
-COPY Tsutskiridze.TradeBuddy.sln . 
+# Copy the solution and project files first for caching dependency restoration
+COPY Tsutskiridze.TradeBuddy.sln .
 COPY Tsutskiridze.TradeBuddy/*.csproj Tsutskiridze.TradeBuddy/
 
-# Restore dependencies – this layer will be cached as long as your project files remain unchanged
+# Restore dependencies
 RUN dotnet restore Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj
 
-# Now copy the remaining source code (this step invalidates the cache for later layers if code changes)
+# Copy the rest of the source code and publish the application
 COPY Tsutskiridze.TradeBuddy/ Tsutskiridze.TradeBuddy/
-
 WORKDIR /src/Tsutskiridze.TradeBuddy
-
-# Build and publish the application
 RUN dotnet publish -c Release -o /app/build
 
 # Install prerequisites for Playwright CLI
 RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
 
-# Restore and install the Playwright CLI, download Chromium, and cache browser binaries
+# Install Playwright CLI and download Chromium, then cache the browser binaries
 RUN dotnet tool restore && \
     dotnet tool install --global Microsoft.Playwright.CLI && \
     playwright install chromium && \
     cp -R /root/.cache/ms-playwright /app/ms-playwright
 
-# Stage 2: Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+########################################
+# Stage 2: Final Runtime Image
+########################################
+# Use the official Playwright image (which comes with all necessary browsers and OS libraries)
+FROM mcr.microsoft.com/playwright:jammy AS runtime
+
+# Install .NET 8.0 Runtime on top of the Playwright image
+RUN apt-get update && apt-get install -y wget apt-transport-https && rm -rf /var/lib/apt/lists/*
+RUN wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb \
+    && rm packages-microsoft-prod.deb
+RUN apt-get update && apt-get install -y dotnet-runtime-8.0
+
 WORKDIR /app
 
-# Create a non-root user and group safely: only add them if they don't already exist.
-RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
-    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
-
-# Install OS-level dependencies required by Chromium and Playwright
-RUN apt-get update && apt-get install -y \
-    libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
-    libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
-    libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 \
-    libxfixes3 libxkbcommon0 wget unzip && \
-    rm -rf /var/lib/apt/lists/*
-
-# Copy the published application and cached Playwright browser binaries from the build stage
+# Copy the published app and cached Playwright browser binaries from the build stage
 COPY --from=build /app/build .
 COPY --from=build /app/ms-playwright /app/ms-playwright
 
-# Adjust permissions so the non-root user can access everything
+# Create a non-root user for security
+RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
+    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
+
+# Adjust ownership so that the non-root user can access the application files
 RUN chown -R app:app /app
 
-# Set the environment variable to point to the downloaded browsers
+# Set the environment variable so that Playwright knows where to find the browser binaries
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
 
-# Switch to the non-root user
+# Expose the port your application listens on
+EXPOSE 80
+
+# Switch to the non-root user for added security
 USER app
 
-# Expose the desired port and set the application entrypoint
-EXPOSE 80
+# Set the entrypoint to run your app
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]

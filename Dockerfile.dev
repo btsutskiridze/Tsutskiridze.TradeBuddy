@@ -1,28 +1,35 @@
-# Dockerfile.dev
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS development
+# Use the full .NET 8.0 SDK image for development so that you have all the tools and can use dotnet watch
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dev
 WORKDIR /src
 
-# Set PATH for .NET global tools (e.g., Playwright CLI)
+# Ensure that dotnet global tools (like Playwright CLI) are available
 ENV PATH="/root/.dotnet/tools:${PATH}"
 
-# Install Playwright CLI and download browsers
-RUN dotnet tool install --global Microsoft.Playwright.CLI && \
-    playwright install chromium
-
-# Install debugging tools (optional, for Visual Studio debugging)
-RUN apt-get update && apt-get install -y unzip procps && \
-    curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
-
-# Copy only the project files to restore dependencies
+# Copy solution and project files first to leverage Docker caching for dependency restoration.
+# (In development you might also mount your source directory for live updates.)
 COPY Tsutskiridze.TradeBuddy.sln .
 COPY Tsutskiridze.TradeBuddy/*.csproj Tsutskiridze.TradeBuddy/
+
+# Restore dependencies
 RUN dotnet restore Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj
 
-# Copy the rest of the source code (this will be overridden by a bind mount in development)
+# Copy the remaining source code
 COPY Tsutskiridze.TradeBuddy/ Tsutskiridze.TradeBuddy/
+WORKDIR /src/Tsutskiridze.TradeBuddy
 
-# Expose the port for the application
+# Install prerequisites needed by the Playwright CLI
+RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
+
+# Restore and install the Playwright CLI and download Chromium
+RUN dotnet tool restore && \
+    dotnet tool install --global Microsoft.Playwright.CLI && \
+    playwright install chromium
+
+# Set the environment variable so Playwright knows where the browsers are (cached under the SDK user home)
+ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
+
+# Expose port 80 (or whichever port your app listens on)
 EXPOSE 80
 
-# Set the entrypoint for development (run the app in debug mode with live reload)
-ENTRYPOINT ["dotnet", "watch", "--project", "Tsutskiridze.TradeBuddy", "run"]
+# Use dotnet watch so that code changes automatically restart the app
+ENTRYPOINT ["dotnet", "watch", "run"]
