@@ -18,11 +18,13 @@ namespace Tsutskiridze.TradeBuddy.Services.News
         {
             var response = await _client.GetAsync($"search.json?q={keyword}&sort={sortType}&type=posts");
 
-            Console.WriteLine("===============================================");
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
-            Console.WriteLine("===============================================");
+            // Read the response content once and store it in a variable
+            var rawContent = await response.Content.ReadAsStringAsync();
 
-            response.EnsureSuccessStatusCode();
+            // Log the raw response
+            Console.WriteLine("===============================================");
+            Console.WriteLine(rawContent);
+            Console.WriteLine("===============================================");
 
             var json = JObject.Parse(await response.Content.ReadAsStringAsync());
 
