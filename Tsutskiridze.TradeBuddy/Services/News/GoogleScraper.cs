@@ -24,8 +24,15 @@ namespace Tsutskiridze.TradeBuddy.Services.News
             var searcUrl = $"https://www.google.com/search?q={symbol}&tbm=nws&tbs=sbd:1&hl=en";
 
             _logger.LogDebug("searchUrl ==> {searchUrl}", searcUrl);
+
+            var context = await browser.NewContextAsync(new BrowserNewContextOptions
+            {
+                ViewportSize = new ViewportSize { Width = 1280, Height = 720 },
+                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                            "(KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+            });
             
-            var page = await browser.NewPageAsync();
+            var page = await context.NewPageAsync();
             await page.GotoAsync(searcUrl,
                 new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
 
