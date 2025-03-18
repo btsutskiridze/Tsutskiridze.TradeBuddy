@@ -1,0 +1,28 @@
+# Dockerfile.dev
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS development
+WORKDIR /src
+
+# Set PATH for .NET global tools (e.g., Playwright CLI)
+ENV PATH="/root/.dotnet/tools:${PATH}"
+
+# Install Playwright CLI and download browsers
+RUN dotnet tool install --global Microsoft.Playwright.CLI && \
+    playwright install chromium
+
+# Install debugging tools (optional, for Visual Studio debugging)
+RUN apt-get update && apt-get install -y unzip procps && \
+    curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
+
+# Copy only the project files to restore dependencies
+COPY Tsutskiridze.TradeBuddy.sln .
+COPY Tsutskiridze.TradeBuddy/*.csproj Tsutskiridze.TradeBuddy/
+RUN dotnet restore Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj
+
+# Copy the rest of the source code (this will be overridden by a bind mount in development)
+COPY Tsutskiridze.TradeBuddy/ Tsutskiridze.TradeBuddy/
+
+# Expose the port for the application
+EXPOSE 80
+
+# Set the entrypoint for development (run the app in debug mode with live reload)
+ENTRYPOINT ["dotnet", "watch", "--project", "Tsutskiridze.TradeBuddy", "run"]
