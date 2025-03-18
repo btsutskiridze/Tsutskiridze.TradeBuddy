@@ -23,12 +23,16 @@ namespace Tsutskiridze.TradeBuddy.Services.News
 
             var searcUrl = $"https://www.google.com/search?q={symbol}&tbm=nws&tbs=sbd:1&hl=en";
 
-            _logger.LogInformation("searchUrl ==> {searchUrl}", searcUrl);
+            _logger.LogDebug("searchUrl ==> {searchUrl}", searcUrl);
             
             var page = await browser.NewPageAsync();
             await page.GotoAsync(searcUrl,
                 new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
 
+            // Log the page's HTML content (be aware this can be large)
+            var pageContent = await page.ContentAsync();
+            _logger.LogDebug("Page HTML content:\n{pageContent}", pageContent);
+            
             try
             {
                 _logger.LogInformation("Parsing Google News for {Symbol}", symbol);
