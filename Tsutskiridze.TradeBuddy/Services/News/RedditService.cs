@@ -1,23 +1,49 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Tsutskiridze.TradeBuddy.DTOs.Reddit;
-using System.Text;
-using System.Text.Json;
 
 namespace Tsutskiridze.TradeBuddy.Services.News
 {
     public class RedditService
     {
         private readonly HttpClient _client;
+        private readonly ILogger<RedditService> _logger;
 
-        public RedditService(HttpClient client)
+        public RedditService(HttpClient client, ILogger<RedditService> logger)
         {
             _client = client;
+            _logger = logger;
         }
+
+        public async Task GetPostsAsync(string keyword, string sortType, int? limit = null)
+        {
+            try
+            {
+                var response = await _client.GetAsync($"search.json?q={keyword}&sort={sortType}&type=posts");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogError($"Failed to get Reddit posts for {keyword} with status code {response.StatusCode}");
+                    _logger.LogError(JsonConvert.SerializeObject(response, Formatting.Indented));
+                    return;
+                }
+
+                _logger.LogInformation($"Successfully got Reddit posts for {keyword}");
+                _logger.LogInformation(await response.Content.ReadAsStringAsync());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to get Reddit posts for {keyword}");
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+
 
         public async Task<List<RedditPost>?> GetTopPostsAsync(string keyword, string sortType, int? limit = null)
         {
             var response = await _client.GetAsync($"search.json?q={keyword}&sort={sortType}&type=posts");
-            
+
             response.EnsureSuccessStatusCode();
 
             var json = JObject.Parse(await response.Content.ReadAsStringAsync());

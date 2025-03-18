@@ -6,16 +6,11 @@ WORKDIR /src
 ENV PATH="/root/.dotnet/tools:${PATH}"
 
 # Copy only the solution and project files first to leverage Docker caching for dependency restoration
-COPY Tsutskiridze.TradeBuddy.sln . 
-COPY Tsutskiridze.TradeBuddy/*.csproj Tsutskiridze.TradeBuddy/
+COPY ["Tsutskiridze.TradeBuddy.csproj", "Tsutskiridze.TradeBuddy/"]
+RUN dotnet restore "./Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj"
 
-# Restore dependencies – this layer will be cached as long as your project files remain unchanged
-RUN dotnet restore Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj
-
-# Now copy the remaining source code (this step invalidates the cache for later layers if code changes)
-COPY Tsutskiridze.TradeBuddy/ Tsutskiridze.TradeBuddy/
-
-WORKDIR /src/Tsutskiridze.TradeBuddy
+WORKDIR "/src/Tsutskiridze.TradeBuddy"
+COPY . .
 
 # Build and publish the application
 RUN dotnet publish -c Release -o /app/build

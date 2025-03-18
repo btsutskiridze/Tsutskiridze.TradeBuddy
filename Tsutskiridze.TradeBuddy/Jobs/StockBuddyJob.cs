@@ -21,7 +21,7 @@ namespace Tsutskiridze.TradeBuddy.Jobs
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            await _googleScraper.GetNewsAsync("PLTR", 5);
+            //await _googleScraper.GetNewsAsync("PLTR", 5);
 
             //    var result = await _stockAnalysis.ExecuteStockAnalysis("PLTR");
 
