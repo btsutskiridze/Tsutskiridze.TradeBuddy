@@ -29,23 +29,30 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
 # Create a non-root user and group
-RUN getent group app || groupadd -g 1001 app && getent passwd app || useradd -m -u 1001 -g app app
+RUN getent group app || groupadd -g 1001 app && \
+    getent passwd app || useradd -m -u 1001 -g app app
 
-# Install Chromium dependencies
+# Install Chromium dependencies (including wget and unzip for Playwright)
 RUN apt-get update && apt-get install -y \
     libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
     libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
-    libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 && \
+    libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy built output and set correct permissions
+# Switch to root for Playwright installation in runtime stage
+USER root
+RUN dotnet tool install --global Microsoft.Playwright.CLI
+ENV PATH="${PATH}:/root/.dotnet/tools"
+RUN playwright install chromium
+
+# Copy built output and adjust permissions
 COPY --from=build /app/build .
 RUN chown -R app:app /app
 
 # Optionally set the PLAYWRIGHT_BROWSERS_PATH if needed:
 ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
 
-# Switch to the non-root user
+# Switch to non-root user
 USER app
 
 # Expose port
