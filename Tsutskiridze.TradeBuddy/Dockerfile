@@ -27,5 +27,13 @@ RUN dotnet publish "./Tsutskiridze.TradeBuddy.csproj" -c $BUILD_CONFIGURATION -o
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
+
+# Create a non-root user and group safely: only add them if they don't already exist.
+RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
+    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
+
+
+USER app
+
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
