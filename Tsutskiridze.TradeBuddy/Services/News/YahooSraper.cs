@@ -6,10 +6,12 @@ namespace Tsutskiridze.TradeBuddy.Services.News
     public class YahooSraper
     {
         private readonly HttpClient _httpClient;
+        private readonly ILogger<YahooSraper> _logger;
 
-        public YahooSraper(HttpClient httpClient)
+        public YahooSraper(HttpClient httpClient, ILogger<YahooSraper> logger)
         {
             _httpClient = httpClient;
+            _logger = logger;
         }
 
         public async Task<List<YahooNews>?> GetNewsAsync(string symbol, int? limit = null)
@@ -19,6 +21,9 @@ namespace Tsutskiridze.TradeBuddy.Services.News
 
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(await response.Content.ReadAsStringAsync());
+
+            _logger.LogInformation("Scraping Yahoo news for {Symbol}", symbol);
+            _logger.LogInformation("HTML: {Html}", response.Content.ReadAsStringAsync());
 
             var newsNodes = htmlDocument.DocumentNode.SelectNodes("//section[@data-testid='storyitem']");
 
