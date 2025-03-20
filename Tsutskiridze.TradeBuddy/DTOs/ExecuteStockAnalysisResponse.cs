@@ -4,7 +4,8 @@ namespace Tsutskiridze.TradeBuddy.DTOs
 {
     public class ExecuteStockAnalysisResponse
     {
-        public StockAnalysisModels.StockAnalysis Analysis { get; set; }
-        public string TelegramMessage { get; set; }
+        public string Stock { get; set; }
+        public StockAnalysisModels.StockAnalysis? Analysis { get; set; }
+        public string? TelegramMessage { get; set; }
     }
 }

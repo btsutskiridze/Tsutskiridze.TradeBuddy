@@ -18,13 +18,7 @@ namespace Tsutskiridze.TradeBuddy.Configs
                 client.BaseAddress = new Uri(SecretsManager.GetSecret("Fmp:BaseUrl"));
             });
 
-            services.AddHttpClient<RedditService>(client =>
-            {
-                client.BaseAddress = new Uri(SecretsManager.GetSecret("Reddit:BaseUrl"));
-                client.DefaultRequestHeaders.Add("User-Agent", "TradeBuddy/1.0 (contact: your.email@example.com)");
-                client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-            });
+            services.AddHttpClient<RedditService>();
 
             services.AddHttpClient<FinnhubService>(client =>
             {

@@ -2,6 +2,6 @@
 {
     public interface IAIService
     {
-        public Task<T?> Ask<T>(string prompt);
+        public Task<T> Ask<T>(string prompt);
     }
 }

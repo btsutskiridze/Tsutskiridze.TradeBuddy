@@ -2,7 +2,6 @@
 {
     public static class Stocks
     {
-        public static readonly string RCAT = "RCAT";
-        public static readonly string MVST = "MVST";
+        public static List<string> Favorites = ["PLTR", "MVST", "RCAT", "NVNI"];
     }
 }

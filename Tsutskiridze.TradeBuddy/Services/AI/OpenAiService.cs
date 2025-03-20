@@ -15,7 +15,7 @@ namespace Tsutskiridze.TradeBuddy.Services.AI
             _client = new ChatClient(_modelID, _apiKey);
         }
 
-        public async Task<T?> Ask<T>(string prompt)
+        public async Task<T> Ask<T>(string prompt)
         {
             List<ChatMessage> messages =
             [
@@ -34,7 +34,12 @@ namespace Tsutskiridze.TradeBuddy.Services.AI
 
             ChatCompletion completion = await _client.CompleteChatAsync(messages, options);
 
-            T? result = JsonConvert.DeserializeObject<T>(completion.Content[0].Text);
+            var result = JsonConvert.DeserializeObject<T>(completion.Content[0].Text);
+
+            if (result == null)
+            {
+                throw new Exception("AI returned null");
+            }
 
             return result;
         }

@@ -25,7 +25,14 @@ namespace Tsutskiridze.TradeBuddy.Services.Stocks
                 await response.Content.ReadAsStringAsync()
             );
 
-            return _mapper.Map<StockQuote>(stockCurrentInfos?.FirstOrDefault());
+            var stockQuote = _mapper.Map<StockQuote>(stockCurrentInfos?.FirstOrDefault());
+
+            if (stockQuote == null)
+            {
+                throw new Exception("Failed to get stock quote");
+            }
+
+            return stockQuote;
         }
     }
 }

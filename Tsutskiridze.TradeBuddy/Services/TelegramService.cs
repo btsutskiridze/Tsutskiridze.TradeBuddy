@@ -31,6 +31,7 @@ namespace Tsutskiridze.TradeBuddy.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending message to Telegram");
+                throw;
             }
         }
     }

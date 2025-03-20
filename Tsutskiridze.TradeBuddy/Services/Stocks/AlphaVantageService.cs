@@ -27,7 +27,14 @@ namespace Tsutskiridze.TradeBuddy.Services.Stocks
 
             var report = data?.AnnualReports?.FirstOrDefault();
 
-            return _mapper.Map<AnnualReport>(report);
+            var annualReport = _mapper.Map<AnnualReport>(report);
+
+            if (annualReport == null)
+            {
+                throw new Exception("Failed to get stock annual report");
+            }
+
+            return annualReport;
         }
 
         public async Task<StockOverview?> GetStockOverview(string symbol)
@@ -38,6 +45,11 @@ namespace Tsutskiridze.TradeBuddy.Services.Stocks
             var stockOverview = JsonConvert.DeserializeObject<StockOverview>(
                 await response.Content.ReadAsStringAsync()
             );
+
+            if (stockOverview == null)
+            {
+                throw new Exception("Failed to get stock overview");
+            }
 
             return stockOverview;
         }
@@ -53,7 +65,7 @@ namespace Tsutskiridze.TradeBuddy.Services.Stocks
 
             if (data?.Prices == null)
             {
-                return [];
+                throw new Exception("Failed to get stock prices");
             }
 
             var prices = data.Prices

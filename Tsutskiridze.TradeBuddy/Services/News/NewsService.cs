@@ -3,6 +3,7 @@ using Tsutskiridze.TradeBuddy.DTOs.Finnhub;
 using Tsutskiridze.TradeBuddy.DTOs.Google;
 using Tsutskiridze.TradeBuddy.DTOs.Reddit;
 using Tsutskiridze.TradeBuddy.DTOs.Yahoo;
+using Tsutskiridze.TradeBuddy.Helpers;
 
 namespace Tsutskiridze.TradeBuddy.Services.News
 {
@@ -24,21 +25,18 @@ namespace Tsutskiridze.TradeBuddy.Services.News
         public async Task<AllNews?> GetAllNews(string symbol, int? limit = null)
         {
             var googleTask = GetGoogleNewsAsync(symbol, limit);
-            var redditTask = GetRedditNewsAsync(symbol, "new", limit);
+            var redditTask = GetRedditNewsAsync(symbol, RedditSortType.New, limit);
             var yahooTask = GetYahooNewsAsync(symbol, limit);
             var finnhubTask = GetFinnhubNewsAsync(symbol, DateTime.UtcNow.AddDays(-7), DateTime.UtcNow, limit);
 
-            // Wait until all tasks complete.
             await Task.WhenAll(googleTask, redditTask, yahooTask, finnhubTask);
 
-            // Check if all results are null.
             if (googleTask.Result == null && redditTask.Result == null &&
                 yahooTask.Result == null && finnhubTask.Result == null)
             {
-                return null;
+                throw new Exception("Failed to get news");
             }
 
-            // Fill the AllNews DTO with the results.
             return new AllNews
             {
                 Google = googleTask.Result,
@@ -54,9 +52,9 @@ namespace Tsutskiridze.TradeBuddy.Services.News
             return await _googleScraper.GetNewsAsync(symbol, limit);
         }
 
-        public async Task<List<RedditPost>?> GetRedditNewsAsync(string symbol, string sort, int? limit = null)
+        public async Task<List<RedditPost>?> GetRedditNewsAsync(string symbol, RedditSortType sort, int? limit = null)
         {
-            return await _reddit.GetTopPostsAsync(symbol, sort, limit);
+            return await _reddit.GetRedditPosts(symbol, sort, limit);
         }
 
         public async Task<List<YahooNews>?> GetYahooNewsAsync(string symbol, int? limit = null)
