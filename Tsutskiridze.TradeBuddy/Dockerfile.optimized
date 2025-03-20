@@ -1,0 +1,64 @@
+# Stage 1: Build and Publish Application
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Set PATH so that dotnet global tools (like Playwright CLI) are available
+ENV PATH="/root/.dotnet/tools:${PATH}"
+
+# Copy only the project file and restore dependencies
+COPY ["Tsutskiridze.TradeBuddy.csproj", "Tsutskiridze.TradeBuddy/"]
+RUN dotnet restore "Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj"
+
+# Copy the rest of the code and publish
+WORKDIR "/src/Tsutskiridze.TradeBuddy"
+COPY . .
+RUN dotnet publish -c Release -o /app/build
+
+# Stage 2: Install Playwright (Cached separately)
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS playwright
+WORKDIR /src
+
+# Add the global tools directory to PATH
+ENV PATH="/root/.dotnet/tools:${PATH}"
+
+# Install prerequisites
+RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
+
+# Install Playwright CLI and download Chromium
+RUN dotnet tool install --global Microsoft.Playwright.CLI && \
+    playwright install chromium && \
+    mkdir -p /app/ms-playwright && cp -R /root/.cache/ms-playwright/* /app/ms-playwright
+
+
+# Stage 3: Final Runtime Image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+
+# Create a non-root user and group if not present
+RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
+    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
+
+# Install OS-level dependencies for Chromium and Playwright
+RUN apt-get update && apt-get install -y \
+    libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
+    libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
+    libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 \
+    libxfixes3 libxkbcommon0 wget unzip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy the published application and cached Playwright browser binaries from previous stages
+COPY --from=build /app/build .
+COPY --from=playwright /app/ms-playwright /app/ms-playwright
+
+# Adjust permissions so the non-root user can access everything
+RUN chown -R app:app /app
+
+# Set the environment variable to point to the downloaded browsers
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
+
+# Switch to the non-root user
+USER app
+
+# Expose the port and set the entrypoint
+EXPOSE 80
+ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
