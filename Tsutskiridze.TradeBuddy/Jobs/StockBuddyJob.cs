@@ -1,4 +1,5 @@
 ﻿using Tsutskiridze.Bloom.Core.Infrastructure.Jobs;
+//using Tsutskiridze.TradeBuddy.Helpers;
 using Tsutskiridze.TradeBuddy.Services;
 
 namespace Tsutskiridze.TradeBuddy.Jobs
@@ -18,7 +19,7 @@ namespace Tsutskiridze.TradeBuddy.Jobs
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            //await _stockAnalysis.ExecuteStockAnalysisMultiple(Stocks.Favorites);
+            //await _stockAnalysis.ExecuteStockAnalysisMultiple(Stocks.Favorites, TimeSpan.FromMinutes(5));
         }
     }
 }

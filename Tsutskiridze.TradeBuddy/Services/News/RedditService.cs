@@ -37,7 +37,6 @@ namespace Tsutskiridze.TradeBuddy.Services.News
                 HttpMethod.Get,
                 $"{RedditParams.SearchEndpoint}?q={keyword}&sort={sortType.ToString().ToLower()}&type=posts{limitQuery}"
             );
-
             requestMessage.Headers.Add("User-Agent", RedditParams.UserAgent);
             requestMessage.Headers.Add("Authorization", $"Bearer {await GetAccessToken()}");
 
@@ -62,7 +61,7 @@ namespace Tsutskiridze.TradeBuddy.Services.News
                     var comments = item["data"]?["num_comments"]?.Value<int>() ?? 0;
 
                     // Only include posts that meet your score/comments thresholds
-                    if (score >= 5 && comments >= 5)
+                    if (score >= 5 && comments >= 3)
                     {
                         var body = item["data"]?["selftext"]?.Value<string>() ?? string.Empty;
                         posts.Add(new RedditPost
