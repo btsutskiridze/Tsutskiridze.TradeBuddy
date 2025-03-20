@@ -23,7 +23,7 @@ namespace Tsutskiridze.TradeBuddy.Services.News
             htmlDocument.LoadHtml(await response.Content.ReadAsStringAsync());
 
             _logger.LogInformation("Scraping Yahoo news for {Symbol}", symbol);
-            _logger.LogInformation("HTML: {Html}", response.Content.ReadAsStringAsync());
+            _logger.LogInformation("HTML: {Html}", await response.Content.ReadAsStringAsync());
 
             var newsNodes = htmlDocument.DocumentNode.SelectNodes("//section[@data-testid='storyitem']");
 
