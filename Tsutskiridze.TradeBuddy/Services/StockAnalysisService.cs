@@ -38,6 +38,29 @@ namespace Tsutskiridze.TradeBuddy.Services
             return [.. results];
         }
 
+        public async Task<List<ExecuteStockAnalysisResponse>> ExecuteStockAnalysisMultiple(List<string> stocks, TimeSpan delay)
+        {
+            _logger.LogInformation("Starting stock analysis for {Stocks}", string.Join(", ", stocks));
+            var results = new List<ExecuteStockAnalysisResponse>();
+
+            var lastStock = stocks.Last();
+
+            foreach (var stock in stocks)
+            {
+                var result = await ExecuteStockAnalysis(stock);
+                results.Add(result);
+
+                if (stock != lastStock)
+                {
+                    _logger.LogInformation("Waiting for {Delay} before next analysis", delay);
+                    await Task.Delay(delay);
+                }
+            }
+
+            _logger.LogInformation("All stock analysis completed");
+            return results;
+        }
+
         public async Task<ExecuteStockAnalysisResponse> ExecuteStockAnalysis(string stock)
         {
             var watch = Stopwatch.StartNew();
