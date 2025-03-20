@@ -1,38 +1,41 @@
-# Stage 1: Build
+# Stage 1: Build and Publish Application
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Set PATH so that dotnet global tools (like Playwright CLI) are available
 ENV PATH="/root/.dotnet/tools:${PATH}"
 
-# Copy only the solution and project files first to leverage Docker caching for dependency restoration
+# Copy only the project file and restore dependencies
 COPY ["Tsutskiridze.TradeBuddy.csproj", "Tsutskiridze.TradeBuddy/"]
-RUN dotnet restore "./Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj"
+RUN dotnet restore "Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj"
 
+# Copy the rest of the code and publish
 WORKDIR "/src/Tsutskiridze.TradeBuddy"
 COPY . .
-
-# Build and publish the application
 RUN dotnet publish -c Release -o /app/build
 
-# Install prerequisites for Playwright CLI
+# Stage 2: Install Playwright (Cached separately)
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS playwright
+WORKDIR /src
+
+# Install prerequisites (use BuildKit cache mounts if available)
 RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
 
-# Restore and install the Playwright CLI, download Chromium, and cache browser binaries
+# Install Playwright CLI and download Chromium
 RUN dotnet tool restore && \
     dotnet tool install --global Microsoft.Playwright.CLI && \
     playwright install chromium && \
-    cp -R /root/.cache/ms-playwright /app/ms-playwright
+    mkdir -p /app/ms-playwright && cp -R /root/.cache/ms-playwright/* /app/ms-playwright
 
-# Stage 2: Runtime
+# Stage 3: Final Runtime Image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Create a non-root user and group safely: only add them if they don't already exist.
+# Create a non-root user and group if not present
 RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
     if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
 
-# Install OS-level dependencies required by Chromium and Playwright
+# Install OS-level dependencies for Chromium and Playwright
 RUN apt-get update && apt-get install -y \
     libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
     libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
@@ -40,9 +43,9 @@ RUN apt-get update && apt-get install -y \
     libxfixes3 libxkbcommon0 wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy the published application and cached Playwright browser binaries from the build stage
+# Copy the published application and cached Playwright browser binaries from previous stages
 COPY --from=build /app/build .
-COPY --from=build /app/ms-playwright /app/ms-playwright
+COPY --from=playwright /app/ms-playwright /app/ms-playwright
 
 # Adjust permissions so the non-root user can access everything
 RUN chown -R app:app /app
@@ -53,6 +56,6 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
 # Switch to the non-root user
 USER app
 
-# Expose the desired port and set the application entrypoint
+# Expose the port and set the entrypoint
 EXPOSE 80
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
