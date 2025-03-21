@@ -2,6 +2,7 @@
 using Tsutskiridze.Bloom.Core.Common.Base;
 using Tsutskiridze.TradeBuddy.Helpers;
 using Tsutskiridze.TradeBuddy.Services.News;
+using Microsoft.Playwright;
 
 namespace Tsutskiridze.TradeBuddy.Controllers
 {
@@ -41,9 +42,93 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         [HttpGet("yahoo/{symbol}")]
         public async Task<IActionResult> GetYahooNews(string symbol, [FromQuery] int limit = 10)
         {
-            var news = await _news.GetYahooNews(symbol, limit);
+            // Initialize Playwright and launch the browser
+            using var playwright = await Playwright.CreateAsync();
+            var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+            {
+                Headless = true
+            });
 
-            return JsonResult(news);
+            // Create a new browser context/page
+            var page = await browser.NewPageAsync();
+
+            // Navigate to the Yahoo Finance news page for the given symbol in English
+            // This query string helps ensure English content: ?lang=en-US&region=US
+            var newsUrl = $"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US";
+            _logger.LogInformation("Navigating to: {NewsUrl}", newsUrl);
+            await page.GotoAsync(newsUrl);
+
+            // Wait for the news sections to be present (or time out if none appear)
+            await page.WaitForSelectorAsync("section[data-testid='storyitem']", new PageWaitForSelectorOptions
+            {
+                Timeout = 10000 // 10 seconds
+            });
+
+            // log page html
+                    // Log the full page HTML
+            var fullHtml = await page.ContentAsync();
+            _logger.LogInformation("Full HTML for {Symbol}:\n{FullHtml}", symbol, fullHtml);
+
+            // Select all story items
+            var storyItems = page.Locator("section[data-testid='storyitem']");
+            var count = await storyItems.CountAsync();
+            _logger.LogInformation("Found {Count} news items for {Symbol}", count, symbol);
+
+            var newsList = new List<YahooNews>();
+
+            for (int i = 0; i < count; i++)
+            {
+                // Check if we've reached the requested limit
+                if (limit.HasValue && newsList.Count >= limit.Value)
+                {
+                    break;
+                }
+
+                try
+                {
+                    var item = storyItems.Nth(i);
+
+                    // Title
+                    var titleElement = item.Locator("h3");
+                    var title = await titleElement.InnerTextAsync() ?? "N/A";
+
+                    // URL
+                    var anchorElement = item.Locator("a.subtle-link");
+                    var href = await anchorElement.GetAttributeAsync("href") ?? "";
+                    var newsUrlFull = href.StartsWith("https", StringComparison.OrdinalIgnoreCase)
+                        ? href
+                        : $"https://finance.yahoo.com{href}";
+
+                    // Summary
+                    var summaryElement = item.Locator("p");
+                    var summary = (await summaryElement.InnerTextAsync())?.Trim() ?? "N/A";
+
+                    // Publish time
+                    var timeElement = item.Locator("div[class*='publishing']");
+                    var publishTime = (await timeElement.InnerTextAsync())?.Trim() ?? "N/A";
+
+                    newsList.Add(new YahooNews
+                    {
+                        Title = title.Trim(),
+                        Url = newsUrlFull.Trim(),
+                        Summary = summary,
+                        PublishTime = publishTime
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to parse a news item at index {Index}", i);
+                }
+            }
+
+            // Close the browser
+            await browser.CloseAsync();
+
+            if (newsList.count > 0){
+                return JsonResult(newsList);
+            }
+
+            return fullHtml;
         }
 
 
