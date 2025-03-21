@@ -1,47 +1,52 @@
-# Stage 1: Build and Publish Application
+# --------------------------------------------
+# Stage 1: Build
+# --------------------------------------------
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Set PATH so that dotnet global tools (like Playwright CLI) are available
 ENV PATH="/root/.dotnet/tools:${PATH}"
 
-# Copy only the project file and restore dependencies
+# 1. Install build-stage dependencies BEFORE copying project files
+#    so this layer is re-used as long as apt packages don't change.
+RUN apt-get update && apt-get install -y wget unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Copy project files for NuGet restore.
+#    (If you have .sln or multiple csproj, copy those too.)
 COPY ["Tsutskiridze.TradeBuddy.csproj", "Tsutskiridze.TradeBuddy/"]
+
+# 3. Restore NuGet packages. If csproj is unchanged, this layer remains cached.
 RUN dotnet restore "Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj"
 
-# Copy the rest of the code and publish
-WORKDIR "/src/Tsutskiridze.TradeBuddy"
-COPY . .
-RUN dotnet publish -c Release -o /app/build
-
-# Stage 2: Install Playwright (Cached separately)
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS playwright
 WORKDIR /src/Tsutskiridze.TradeBuddy
 
-# Add the global tools directory to PATH
-ENV PATH="/root/.dotnet/tools:${PATH}"
+# 4. (Optional) Copy only the tool manifest file if you keep it separate (e.g., .config/dotnet-tools.json).
+#    Then install the global tools (including Playwright CLI).
+COPY ["Tsutskiridze.TradeBuddy/.config/dotnet-tools.json", ".config/"]
+RUN dotnet tool restore
 
-# Install prerequisites
-RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
+# 5. Install Chromium via Playwright and copy the cached binaries to a known location.
+RUN playwright install chromium && \
+    cp -R /root/.cache/ms-playwright /app/ms-playwright
 
-# Copy the project file so Playwright can find a valid project
-COPY ["Tsutskiridze.TradeBuddy.csproj", "."]
+# 6. NOW copy the full source code (this changes often, so it should come later).
+COPY . .
 
-# Install Playwright CLI and download Chromium
-RUN dotnet tool install --global Microsoft.Playwright.CLI && \
-    playwright install chromium && \
-    mkdir -p /app/ms-playwright && cp -R /root/.cache/ms-playwright/* /app/ms-playwright
+# 7. Build and publish
+RUN dotnet publish -c Release -o /app/build
 
-
-# Stage 3: Final Runtime Image
+# --------------------------------------------
+# Stage 2: Runtime
+# --------------------------------------------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Create a non-root user and group if not present
+# Create a non-root user and group if it doesn't exist
 RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
     if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
 
-# Install OS-level dependencies for Chromium and Playwright
+# Install OS-level dependencies required by Chromium and Playwright at runtime
 RUN apt-get update && apt-get install -y \
     libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
     libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
@@ -49,19 +54,21 @@ RUN apt-get update && apt-get install -y \
     libxfixes3 libxkbcommon0 wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy the published application and cached Playwright browser binaries from previous stages
+# Copy the published app from build image
 COPY --from=build /app/build .
-COPY --from=playwright /app/ms-playwright /app/ms-playwright
+# Copy Playwright's cached browser binaries
+COPY --from=build /app/ms-playwright /app/ms-playwright
 
-# Adjust permissions so the non-root user can access everything
+# Adjust permissions for the non-root user
 RUN chown -R app:app /app
 
-# Set the environment variable to point to the downloaded browsers
+# Let Playwright know where the browsers live
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
 
-# Switch to the non-root user
+# Switch to non-root user
 USER app
 
-# Expose the port and set the entrypoint
+# Expose the desired port and set the application entrypoint
 EXPOSE 80
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
+    
