@@ -23,7 +23,7 @@ WORKDIR /src/Tsutskiridze.TradeBuddy
 
 # 4. (Optional) Copy only the tool manifest file if you keep it separate (e.g., .config/dotnet-tools.json).
 #    Then install the global tools (including Playwright CLI).
-COPY ["Tsutskiridze.TradeBuddy/.config/dotnet-tools.json", ".config/"]
+COPY [".config/dotnet-tools.json", ".config/"]
 RUN dotnet tool restore
 
 # 5. Install Chromium via Playwright and copy the cached binaries to a known location.
