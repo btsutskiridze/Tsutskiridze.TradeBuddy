@@ -16,7 +16,7 @@ RUN dotnet publish -c Release -o /app/build
 
 # Stage 2: Install Playwright (Cached separately)
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS playwright
-WORKDIR /src
+WORKDIR /src/Tsutskiridze.TradeBuddy
 
 # Add the global tools directory to PATH
 ENV PATH="/root/.dotnet/tools:${PATH}"
@@ -24,13 +24,14 @@ ENV PATH="/root/.dotnet/tools:${PATH}"
 # Install prerequisites
 RUN apt-get update && apt-get install -y wget unzip && rm -rf /var/lib/apt/lists/*
 
-# Copy the project file to a known location
-COPY ["Tsutskiridze.TradeBuddy.csproj", "Tsutskiridze.TradeBuddy/"]
+# Copy the project file so Playwright can find a valid project
+COPY ["Tsutskiridze.TradeBuddy.csproj", "."]
 
-# Install Playwright CLI and download Chromium, specifying the project path
+# Install Playwright CLI and download Chromium
 RUN dotnet tool install --global Microsoft.Playwright.CLI && \
-    playwright install chromium -p /src/Tsutskiridze.TradeBuddy && \
+    playwright install chromium && \
     mkdir -p /app/ms-playwright && cp -R /root/.cache/ms-playwright/* /app/ms-playwright
+
 
 # Stage 3: Final Runtime Image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
