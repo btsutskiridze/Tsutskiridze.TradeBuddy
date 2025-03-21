@@ -61,8 +61,6 @@ namespace Tsutskiridze.TradeBuddy.Controllers
 
             // // log page html
             //         // Log the full page HTML
-            var fullHtml = await page.ContentAsync();
-            _logger.LogInformation("Full HTML for {Symbol}:\n{FullHtml}", symbol, fullHtml);
 
 
              try
@@ -81,12 +79,11 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                 _logger.LogError("Consent popup not found or click failed: {err}", ex.Message);
             }
 
-            
+            var fullHtml = await page.ContentAsync();
+            _logger.LogInformation("Full HTML for {Symbol}:\n{FullHtml}", symbol, fullHtml);
+
             // // Wait for the news sections to be present (or time out if none appear)
-            await page.WaitForSelectorAsync("section[data-testid='storyitem']", new PageWaitForSelectorOptions
-            {
-                Timeout = 10000 // 10 seconds
-            });
+            await page.WaitForSelectorAsync("section[data-testid='storyitem']");
 
             // Select all story items
             var storyItems = page.Locator("section[data-testid='storyitem']");
