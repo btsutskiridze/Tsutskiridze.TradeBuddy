@@ -36,7 +36,7 @@ RUN dotnet build --no-restore -c Release
 # 8. Now that the app is built (and `Microsoft.Playwright` is compiled), install Chromium
 #    using the local Playwright CLI. Then copy the browser cache out.
 RUN dotnet tool run playwright install chromium
-RUN cp -R /root/.cache/ms-playwright /app/ms-playwright
+RUN mkdir -p /app && cp -R /root/.cache/ms-playwright /app/ms-playwright
 
 # 9. Finally, publish your application
 RUN dotnet publish -c Release -o /app/build
