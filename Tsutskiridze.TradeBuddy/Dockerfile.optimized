@@ -21,18 +21,24 @@ RUN dotnet restore "Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj"
 
 WORKDIR /src/Tsutskiridze.TradeBuddy
 
-# 4. (Optional) Copy only the tool manifest file if you keep it separate (e.g., .config/dotnet-tools.json).
-#    Then install the global tools (including Playwright CLI).
+# 4. Copy the local tool manifest (so `dotnet tool restore` can find it)
 COPY [".config/dotnet-tools.json", ".config/"]
 
-RUN dotnet tool restore && \
-    dotnet tool run playwright install chromium && \
-    cp -R /root/.cache/ms-playwright /app/ms-playwright
+# 5. Restore the local tools (includes Microsoft.Playwright.CLI if that's in your manifest)
+RUN dotnet tool restore
 
-# 6. NOW copy the full source code (this changes often, so it should come later).
+# 6. Now copy the rest of your source code
 COPY . .
 
-# 7. Build and publish
+# 7. Build your project. This ensures Microsoft.Playwright assemblies are present.
+RUN dotnet build --no-restore -c Release
+
+# 8. Now that the app is built (and `Microsoft.Playwright` is compiled), install Chromium
+#    using the local Playwright CLI. Then copy the browser cache out.
+RUN dotnet tool run playwright install chromium
+RUN cp -R /root/.cache/ms-playwright /app/ms-playwright
+
+# 9. Finally, publish your application
 RUN dotnet publish -c Release -o /app/build
 
 # --------------------------------------------
