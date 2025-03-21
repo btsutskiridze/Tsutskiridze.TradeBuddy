@@ -79,7 +79,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             for (int i = 0; i < count; i++)
             {
                 // Check if we've reached the requested limit
-                if (limit.HasValue && newsList.Count >= limit.Value)
+                if (newsList.Count >= limit)
                 {
                     break;
                 }
