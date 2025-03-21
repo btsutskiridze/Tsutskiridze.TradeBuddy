@@ -59,75 +59,93 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             _logger.LogInformation("Navigating to: {NewsUrl}", newsUrl);
             await page.GotoAsync(newsUrl);
 
-            // // Wait for the news sections to be present (or time out if none appear)
-            // await page.WaitForSelectorAsync("section[data-testid='storyitem']", new PageWaitForSelectorOptions
-            // {
-            //     Timeout = 10000 // 10 seconds
-            // });
-
             // // log page html
             //         // Log the full page HTML
             var fullHtml = await page.ContentAsync();
             _logger.LogInformation("Full HTML for {Symbol}:\n{FullHtml}", symbol, fullHtml);
 
-            // // Select all story items
-            // var storyItems = page.Locator("section[data-testid='storyitem']");
-            // var count = await storyItems.CountAsync();
-            // _logger.LogInformation("Found {Count} news items for {Symbol}", count, symbol);
 
-            // var newsList = new List<YahooNews>();
+             try
+            {
+                // Example: if there's a button with text "I agree" or "Accept all"
+                var acceptAllButton = page.Locator("button[name='agree']").First;
+                if (await acceptAllButton.IsVisibleAsync())
+                {
+                    await acceptAllButton.ClickAsync();
+                    await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                }
+            }
+            catch (Exception ex)
+            {
+                // If not found or something else fails, just log and continue
+                _logger.LogError("Consent popup not found or click failed: {err}", ex.Message);
+            }
 
-            // for (int i = 0; i < count; i++)
-            // {
-            //     // Check if we've reached the requested limit
-            //     if (newsList.Count >= limit)
-            //     {
-            //         break;
-            //     }
+            
+            // // Wait for the news sections to be present (or time out if none appear)
+            await page.WaitForSelectorAsync("section[data-testid='storyitem']", new PageWaitForSelectorOptions
+            {
+                Timeout = 10000 // 10 seconds
+            });
 
-            //     try
-            //     {
-            //         var item = storyItems.Nth(i);
+            // Select all story items
+            var storyItems = page.Locator("section[data-testid='storyitem']");
+            var count = await storyItems.CountAsync();
+            _logger.LogInformation("Found {Count} news items for {Symbol}", count, symbol);
 
-            //         // Title
-            //         var titleElement = item.Locator("h3");
-            //         var title = await titleElement.InnerTextAsync() ?? "N/A";
+            var newsList = new List<YahooNews>();
 
-            //         // URL
-            //         var anchorElement = item.Locator("a.subtle-link");
-            //         var href = await anchorElement.GetAttributeAsync("href") ?? "";
-            //         var newsUrlFull = href.StartsWith("https", StringComparison.OrdinalIgnoreCase)
-            //             ? href
-            //             : $"https://finance.yahoo.com{href}";
+            for (int i = 0; i < count; i++)
+            {
+                // Check if we've reached the requested limit
+                if (newsList.Count >= limit)
+                {
+                    break;
+                }
 
-            //         // Summary
-            //         var summaryElement = item.Locator("p");
-            //         var summary = (await summaryElement.InnerTextAsync())?.Trim() ?? "N/A";
+                try
+                {
+                    var item = storyItems.Nth(i);
 
-            //         // Publish time
-            //         var timeElement = item.Locator("div[class*='publishing']");
-            //         var publishTime = (await timeElement.InnerTextAsync())?.Trim() ?? "N/A";
+                    // Title
+                    var titleElement = item.Locator("h3");
+                    var title = await titleElement.InnerTextAsync() ?? "N/A";
 
-            //         newsList.Add(new YahooNews
-            //         {
-            //             Title = title.Trim(),
-            //             Url = newsUrlFull.Trim(),
-            //             Summary = summary,
-            //             PublishTime = publishTime
-            //         });
-            //     }
-            //     catch (Exception ex)
-            //     {
-            //         _logger.LogError(ex, "Failed to parse a news item at index {Index}", i);
-            //     }
-            // }
+                    // URL
+                    var anchorElement = item.Locator("a.subtle-link");
+                    var href = await anchorElement.GetAttributeAsync("href") ?? "";
+                    var newsUrlFull = href.StartsWith("https", StringComparison.OrdinalIgnoreCase)
+                        ? href
+                        : $"https://finance.yahoo.com{href}";
 
-            // // Close the browser
-            // await browser.CloseAsync();
+                    // Summary
+                    var summaryElement = item.Locator("p");
+                    var summary = (await summaryElement.InnerTextAsync())?.Trim() ?? "N/A";
 
-            // if (newsList.Count > 0){
-            //     return JsonResult(newsList);
-            // }
+                    // Publish time
+                    var timeElement = item.Locator("div[class*='publishing']");
+                    var publishTime = (await timeElement.InnerTextAsync())?.Trim() ?? "N/A";
+
+                    newsList.Add(new YahooNews
+                    {
+                        Title = title.Trim(),
+                        Url = newsUrlFull.Trim(),
+                        Summary = summary,
+                        PublishTime = publishTime
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to parse a news item at index {Index}", i);
+                }
+            }
+
+            // Close the browser
+            await browser.CloseAsync();
+
+            if (newsList.Count > 0){
+                return JsonResult(newsList);
+            }
 
             return JsonResult(fullHtml);
         }
