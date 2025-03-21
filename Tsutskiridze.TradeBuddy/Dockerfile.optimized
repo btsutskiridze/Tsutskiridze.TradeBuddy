@@ -12,27 +12,37 @@ ENV PATH="/root/.dotnet/tools:${PATH}"
 RUN apt-get update && apt-get install -y wget unzip \
     && rm -rf /var/lib/apt/lists/*
 
-
-# Copy just the csproj and tool manifest first
+# 2. Copy project files for NuGet restore.
+#    (If you have .sln or multiple csproj, copy those too.)
 COPY ["Tsutskiridze.TradeBuddy.csproj", "Tsutskiridze.TradeBuddy/"]
-COPY [".config/dotnet-tools.json", "Tsutskiridze.TradeBuddy/.config/"]
 
-# Restore as a separate layer
+# 3. Restore NuGet packages. If csproj is unchanged, this layer remains cached.
 RUN dotnet restore "Tsutskiridze.TradeBuddy/Tsutskiridze.TradeBuddy.csproj"
 
-# Install local .NET tools (including Playwright CLI)
 WORKDIR /src/Tsutskiridze.TradeBuddy
+
+# 4. Copy the local tool manifest (so dotnet tool restore can find it)
+COPY [".config/dotnet-tools.json", ".config/"]
+
+# 5. Restore the local tools (includes Microsoft.Playwright.CLI if that's in your manifest)
 RUN dotnet tool restore
 
-# Install Chromium so it's cached in its own layer
+# 7. Build your project. This ensures Microsoft.Playwright assemblies are present.
+RUN dotnet build --no-restore -c Release
+
+# 8. Now that the app is built (and Microsoft.Playwright is compiled), install Chromium
+#    using the local Playwright CLI. Then copy the browser cache out.
 RUN dotnet tool run playwright install chromium
+RUN mkdir -p /app && cp -R /root/.cache/ms-playwright /app/ms-playwright
 
-# Now copy your full source (this step will change more often)
-COPY . ./
+# 6. Now copy the rest of your source code
+COPY . .
 
+# 9. Finally, publish your application
 # Build & Publish
 RUN dotnet build --no-restore -c Release
 RUN dotnet publish -c Release -o /app/build
+
 # --------------------------------------------
 # Stage 2: Runtime
 # --------------------------------------------
@@ -68,5 +78,4 @@ USER app
 # Expose the desired port and set the application entrypoint
 EXPOSE 80
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
-        
         
