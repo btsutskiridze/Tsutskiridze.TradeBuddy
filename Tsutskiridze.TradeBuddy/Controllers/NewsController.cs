@@ -3,6 +3,7 @@ using Tsutskiridze.Bloom.Core.Common.Base;
 using Tsutskiridze.TradeBuddy.Helpers;
 using Tsutskiridze.TradeBuddy.Services.News;
 using Microsoft.Playwright;
+using Tsutskiridze.TradeBuddy.DTOs.Yahoo;
 
 namespace Tsutskiridze.TradeBuddy.Controllers
 {
@@ -124,11 +125,11 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             // Close the browser
             await browser.CloseAsync();
 
-            if (newsList.count > 0){
+            if (newsList.Count > 0){
                 return JsonResult(newsList);
             }
 
-            return fullHtml;
+            return JsonResult(fullHtml);
         }
 
 
