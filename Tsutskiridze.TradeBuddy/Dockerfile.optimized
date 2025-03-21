@@ -24,10 +24,9 @@ WORKDIR /src/Tsutskiridze.TradeBuddy
 # 4. (Optional) Copy only the tool manifest file if you keep it separate (e.g., .config/dotnet-tools.json).
 #    Then install the global tools (including Playwright CLI).
 COPY [".config/dotnet-tools.json", ".config/"]
-RUN dotnet tool restore
 
-# 5. Install Chromium via Playwright and copy the cached binaries to a known location.
-RUN playwright install chromium && \
+RUN dotnet tool restore && \
+    dotnet tool run playwright install chromium && \
     cp -R /root/.cache/ms-playwright /app/ms-playwright
 
 # 6. NOW copy the full source code (this changes often, so it should come later).
@@ -71,4 +70,5 @@ USER app
 # Expose the desired port and set the application entrypoint
 EXPOSE 80
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
-    
+        
+        
