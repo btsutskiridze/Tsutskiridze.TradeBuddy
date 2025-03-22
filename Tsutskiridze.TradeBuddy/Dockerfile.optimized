@@ -61,8 +61,9 @@ RUN apt-get update && apt-get install -y \
 # Stage 3: Final Runtime Image
 # -----------------------------
 FROM custom-runtime AS runtime
+WORKDIR /app
 
-# Create a non-root user (if needed) to run the app safely
+# Create a non-root user for security if not already present
 RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
     if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
 
@@ -70,13 +71,18 @@ RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
 COPY --from=build /app/build .
 COPY --from=build /app/ms-playwright /app/ms-playwright
 
-# Set environment variable so Playwright knows where the browsers are located
-ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
-
-# Switch to non-root user
+# --- Fix Permissions & Create Symlink ---
+# Switch to root temporarily to adjust permissions and create a symlink
+USER root
+RUN chmod -R 755 /app/ms-playwright && \
+    ln -sf /app/ms-playwright /app/.playwright
+# Switch back to non-root user
 USER app
+# ------------------------------------
+
+# Set environment variable so Playwright uses the correct browser path
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
 
 # Expose port 80 and define the entrypoint for your application
 EXPOSE 80
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
-        
