@@ -65,22 +65,6 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             var page = await context.NewPageAsync();
             await page.GotoAsync(searchUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
-            try
-            {
-                // Locate the button (for example, a button with name "agree")
-                var acceptAllButton = page.Locator("button[name='agree']").First;
-                if (await acceptAllButton.IsVisibleAsync())
-                {
-                    await acceptAllButton.ClickAsync(new LocatorClickOptions { Timeout = 1000 });
-                    await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-                }
-            }
-            catch (Exception ex)
-            {
-                // If the button isn't found or the click fails within 1 second, log the error and continue
-                _logger.LogError("Consent popup not found or click failed: {err}", ex.Message);
-            }
-
             await page.WaitForSelectorAsync("section[data-testid='storyitem']");
 
             // Select all story items
