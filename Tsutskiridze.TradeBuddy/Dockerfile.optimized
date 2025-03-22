@@ -56,12 +56,6 @@ RUN apt-get update && apt-get install -y \
     libxfixes3 libxkbcommon0 wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user (if needed) to run the app safely
-RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
-    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
-
-# Switch to non-root user
-USER app
 
 # -----------------------------
 # Stage 3: Final Runtime Image
@@ -74,6 +68,14 @@ COPY --from=build /app/ms-playwright /app/ms-playwright
 
 # Set environment variable so Playwright knows where the browsers are located
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
+
+
+# Create a non-root user (if needed) to run the app safely
+RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
+    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
+
+# Switch to non-root user
+USER app
 
 # Expose port 80 and define the entrypoint for your application
 EXPOSE 80
