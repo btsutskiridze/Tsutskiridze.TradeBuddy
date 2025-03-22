@@ -56,7 +56,6 @@ RUN apt-get update && apt-get install -y \
     libxfixes3 libxkbcommon0 wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-
 # -----------------------------
 # Stage 3: Final Runtime Image
 # -----------------------------
@@ -72,11 +71,14 @@ COPY --from=build /app/build .
 COPY --from=build /app/ms-playwright /app/ms-playwright
 
 # --- Fix Permissions & Create Symlink ---
-# Switch to root temporarily to adjust permissions and create a symlink
+# Switch to root to adjust permissions, create a symlink, and fix ownership.
 USER root
 RUN chmod -R 755 /app/ms-playwright && \
-    ln -sf /app/ms-playwright /app/.playwright
-# Switch back to non-root user
+    ln -sf /app/ms-playwright /app/.playwright && \
+    # Explicitly ensure the node binary is executable
+    chmod +x /app/ms-playwright/node/linux-x64/node && \
+    chown -R app:app /app
+# Switch back to the non-root user
 USER app
 # ------------------------------------
 
