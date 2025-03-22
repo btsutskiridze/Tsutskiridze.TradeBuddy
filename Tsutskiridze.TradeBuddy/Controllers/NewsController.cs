@@ -69,11 +69,15 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             {
                 // Locate the button (for example, a button with name "agree")
                 var acceptAllButton = page.Locator("button[name='agree']").First;
-                if (await acceptAllButton.IsVisibleAsync())
+                // Attempt to remove the overlay.
+                var overlayLocator = page.Locator("div.scroll-down-wrapper.show");
+                if (await overlayLocator.IsVisibleAsync())
                 {
-                    await acceptAllButton.ClickAsync(new LocatorClickOptions { Timeout = 1000 });
-                    await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                    await overlayLocator.EvaluateAsync("element => element.remove()");
                 }
+
+                // Now click the button
+                await acceptAllButton.ClickAsync(new LocatorClickOptions { Timeout = 3000 });
             }
             catch (Exception ex)
             {
