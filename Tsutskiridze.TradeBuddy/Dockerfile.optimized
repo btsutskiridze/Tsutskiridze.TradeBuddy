@@ -12,14 +12,6 @@ ENV PATH="/root/.dotnet/tools:${PATH}"
 RUN apt-get update && apt-get install -y wget unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install OS-level dependencies required by Chromium and Playwright at runtime
-RUN apt-get update && apt-get install -y \
-    libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
-    libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
-    libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 \
-    libxfixes3 libxkbcommon0 wget unzip && \
-    rm -rf /var/lib/apt/lists/*
-
 # 2. Copy project files for NuGet restore.
 #    (If you have .sln or multiple csproj, copy those too.)
 COPY ["Tsutskiridze.TradeBuddy.csproj", "Tsutskiridze.TradeBuddy/"]
@@ -58,6 +50,14 @@ WORKDIR /app
 # Create a non-root user and group if it doesn't exist
 RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
     if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
+
+# Install OS-level dependencies required by Chromium and Playwright at runtime
+RUN apt-get update && apt-get install -y \
+    libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
+    libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
+    libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 \
+    libxfixes3 libxkbcommon0 wget unzip && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy the published app from build image
 COPY --from=build /app/build .
