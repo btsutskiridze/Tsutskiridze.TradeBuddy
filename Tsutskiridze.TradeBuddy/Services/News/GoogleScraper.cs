@@ -31,10 +31,10 @@ namespace Tsutskiridze.TradeBuddy.Services.News
                 UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
                             "(KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
             });
-            
+
             var page = await context.NewPageAsync();
             await page.GotoAsync(searcUrl,
-                new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
+                new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
 
             try
             {
@@ -43,7 +43,7 @@ namespace Tsutskiridze.TradeBuddy.Services.News
                 if (await acceptAllButton.IsVisibleAsync())
                 {
                     await acceptAllButton.ClickAsync();
-                    await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+                    await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
                 }
             }
             catch (Exception ex)
@@ -52,11 +52,11 @@ namespace Tsutskiridze.TradeBuddy.Services.News
                 _logger.LogError("Consent popup not found or click failed: {err}", ex.Message);
             }
 
-            
+
             // Log the page's HTML content (be aware this can be large)
             var pageContent = await page.ContentAsync();
             _logger.LogDebug("Page HTML content:\n{pageContent}", pageContent);
-            
+
             try
             {
                 _logger.LogInformation("Parsing Google News for {Symbol}", symbol);
