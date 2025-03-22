@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Playwright;
 using Tsutskiridze.Bloom.Core.Common.Base;
 using Tsutskiridze.TradeBuddy.Helpers;
 using Tsutskiridze.TradeBuddy.Services.News;
-using Microsoft.Playwright;
-using Tsutskiridze.TradeBuddy.DTOs.Yahoo;
 
 namespace Tsutskiridze.TradeBuddy.Controllers
 {
@@ -61,9 +60,9 @@ namespace Tsutskiridze.TradeBuddy.Controllers
 
             // // log page html
             //         // Log the full page HTML
+            var htmlBefore = await page.ContentAsync();
 
-
-             try
+            try
             {
                 // Example: if there's a button with text "I agree" or "Accept all"
                 var acceptAllButton = page.Locator("button[name='agree']").First;
@@ -79,72 +78,77 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                 _logger.LogError("Consent popup not found or click failed: {err}", ex.Message);
             }
 
-            var fullHtml = await page.ContentAsync();
-            _logger.LogInformation("Full HTML for {Symbol}:\n{FullHtml}", symbol, fullHtml);
+            var htmlAfter = await page.ContentAsync();
+            _logger.LogInformation("Full HTML for {Symbol}:\n{FullHtml}", symbol, htmlAfter);
 
-            // // Wait for the news sections to be present (or time out if none appear)
-            await page.WaitForSelectorAsync("section[data-testid='storyitem']");
+            //// // Wait for the news sections to be present (or time out if none appear)
+            //await page.WaitForSelectorAsync("section[data-testid='storyitem']");
 
-            // Select all story items
-            var storyItems = page.Locator("section[data-testid='storyitem']");
-            var count = await storyItems.CountAsync();
-            _logger.LogInformation("Found {Count} news items for {Symbol}", count, symbol);
+            //// Select all story items
+            //var storyItems = page.Locator("section[data-testid='storyitem']");
+            //var count = await storyItems.CountAsync();
+            //_logger.LogInformation("Found {Count} news items for {Symbol}", count, symbol);
 
-            var newsList = new List<YahooNews>();
+            //var newsList = new List<YahooNews>();
 
-            for (int i = 0; i < count; i++)
-            {
-                // Check if we've reached the requested limit
-                if (newsList.Count >= limit)
-                {
-                    break;
-                }
+            //for (int i = 0; i < count; i++)
+            //{
+            //    // Check if we've reached the requested limit
+            //    if (newsList.Count >= limit)
+            //    {
+            //        break;
+            //    }
 
-                try
-                {
-                    var item = storyItems.Nth(i);
+            //    try
+            //    {
+            //        var item = storyItems.Nth(i);
 
-                    // Title
-                    var titleElement = item.Locator("h3");
-                    var title = await titleElement.InnerTextAsync() ?? "N/A";
+            //        // Title
+            //        var titleElement = item.Locator("h3");
+            //        var title = await titleElement.InnerTextAsync() ?? "N/A";
 
-                    // URL
-                    var anchorElement = item.Locator("a.subtle-link");
-                    var href = await anchorElement.GetAttributeAsync("href") ?? "";
-                    var newsUrlFull = href.StartsWith("https", StringComparison.OrdinalIgnoreCase)
-                        ? href
-                        : $"https://finance.yahoo.com{href}";
+            //        // URL
+            //        var anchorElement = item.Locator("a.subtle-link");
+            //        var href = await anchorElement.GetAttributeAsync("href") ?? "";
+            //        var newsUrlFull = href.StartsWith("https", StringComparison.OrdinalIgnoreCase)
+            //            ? href
+            //            : $"https://finance.yahoo.com{href}";
 
-                    // Summary
-                    var summaryElement = item.Locator("p");
-                    var summary = (await summaryElement.InnerTextAsync())?.Trim() ?? "N/A";
+            //        // Summary
+            //        var summaryElement = item.Locator("p");
+            //        var summary = (await summaryElement.InnerTextAsync())?.Trim() ?? "N/A";
 
-                    // Publish time
-                    var timeElement = item.Locator("div[class*='publishing']");
-                    var publishTime = (await timeElement.InnerTextAsync())?.Trim() ?? "N/A";
+            //        // Publish time
+            //        var timeElement = item.Locator("div[class*='publishing']");
+            //        var publishTime = (await timeElement.InnerTextAsync())?.Trim() ?? "N/A";
 
-                    newsList.Add(new YahooNews
-                    {
-                        Title = title.Trim(),
-                        Url = newsUrlFull.Trim(),
-                        Summary = summary,
-                        PublishTime = publishTime
-                    });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to parse a news item at index {Index}", i);
-                }
-            }
+            //        newsList.Add(new YahooNews
+            //        {
+            //            Title = title.Trim(),
+            //            Url = newsUrlFull.Trim(),
+            //            Summary = summary,
+            //            PublishTime = publishTime
+            //        });
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        _logger.LogError(ex, "Failed to parse a news item at index {Index}", i);
+            //    }
+            //}
 
             // Close the browser
             await browser.CloseAsync();
 
-            if (newsList.Count > 0){
-                return JsonResult(newsList);
-            }
+            //if (newsList.Count > 0)
+            //{
+            //    return JsonResult(newsList);
+            //}
 
-            return JsonResult(fullHtml);
+            return JsonResult(new
+            {
+                htmlBefore,
+                htmlAfter
+            });
         }
 
 
