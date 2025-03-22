@@ -62,17 +62,16 @@ RUN apt-get update && apt-get install -y \
 # -----------------------------
 FROM custom-runtime AS runtime
 
+# Create a non-root user (if needed) to run the app safely
+RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
+    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
+
 # Copy the published application and cached Playwright binaries from the build stage
 COPY --from=build /app/build .
 COPY --from=build /app/ms-playwright /app/ms-playwright
 
 # Set environment variable so Playwright knows where the browsers are located
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
-
-
-# Create a non-root user (if needed) to run the app safely
-RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
-    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
 
 # Switch to non-root user
 USER app
