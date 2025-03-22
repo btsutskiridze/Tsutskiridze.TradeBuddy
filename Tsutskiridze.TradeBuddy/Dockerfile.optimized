@@ -41,13 +41,16 @@ RUN mkdir -p /app && cp -R /root/.cache/ms-playwright /app/ms-playwright
 # 9. Finally, publish your application
 RUN dotnet publish -c Release -o /app/build
 
-# -----------------------------
-# Stage 2: Custom Runtime Base Image
-# -----------------------------
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS custom-runtime
+# --------------------------------------------
+# Stage 2: Runtime
+# --------------------------------------------
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Pre-install OS-level dependencies needed by Chromium/Playwright
+# Create a non-root user and group if it doesn't exist
+RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
+    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
+
 # Install OS-level dependencies required by Chromium and Playwright at runtime
 RUN apt-get update && apt-get install -y \
     libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
@@ -56,35 +59,21 @@ RUN apt-get update && apt-get install -y \
     libxfixes3 libxkbcommon0 wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# -----------------------------
-# Stage 3: Final Runtime Image
-# -----------------------------
-FROM custom-runtime AS runtime
-WORKDIR /app
-
-# Create a non-root user for security if not already present
-RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
-    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
-
-# Copy the published application and cached Playwright binaries from the build stage
+# Copy the published app from build image
 COPY --from=build /app/build .
+# Copy Playwright's cached browser binaries
 COPY --from=build /app/ms-playwright /app/ms-playwright
 
-# --- Fix Permissions & Create Symlink ---
-# Switch to root to adjust permissions, create a symlink, and fix ownership.
-USER root
-RUN chmod -R 755 /app/ms-playwright && \
-    ln -sf /app/ms-playwright /app/.playwright && \
-    # Explicitly ensure the node binary is executable
-    chmod +x /app/ms-playwright/node/linux-x64/node && \
-    chown -R app:app /app
-# Switch back to the non-root user
-USER app
-# ------------------------------------
+# Adjust permissions for the non-root user
+RUN chown -R app:app /app
 
-# Set environment variable so Playwright uses the correct browser path
+# Let Playwright know where the browsers live
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
 
-# Expose port 80 and define the entrypoint for your application
+# Switch to non-root user
+USER app
+
+# Expose the desired port and set the application entrypoint
 EXPOSE 80
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
+        
