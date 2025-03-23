@@ -41,7 +41,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         }
 
         [HttpGet("yahoo/{symbol}")]
-        public async Task<IActionResult> GetYahooNews(string symbol, [FromQuery] int limit = 10)
+        public async Task<IActionResult> GetYahooNews(string symbol = "NVDA", [FromQuery] int limit = 10)
         {
 
             using var playwright = await Playwright.CreateAsync();
@@ -94,7 +94,10 @@ namespace Tsutskiridze.TradeBuddy.Controllers
 
             var newsList = new List<YahooNews>();
 
-            var htmlList = new List<string>();
+            var htmlList = await storyItems.InnerHTMLAsync();
+
+            return JsonResult(htmlList);
+
 
             for (int i = 0; i < count; i++)
             {
