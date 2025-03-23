@@ -94,6 +94,8 @@ namespace Tsutskiridze.TradeBuddy.Controllers
 
             var newsList = new List<YahooNews>();
 
+            var htmlList = new List<string>();
+
             for (int i = 0; i < count; i++)
             {
                 // Check if we've reached the requested limit
@@ -102,47 +104,50 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                     break;
                 }
 
-                try
-                {
-                    var item = storyItems.Nth(i);
+                htmlList.Add(await storyItems.Nth(i).InnerHTMLAsync());
 
-                    // Title
-                    var titleElement = item.Locator("h3").First;
-                    var title = await titleElement.InnerTextAsync() ?? "N/A";
+                //try
+                //{
+                //    var item = storyItems.Nth(i);
 
-                    // URL
-                    var anchorElement = item.Locator("a.subtle-link").First;
-                    var href = await anchorElement.GetAttributeAsync("href") ?? "";
-                    var newsUrlFull = href.StartsWith("https", StringComparison.OrdinalIgnoreCase)
-                        ? href
-                        : $"https://finance.yahoo.com{href}";
+                //    // Title
+                //    var titleElement = item.Locator("h3").First;
+                //    var title = await titleElement.InnerTextAsync() ?? "N/A";
 
-                    // Summary
-                    var summaryElement = item.Locator("p").First;
-                    var summary = (await summaryElement.InnerTextAsync())?.Trim() ?? "N/A";
+                //    // URL
+                //    var anchorElement = item.Locator("a.subtle-link").First;
+                //    var href = await anchorElement.GetAttributeAsync("href") ?? "";
+                //    var newsUrlFull = href.StartsWith("https", StringComparison.OrdinalIgnoreCase)
+                //        ? href
+                //        : $"https://finance.yahoo.com{href}";
 
-                    // Publish time
-                    var timeElement = item.Locator("div[class*='publishing']").First;
-                    var publishTime = ((await timeElement.InnerTextAsync())?.Trim())?.Split("•\n").Last() ?? "N/A";
+                //    // Summary
+                //    var summaryElement = item.Locator("p").First;
+                //    var summary = (await summaryElement.InnerTextAsync())?.Trim() ?? "N/A";
 
-                    newsList.Add(new YahooNews
-                    {
-                        Title = title.Trim(),
-                        Url = newsUrlFull.Trim(),
-                        Summary = summary,
-                        PublishTime = publishTime
-                    });
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to parse a news item at index {Index}", i);
-                }
+                //    // Publish time
+                //    var timeElement = item.Locator("div[class*='publishing']").First;
+                //    var publishTime = ((await timeElement.InnerTextAsync())?.Trim())?.Split("•\n").Last() ?? "N/A";
+
+                //    newsList.Add(new YahooNews
+                //    {
+                //        Title = title.Trim(),
+                //        Url = newsUrlFull.Trim(),
+                //        Summary = summary,
+                //        PublishTime = publishTime
+                //    });
+                //}
+                //catch (Exception ex)
+                //{
+                //    _logger.LogError(ex, "Failed to parse a news item at index {Index}", i);
+                //    _logger.LogInformation(await storyItems.Nth(i).All());
+                //}
             }
 
             // Close the browser
             await browser.CloseAsync();
 
-            return JsonResult(newsList);
+            return JsonResult(htmlList);
         }
 
 
