@@ -76,7 +76,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                 }
 
                 // Now click the button
-                await acceptAllButton.ClickAsync(new LocatorClickOptions { Timeout = 1000 });
+                await acceptAllButton.ClickAsync(new LocatorClickOptions { Timeout = 3000 });
             }
             catch (Exception ex)
             {
@@ -85,9 +85,9 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             }
 
 
-            await browser.CloseAsync();
-
             var innerHtml = await page.ContentAsync();
+
+            await browser.CloseAsync();
 
             return new ContentResult
             {
