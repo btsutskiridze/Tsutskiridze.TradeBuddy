@@ -84,6 +84,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                 _logger.LogError("Consent popup not found or click failed: {err}", ex.Message);
             }
 
+            await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
             var innerHtml = await page.ContentAsync();
 
