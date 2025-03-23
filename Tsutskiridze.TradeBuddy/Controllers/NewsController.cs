@@ -63,7 +63,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             });
 
             var page = await context.NewPageAsync();
-            await page.GotoAsync(searchUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
+            await page.GotoAsync(searchUrl, new PageGotoOptions { WaitUntil = WaitUntilState.NetworkIdle });
 
             try
             {
@@ -77,7 +77,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                 }
 
                 // Now click the button
-                await acceptAllButton.ClickAsync(new LocatorClickOptions { Timeout = 3000 });
+                await acceptAllButton.ClickAsync(new LocatorClickOptions { Timeout = 1000 });
             }
             catch (Exception ex)
             {
@@ -93,64 +93,61 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             _logger.LogInformation("Found {Count} news items for {Symbol}", count, symbol);
 
             var newsList = new List<YahooNews>();
+            var htmlList = new List<string>();
 
-            var htmlList = await storyItems.InnerHTMLAsync();
+
+            for (int i = 0; i < count; i++)
+            {
+                // Check if we've reached the requested limit
+                if (newsList.Count >= limit)
+                {
+                    break;
+                }
+
+                htmlList.Add(await storyItems.Nth(i).InnerHTMLAsync());
+
+                //try
+                //{
+                //    var item = storyItems.Nth(i);
+
+                //    // Title
+                //    var titleElement = item.Locator("h3").First;
+                //    var title = await titleElement.InnerTextAsync() ?? "N/A";
+
+                //    // URL
+                //    var anchorElement = item.Locator("a.subtle-link").First;
+                //    var href = await anchorElement.GetAttributeAsync("href") ?? "";
+                //    var newsUrlFull = href.StartsWith("https", StringComparison.OrdinalIgnoreCase)
+                //        ? href
+                //        : $"https://finance.yahoo.com{href}";
+
+                //    // Summary
+                //    var summaryElement = item.Locator("p").First;
+                //    var summary = (await summaryElement.InnerTextAsync())?.Trim() ?? "N/A";
+
+                //    // Publish time
+                //    var timeElement = item.Locator("div[class*='publishing']").First;
+                //    var publishTime = ((await timeElement.InnerTextAsync())?.Trim())?.Split("•\n").Last() ?? "N/A";
+
+                //    newsList.Add(new YahooNews
+                //    {
+                //        Title = title.Trim(),
+                //        Url = newsUrlFull.Trim(),
+                //        Summary = summary,
+                //        PublishTime = publishTime
+                //    });
+                //}
+                //catch (Exception ex)
+                //{
+                //    _logger.LogError(ex, "Failed to parse a news item at index {Index}", i);
+                //    _logger.LogInformation(await storyItems.Nth(i).All());
+                //}
+            }
+
+            // Close the browser
+            await browser.CloseAsync();
 
             return JsonResult(htmlList);
-
-
-            //for (int i = 0; i < count; i++)
-            //{
-            //    // Check if we've reached the requested limit
-            //    if (newsList.Count >= limit)
-            //    {
-            //        break;
-            //    }
-
-            //    htmlList.Add(await storyItems.Nth(i).InnerHTMLAsync());
-
-            //    //try
-            //    //{
-            //    //    var item = storyItems.Nth(i);
-
-            //    //    // Title
-            //    //    var titleElement = item.Locator("h3").First;
-            //    //    var title = await titleElement.InnerTextAsync() ?? "N/A";
-
-            //    //    // URL
-            //    //    var anchorElement = item.Locator("a.subtle-link").First;
-            //    //    var href = await anchorElement.GetAttributeAsync("href") ?? "";
-            //    //    var newsUrlFull = href.StartsWith("https", StringComparison.OrdinalIgnoreCase)
-            //    //        ? href
-            //    //        : $"https://finance.yahoo.com{href}";
-
-            //    //    // Summary
-            //    //    var summaryElement = item.Locator("p").First;
-            //    //    var summary = (await summaryElement.InnerTextAsync())?.Trim() ?? "N/A";
-
-            //    //    // Publish time
-            //    //    var timeElement = item.Locator("div[class*='publishing']").First;
-            //    //    var publishTime = ((await timeElement.InnerTextAsync())?.Trim())?.Split("•\n").Last() ?? "N/A";
-
-            //    //    newsList.Add(new YahooNews
-            //    //    {
-            //    //        Title = title.Trim(),
-            //    //        Url = newsUrlFull.Trim(),
-            //    //        Summary = summary,
-            //    //        PublishTime = publishTime
-            //    //    });
-            //    //}
-            //    //catch (Exception ex)
-            //    //{
-            //    //    _logger.LogError(ex, "Failed to parse a news item at index {Index}", i);
-            //    //    _logger.LogInformation(await storyItems.Nth(i).All());
-            //    //}
-            //}
-
-            //// Close the browser
-            //await browser.CloseAsync();
-
-            //return JsonResult(htmlList);
         }
 
 
