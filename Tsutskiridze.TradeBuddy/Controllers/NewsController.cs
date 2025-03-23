@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HtmlAgilityPack;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Playwright;
 using Tsutskiridze.Bloom.Core.Common.Base;
 using Tsutskiridze.TradeBuddy.DTOs.Yahoo;
@@ -87,68 +88,63 @@ namespace Tsutskiridze.TradeBuddy.Controllers
 
             await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
+            var innerHtml = await page.ContentAsync();
+
+            await browser.CloseAsync();
+
             //return new ContentResult
             //{
             //    Content = innerHtml,
             //    ContentType = "text/html",
             //};
 
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(innerHtml);
 
-            // Select all story items
-            var storyItems = page.Locator("section[data-testid='storyitem']");
-            var count = await storyItems.CountAsync();
-            _logger.LogInformation("Found {Count} news items for {Symbol}", count, symbol);
+            _logger.LogInformation("Scraping Yahoo news for {Symbol}", symbol);
+
+            var newsNodes = htmlDocument.DocumentNode.SelectNodes("//section[@data-testid='storyitem']");
+
+            if (newsNodes == null)
+            {
+                return null;
+            }
 
             var newsList = new List<YahooNews>();
-            var htmlList = new List<string>();
 
-
-            for (int i = 0; i < count; i++)
+            foreach (var node in newsNodes)
             {
-                // Check if we've reached the requested limit
-                if (newsList.Count >= limit)
-                {
-                    break;
-                }
-
                 try
                 {
-                    var item = storyItems.Nth(i);
+                    var titleNode = node.SelectSingleNode(".//h3");
+                    var urlNode = node.SelectSingleNode(".//a[@class='subtle-link']");
+                    var summaryNode = node.SelectSingleNode(".//p");
+                    var timeNode = node.SelectSingleNode(".//div[contains(@class, 'publishing')]");
 
-                    // Title
-                    var titleElement = item.Locator("h3").First;
-                    var title = await titleElement.InnerTextAsync() ?? "N/A";
-
-                    // URL
-                    var anchorElement = item.Locator("a.subtle-link").First;
-                    var href = await anchorElement.GetAttributeAsync("href") ?? "";
-                    var newsUrlFull = href.StartsWith("https", StringComparison.OrdinalIgnoreCase)
-                        ? href
-                        : $"https://finance.yahoo.com{href}";
-
-                    // Summary
-                    var summaryElement = item.Locator("p").First;
-                    var summary = (await summaryElement.InnerTextAsync())?.Trim() ?? "N/A";
-
-                    // Publish time
-                    var timeElement = item.Locator("div[class*='publishing']").First;
-                    var publishTime = ((await timeElement.InnerTextAsync())?.Trim())?.Split("•\n").Last() ?? "N/A";
+                    string title = titleNode?.InnerText.Trim() ?? "N/A";
+                    string newsUrl = urlNode?.GetAttributeValue("href", "").Trim() ?? "N/A";
+                    if (!newsUrl.StartsWith("https")) newsUrl = "https://finance.yahoo.com" + newsUrl;
+                    string summary = summaryNode?.InnerText.Trim() ?? "N/A";
+                    string publishTime = timeNode?.InnerText.Trim() ?? "N/A";
 
                     newsList.Add(new YahooNews
                     {
-                        Title = title.Trim(),
-                        Url = newsUrlFull.Trim(),
+                        Title = title,
+                        Url = newsUrl,
                         Summary = summary,
                         PublishTime = publishTime
                     });
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    _logger.LogError(ex, "Failed to parse a news item at index {Index}", i);
+                }
+
+                if (newsList.Count >= limit)
+                {
+                    break;
                 }
             }
 
-            await browser.CloseAsync();
             return JsonResult(newsList);
         }
 
