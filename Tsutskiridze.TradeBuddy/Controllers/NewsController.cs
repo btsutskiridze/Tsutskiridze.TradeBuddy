@@ -48,9 +48,11 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         public async Task<IActionResult> GetYahooHttpNewsWithCrumb(string symbol = "NVDA", [FromQuery] int limit = 10)
         {
             using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
             httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
-            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/web");
+            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+            httpClient.DefaultRequestHeaders.Add("DNT", "1");
+            httpClient.DefaultRequestHeaders.Add("Connection", "close");
             // Step 1: Get crumb (note: might not work without session/cookie handling)
             var crumbRes = await httpClient.GetAsync("https://query1.finance.yahoo.com/v1/test/getcrumb");
 
@@ -81,9 +83,11 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         public async Task<IActionResult> GetYahooHttpNews(string symbol = "NVDA", [FromQuery] int limit = 10)
         {
             using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
             httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
-            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/web");
+            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+            httpClient.DefaultRequestHeaders.Add("DNT", "1");
+            httpClient.DefaultRequestHeaders.Add("Connection", "close");
             var response = await httpClient.GetAsync($"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US");
             response.EnsureSuccessStatusCode();
 
@@ -100,9 +104,11 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         public async Task<IActionResult> GetYahooHttpNewsWithHeaders(string symbol = "NVDA", [FromQuery] int limit = 10)
         {
             using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
             httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
-            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/web");
+            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+            httpClient.DefaultRequestHeaders.Add("DNT", "1");
+            httpClient.DefaultRequestHeaders.Add("Connection", "close");
             var response = await httpClient.GetAsync($"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US");
 
             response.EnsureSuccessStatusCode();
