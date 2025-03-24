@@ -9,19 +9,19 @@ namespace Tsutskiridze.TradeBuddy.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class TestController : ApiControllerBase
+    public class StockController : ApiControllerBase
     {
 
 
         private readonly StockAnalysisService _stockAnalysis;
 
-        public TestController(StockAnalysisService stockAnalysisService)
+        public StockController(StockAnalysisService stockAnalysisService)
         {
             _stockAnalysis = stockAnalysisService;
         }
 
 
-        [HttpPost("{stock}")]
+        [HttpPost("{stock}/Analysis")]
         public async Task<IActionResult> AnalyseStock(string stock)
         {
             var result = await _stockAnalysis.ExecuteStockAnalysis(stock);
@@ -31,7 +31,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                 return JsonResult("Stock analysis returned null", HttpStatusCode.InternalServerError);
             }
 
-            return JsonResult(result, HttpStatusCode.OK);
+            return JsonResult(result);
         }
     }
 }

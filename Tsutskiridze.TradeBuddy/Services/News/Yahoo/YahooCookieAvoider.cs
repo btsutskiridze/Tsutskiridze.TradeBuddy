@@ -3,7 +3,7 @@ using System.Net;
 
 namespace Tsutskiridze.TradeBuddy.Services.News.Yahoo
 {
-    public class YahooFormHandler
+    public class YahooCookieAvoider
     {
         public static Dictionary<string, string> ExtractFormData(string html)
         {

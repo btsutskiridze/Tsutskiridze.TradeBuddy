@@ -16,14 +16,40 @@ namespace Tsutskiridze.TradeBuddy.Services.News.Yahoo
 
         public async Task<List<YahooNews>?> GetNewsAsync(string symbol, int? limit = null)
         {
-            var response = await _httpClient.GetAsync($"quote/{symbol}/news");
+            var response = await _httpClient.GetAsync($"quote/{symbol}/news?lang=en-US&region=US");
             response.EnsureSuccessStatusCode();
 
+            var html = await response.Content.ReadAsStringAsync();
+
+            Dictionary<string, string> formData;
+
+            try
+            {
+                formData = YahooCookieAvoider.ExtractFormData(html);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to extract Yahoo cookie form data");
+                formData = null;
+            }
+
+            if (formData != null)
+            {
+                try
+                {
+                    string pageContent = await YahooCookieAvoider.SubmitFormAsync(formData);
+                    html = pageContent;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to extract Yahoo cookie form data");
+                }
+            }
+
             var htmlDocument = new HtmlDocument();
-            htmlDocument.LoadHtml(await response.Content.ReadAsStringAsync());
+            htmlDocument.LoadHtml(html);
 
             _logger.LogInformation("Scraping Yahoo news for {Symbol}", symbol);
-            _logger.LogInformation("HTML: {Html}", await response.Content.ReadAsStringAsync());
 
             var newsNodes = htmlDocument.DocumentNode.SelectNodes("//section[@data-testid='storyitem']");
 
@@ -31,6 +57,8 @@ namespace Tsutskiridze.TradeBuddy.Services.News.Yahoo
             {
                 return null;
             }
+
+            _logger.LogInformation("Scraping Yahoo news for {Symbol}", symbol);
 
             var newsList = new List<YahooNews>();
 
@@ -47,7 +75,7 @@ namespace Tsutskiridze.TradeBuddy.Services.News.Yahoo
                     string newsUrl = urlNode?.GetAttributeValue("href", "").Trim() ?? "N/A";
                     if (!newsUrl.StartsWith("https")) newsUrl = "https://finance.yahoo.com" + newsUrl;
                     string summary = summaryNode?.InnerText.Trim() ?? "N/A";
-                    string publishTime = timeNode?.InnerText.Trim() ?? "N/A";
+                    string publishTime = timeNode?.InnerText.Trim().Split("• ").Last() ?? "N/A";
 
                     newsList.Add(new YahooNews
                     {
