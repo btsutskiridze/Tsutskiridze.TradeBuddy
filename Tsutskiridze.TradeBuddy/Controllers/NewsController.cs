@@ -48,7 +48,9 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         public async Task<IActionResult> GetYahooHttpNewsWithCrumb(string symbol = "NVDA", [FromQuery] int limit = 10)
         {
             using var httpClient = new HttpClient();
-
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+            httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
+            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/web");
             // Step 1: Get crumb (note: might not work without session/cookie handling)
             var crumbRes = await httpClient.GetAsync("https://query1.finance.yahoo.com/v1/test/getcrumb");
 
@@ -79,6 +81,9 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         public async Task<IActionResult> GetYahooHttpNews(string symbol = "NVDA", [FromQuery] int limit = 10)
         {
             using var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+            httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
+            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/web");
             var response = await httpClient.GetAsync($"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US");
             response.EnsureSuccessStatusCode();
 
@@ -95,20 +100,63 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         public async Task<IActionResult> GetYahooHttpNewsWithHeaders(string symbol = "NVDA", [FromQuery] int limit = 10)
         {
             using var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync($"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US");
             httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
             httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
             httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/web");
-            
+            var response = await httpClient.GetAsync($"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US");
+
             response.EnsureSuccessStatusCode();
 
             var html = await response.Content.ReadAsStringAsync();
 
-            return new ContentResult
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(html);
+
+            _logger.LogInformation("Scraping Yahoo news for {Symbol}", symbol);
+
+            var newsNodes = htmlDocument.DocumentNode.SelectNodes("//section[@data-testid='storyitem']");
+
+            if (newsNodes == null)
             {
-                Content = html,
-                ContentType = "text/html",
-            };
+                return null;
+            }
+
+            var newsList = new List<YahooNews>();
+
+            foreach (var node in newsNodes)
+            {
+                try
+                {
+                    var titleNode = node.SelectSingleNode(".//h3");
+                    var urlNode = node.SelectSingleNode(".//a[@class='subtle-link']");
+                    var summaryNode = node.SelectSingleNode(".//p");
+                    var timeNode = node.SelectSingleNode(".//div[contains(@class, 'publishing')]");
+
+                    string title = titleNode?.InnerText.Trim() ?? "N/A";
+                    string newsUrl = urlNode?.GetAttributeValue("href", "").Trim() ?? "N/A";
+                    if (!newsUrl.StartsWith("https")) newsUrl = "https://finance.yahoo.com" + newsUrl;
+                    string summary = summaryNode?.InnerText.Trim() ?? "N/A";
+                    string publishTime = timeNode?.InnerText.Trim() ?? "N/A";
+
+                    newsList.Add(new YahooNews
+                    {
+                        Title = title,
+                        Url = newsUrl,
+                        Summary = summary,
+                        PublishTime = publishTime
+                    });
+                }
+                catch (Exception)
+                {
+                }
+
+                if (newsList.Count >= limit)
+                {
+                    break;
+                }
+            }
+
+            return JsonResult(newsList);
         }
 
 
