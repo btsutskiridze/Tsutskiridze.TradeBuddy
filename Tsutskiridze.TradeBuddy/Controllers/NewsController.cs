@@ -98,7 +98,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             var newsSectionSelector = "section[data-testid='quoteNewsStream-0-Stream']";
             await page.WaitForSelectorAsync(newsSectionSelector, new() { Timeout = 5000 });
             
-            var html = await page.ContentAsync();
+            var innerHtml = await page.ContentAsync();
             await browser.CloseAsync();
 
             //return new ContentResult
