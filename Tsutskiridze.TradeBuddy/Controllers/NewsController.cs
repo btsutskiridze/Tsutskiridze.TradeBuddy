@@ -5,6 +5,9 @@ using Tsutskiridze.Bloom.Core.Common.Base;
 using Tsutskiridze.TradeBuddy.DTOs.Yahoo;
 using Tsutskiridze.TradeBuddy.Helpers;
 using Tsutskiridze.TradeBuddy.Services.News;
+using System.Net.Http;
+using System.Threading.Tasks;
+
 
 namespace Tsutskiridze.TradeBuddy.Controllers
 {
@@ -40,6 +43,74 @@ namespace Tsutskiridze.TradeBuddy.Controllers
 
             return JsonResult(news);
         }
+
+        [HttpGet("yahoohttpwithcrumb/{symbol}")]
+        public async Task<IActionResult> GetYahooHttpNewsWithCrumb(string symbol = "NVDA", [FromQuery] int limit = 10)
+        {
+            using var httpClient = new HttpClient();
+
+            // Step 1: Get crumb (note: might not work without session/cookie handling)
+            var crumbRes = await httpClient.GetAsync("https://query1.finance.yahoo.com/v1/test/getcrumb");
+
+            if (!crumbRes.IsSuccessStatusCode)
+            {
+                return StatusCode((int)crumbRes.StatusCode, "Failed to fetch crumb");
+            }
+
+            var crumb = (await crumbRes.Content.ReadAsStringAsync()).Trim();
+
+            // Step 2: Use crumb in news request
+            var newsRes = await httpClient.GetAsync($"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US&crumb={crumb}");
+            newsRes.EnsureSuccessStatusCode();
+
+            var html = await newsRes.Content.ReadAsStringAsync();
+
+            return new ContentResult
+            {
+                Content = html,
+                ContentType = "text/html",
+            };
+        }
+
+
+
+
+        [HttpGet("yahoohttp/{symbol}")]
+        public async Task<IActionResult> GetYahooHttpNews(string symbol = "NVDA", [FromQuery] int limit = 10)
+        {
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync($"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US");
+            response.EnsureSuccessStatusCode();
+
+            var html = await response.Content.ReadAsStringAsync();
+
+            return new ContentResult
+            {
+                Content = html,
+                ContentType = "text/html",
+            };
+        }
+
+        [HttpGet("yahoohttpWithHeaders/{symbol}")]
+        public async Task<IActionResult> GetYahooHttpNewsWithHeaders(string symbol = "NVDA", [FromQuery] int limit = 10)
+        {
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync($"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US");
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+            httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
+            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/web");
+            
+            response.EnsureSuccessStatusCode();
+
+            var html = await response.Content.ReadAsStringAsync();
+
+            return new ContentResult
+            {
+                Content = html,
+                ContentType = "text/html",
+            };
+        }
+
 
         [HttpGet("yahoo/{symbol}")]
         public async Task<IActionResult> GetYahooNews(string symbol = "NVDA", [FromQuery] int limit = 10, CancellationToken cancellationToken = default)
