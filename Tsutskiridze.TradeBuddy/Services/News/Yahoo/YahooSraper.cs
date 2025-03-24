@@ -49,8 +49,6 @@ namespace Tsutskiridze.TradeBuddy.Services.News.Yahoo
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(html);
 
-            _logger.LogInformation("Scraping Yahoo news for {Symbol}", symbol);
-
             var newsNodes = htmlDocument.DocumentNode.SelectNodes("//section[@data-testid='storyitem']");
 
             if (newsNodes == null)
