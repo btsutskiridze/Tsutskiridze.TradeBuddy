@@ -46,50 +46,59 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         {
 
             using var playwright = await Playwright.CreateAsync();
+        
             await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
                 Headless = true
             });
-            // Navigate to the Yahoo Finance news page for the given symbol in English
-            // This query string helps ensure English content: ?lang=en-US&region=US
-            var searchUrl = $"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US";
-            _logger.LogInformation("Navigating to: {NewsUrl}", searchUrl);
-
-
+            
             var context = await browser.NewContextAsync(new BrowserNewContextOptions
             {
                 ViewportSize = new ViewportSize { Width = 1280, Height = 720 },
-                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-                           "(KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
             });
-
+            
             var page = await context.NewPageAsync();
-            await page.GotoAsync(searchUrl, new PageGotoOptions { WaitUntil = WaitUntilState.DOMContentLoaded });
-
+            
+            // 🚫 Block images, fonts, ads, etc. for performance
+            await page.RouteAsync("**/*", async route =>
+            {
+                var type = route.Request.ResourceType;
+                if (type is "image" or "font" or "stylesheet" or "media")
+                    await route.AbortAsync();
+                else
+                    await route.ContinueAsync();
+            });
+            
+            var searchUrl = $"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US";
+            _logger.LogInformation("Navigating to: {NewsUrl}", searchUrl);
+            
+            await page.GotoAsync(searchUrl, new PageGotoOptions
+            {
+                WaitUntil = WaitUntilState.DOMContentLoaded,
+                Timeout = 10000
+            });
+            
+            // 🧼 Try to accept consent popup
             try
             {
-                // Locate the button (for example, a button with name "agree")
-                var acceptAllButton = page.Locator("button[name='agree']").First;
-                // Attempt to remove the overlay.
-                var overlayLocator = page.Locator("div.scroll-down-wrapper.show");
-                if (await overlayLocator.IsVisibleAsync())
+                var consentButton = page.Locator("button[name='agree']");
+                if (await consentButton.IsVisibleAsync(new() { Timeout = 2000 }))
                 {
-                    await overlayLocator.EvaluateAsync("element => element.remove()");
+                    await consentButton.ClickAsync();
+                    _logger.LogInformation("Accepted Yahoo consent popup");
                 }
-
-                // Now click the button
-                await acceptAllButton.ClickAsync(new LocatorClickOptions { Timeout = 2000 });
             }
             catch (Exception ex)
             {
-                // If the button isn't found or the click fails within 1 second, log the error and continue
-                _logger.LogError("Consent popup not found or click failed: {err}", ex.Message);
+                _logger.LogWarning("Consent popup skipped: {err}", ex.Message);
             }
-
-            await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
-
-            var innerHtml = await page.ContentAsync();
-
+            
+            // ⏳ Wait for the news section
+            var newsSectionSelector = "section[data-testid='quoteNewsStream-0-Stream']";
+            await page.WaitForSelectorAsync(newsSectionSelector, new() { Timeout = 5000 });
+            
+            var html = await page.ContentAsync();
             await browser.CloseAsync();
 
             //return new ContentResult
