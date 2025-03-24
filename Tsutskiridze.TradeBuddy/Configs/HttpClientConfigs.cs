@@ -1,4 +1,5 @@
 ﻿using Tsutskiridze.TradeBuddy.Services.News;
+using Tsutskiridze.TradeBuddy.Services.News.Yahoo;
 using Tsutskiridze.TradeBuddy.Services.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Configs

@@ -1,7 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Tsutskiridze.TradeBuddy.DTOs.Yahoo;
 
-namespace Tsutskiridze.TradeBuddy.Services.News
+namespace Tsutskiridze.TradeBuddy.Services.News.Yahoo
 {
     public class YahooSraper
     {

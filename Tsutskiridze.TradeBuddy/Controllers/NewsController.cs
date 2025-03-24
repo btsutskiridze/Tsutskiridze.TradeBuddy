@@ -5,8 +5,7 @@ using Tsutskiridze.Bloom.Core.Common.Base;
 using Tsutskiridze.TradeBuddy.DTOs.Yahoo;
 using Tsutskiridze.TradeBuddy.Helpers;
 using Tsutskiridze.TradeBuddy.Services.News;
-using System.Net.Http;
-using System.Threading.Tasks;
+using Tsutskiridze.TradeBuddy.Services.News.Yahoo;
 
 
 namespace Tsutskiridze.TradeBuddy.Controllers
@@ -44,63 +43,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             return JsonResult(news);
         }
 
-        [HttpGet("yahoohttpwithcrumb/{symbol}")]
-        public async Task<IActionResult> GetYahooHttpNewsWithCrumb(string symbol = "NVDA", [FromQuery] int limit = 10)
-        {
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
-            httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
-            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-            httpClient.DefaultRequestHeaders.Add("DNT", "1");
-            httpClient.DefaultRequestHeaders.Add("Connection", "close");
-            // Step 1: Get crumb (note: might not work without session/cookie handling)
-            var crumbRes = await httpClient.GetAsync("https://query1.finance.yahoo.com/v1/test/getcrumb");
-
-            if (!crumbRes.IsSuccessStatusCode)
-            {
-                return StatusCode((int)crumbRes.StatusCode, "Failed to fetch crumb");
-            }
-
-            var crumb = (await crumbRes.Content.ReadAsStringAsync()).Trim();
-
-            // Step 2: Use crumb in news request
-            var newsRes = await httpClient.GetAsync($"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US&crumb={crumb}");
-            newsRes.EnsureSuccessStatusCode();
-
-            var html = await newsRes.Content.ReadAsStringAsync();
-
-            return new ContentResult
-            {
-                Content = html,
-                ContentType = "text/html",
-            };
-        }
-
-
-
-
-        [HttpGet("yahoohttp/{symbol}")]
-        public async Task<IActionResult> GetYahooHttpNews(string symbol = "NVDA", [FromQuery] int limit = 10)
-        {
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36");
-            httpClient.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
-            httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-            httpClient.DefaultRequestHeaders.Add("DNT", "1");
-            httpClient.DefaultRequestHeaders.Add("Connection", "close");
-            var response = await httpClient.GetAsync($"https://finance.yahoo.com/quote/{symbol}/news?lang=en-US&region=US");
-            response.EnsureSuccessStatusCode();
-
-            var html = await response.Content.ReadAsStringAsync();
-
-            return new ContentResult
-            {
-                Content = html,
-                ContentType = "text/html",
-            };
-        }
-
-        [HttpGet("yahoohttpWithHeaders/{symbol}")]
+        [HttpGet("YahooHttp/{symbol}")]
         public async Task<IActionResult> GetYahooHttpNewsWithHeaders(string symbol = "NVDA", [FromQuery] int limit = 10)
         {
             using var httpClient = new HttpClient();
@@ -114,6 +57,38 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             response.EnsureSuccessStatusCode();
 
             var html = await response.Content.ReadAsStringAsync();
+
+            // 1. Extract form data from the HTML using HTML Agility Pack.
+            Dictionary<string, string> formData;
+            try
+            {
+                formData = YahooFormHandler.ExtractFormData(html);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error extracting form data: " + ex.Message);
+                formData = null;
+            }
+
+            if (formData is not null)
+            {
+
+                Console.WriteLine("Extracted form data:");
+                foreach (var pair in formData)
+                {
+                    Console.WriteLine($"{pair.Key}: {pair.Value}");
+                }
+                // 2. Submit the form to simulate clicking "Accept all"
+                try
+                {
+                    string pageContent = await YahooFormHandler.SubmitFormAsync(formData);
+                    html = pageContent;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error submitting form: " + ex.Message);
+                }
+            }
 
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(html);
@@ -162,7 +137,11 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                 }
             }
 
-            return JsonResult(newsList);
+            return JsonResult(new
+            {
+                newsList,
+                html
+            });
         }
 
 
