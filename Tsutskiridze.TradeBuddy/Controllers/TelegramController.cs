@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -44,7 +44,8 @@ namespace Tsutskiridze.TradeBuddy.Controllers
 
                 return Ok();
             }catch (Exception ex){
-                throw;
+                _logger.LogError(ex, "bad_request");
+                return BadRequest();
             }
         }
     }
