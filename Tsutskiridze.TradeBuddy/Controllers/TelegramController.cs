@@ -39,7 +39,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                 }
             };
 
-            var update = JsonConvert.DeserializeObject<Update>(json);
+            var update = JsonConvert.DeserializeObject<Update>(json, options);
 
             if (update == null)
             {
