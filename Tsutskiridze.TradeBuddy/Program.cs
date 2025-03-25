@@ -7,6 +7,7 @@ using Tsutskiridze.Bloom.Core.Configurations;
 using Tsutskiridze.TradeBuddy.Configs;
 using Tsutskiridze.TradeBuddy.Jobs;
 using Tsutskiridze.TradeBuddy.Mappers;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,7 +40,7 @@ builder.Services.AddBloom((opt) =>
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 });
-
+builder.Services.AddNewtonsoftJson();
 builder.Services.AddHttpClientConfigs();
 
 builder.Services.AddServiceConfigs();
