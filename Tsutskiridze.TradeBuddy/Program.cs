@@ -8,6 +8,8 @@ using Tsutskiridze.TradeBuddy.Configs;
 using Tsutskiridze.TradeBuddy.Jobs;
 using Tsutskiridze.TradeBuddy.Mappers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
