@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -27,6 +28,16 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             var json = await reader.ReadToEndAsync();
             _logger.LogInformation("Received JSON: {json}", json);
             reader.Close();
+
+            var options = new Newtonsoft.Json.JsonSerializerSettings
+            {
+                Converters = { new UnixDateTimeConverter() },
+                Error = (sender, args) =>
+                {
+                    _logger.LogError(args.ErrorContext.Error, "Error during deserialization");
+                    args.ErrorContext.Handled = true;
+                }
+            };
 
             var update = JsonConvert.DeserializeObject<Update>(json);
 
