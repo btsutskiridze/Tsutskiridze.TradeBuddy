@@ -23,14 +23,11 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         [HttpPost("webhook")]
         public async Task<IActionResult> Webhook()
         {
-            // Read the raw JSON from the request body
             using var reader = new StreamReader(Request.Body);
-
             var json = await reader.ReadToEndAsync();
-            _logger.LogInformation("Received JSON: " + json);
+            _logger.LogInformation("Received JSON: {json}", json);
             reader.Close();
 
-            // Deserialize the JSON string into your Update object
             var update = JsonConvert.DeserializeObject<Update>(json);
 
             if (update == null)
