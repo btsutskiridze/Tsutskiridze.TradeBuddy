@@ -18,11 +18,9 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
     <PackageReference Include="OpenAI" Version="2.1.0" />
-    <PackageReference Include="PuppeteerSharp" Version="20.1.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Telegram.Bot" Version="22.4.4" />
-    <PackageReference Include="Tsutskiridze.Bloom.Core" Version="1.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.14" />
+    <PackageReference Include="Tsutskiridze.Bloom.Core" Version="1.0.10" />
   </ItemGroup>
 
 </Project>

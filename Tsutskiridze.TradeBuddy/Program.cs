@@ -7,9 +7,6 @@ using Tsutskiridze.Bloom.Core.Configurations;
 using Tsutskiridze.TradeBuddy.Configs;
 using Tsutskiridze.TradeBuddy.Jobs;
 using Tsutskiridze.TradeBuddy.Mappers;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +39,9 @@ builder.Services.AddBloom((opt) =>
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 });
-builder.Services.AddNewtonsoftJson();
+
+builder.Services.AddControllers();
+
 builder.Services.AddHttpClientConfigs();
 
 builder.Services.AddServiceConfigs();
@@ -58,6 +57,12 @@ builder.Services.ConfigureBloomServices((s) =>
 var app = builder.Build();
 
 app.UseBloom();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.MapControllers();
 
 if (app.Environment.IsDevelopment())
 {

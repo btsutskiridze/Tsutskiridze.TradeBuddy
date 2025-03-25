@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.Bloom.Core.Common.Base;
-using Newtonsoft.Json;
-using System.Diagnostics;
 
 namespace Tsutskiridze.TradeBuddy.Controllers
 {
@@ -14,7 +13,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
     {
         private readonly ITelegramBotClient _botClient;
         private readonly ILogger<TelegramController> _logger;
-        
+
         public TelegramController(ITelegramBotClient botClient, ILogger<TelegramController> logger)
         {
             _botClient = botClient;
@@ -22,31 +21,41 @@ namespace Tsutskiridze.TradeBuddy.Controllers
         }
 
         [HttpPost("webhook")]
-        public async Task<IActionResult> Webhook([FromBody] Update update)
+        public async Task<IActionResult> Webhook()
         {
-            
-            _logger.LogInformation("request:");
-            _logger.LogInformation(JsonConvert.SerializeObject(update));
-            
-            
-            if (update == null){
-                _logger.LogError("bad_request");
+            // Read the raw JSON from the request body
+            using var reader = new StreamReader(Request.Body);
+
+            var json = await reader.ReadToEndAsync();
+            _logger.LogInformation("Received JSON: " + json);
+            reader.Close();
+
+            // Deserialize the JSON string into your Update object
+            var update = JsonConvert.DeserializeObject<Update>(json);
+
+            if (update == null)
+            {
+                _logger.LogError("Deserialization failed - update is null");
                 return BadRequest();
             }
 
-            try{
+            try
+            {
                 if (update.Type == UpdateType.Message)
                 {
                     var message = update.Message;
-                    _logger.LogInformation("updated");
+                    _logger.LogInformation("Processing message update");
                     await _botClient.SendMessage(message.Chat.Id, $"You said: {message.Text}");
                 }
 
                 return Ok();
-            }catch (Exception ex){
-                _logger.LogError(ex, "bad_request");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Processing failed");
                 return BadRequest();
             }
+
         }
     }
 }
