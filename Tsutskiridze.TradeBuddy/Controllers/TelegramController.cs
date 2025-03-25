@@ -20,7 +20,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             _logger = logger;
         }
 
-        [HttpPost("webhook")]
+        [HttpPost("Webhook")]
         public async Task<IActionResult> Webhook()
         {
             using var reader = new StreamReader(Request.Body);
