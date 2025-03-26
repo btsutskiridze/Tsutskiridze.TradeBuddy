@@ -31,12 +31,19 @@ namespace Tsutskiridze.TradeBuddy.Controllers
 
             var options = new JsonSerializerSettings
             {
-                Converters = { new UnixDateTimeConverter() },
+                Converters = {
+                    new UnixDateTimeConverter(),
+                    new StringEnumConverter(new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy
+                    {
+                        ProcessDictionaryKeys = true,
+                        OverrideSpecifiedNames = true
+                    }, allowIntegerValues: false)
+                },
                 Error = (sender, args) =>
                 {
                     _logger.LogError(args.ErrorContext.Error, "Error during deserialization");
                     args.ErrorContext.Handled = true;
-                }
+                },
             };
 
             var update = JsonConvert.DeserializeObject<Update>(json, options);

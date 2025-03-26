@@ -1,5 +1,6 @@
 ﻿using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Helpers;
 
 namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
@@ -49,9 +50,6 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
                     isCoolingDown = true;
                     return;
                 }
-
-                _analysisCount++;
-                _lastExecution = DateTime.UtcNow;
             }
 
             if (isRateLimited)
@@ -70,14 +68,51 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
                 return;
             }
 
-            // Proceed with actual logic
+            await _botClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
             string stockSymbol = message.Text!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+
+            await ValidateSymbol(message, stockSymbol);
+
             _logger.LogInformation("Received stock command for symbol {StockSymbol}", stockSymbol);
 
             var analysis = await _stockService.GenerateAiStockAnalysis(stockSymbol);
+
+            lock (_lock)
+            {
+                _analysisCount++;
+                _lastExecution = DateTime.UtcNow;
+            }
+
             await _stockService.SendStockAnalysisToTelegram(message.Chat.Id, analysis);
 
             await _botClient.SendMessage(message.Chat.Id, "Number of analyses left: " + (20 - _analysisCount));
+        }
+
+        private async Task ValidateSymbol(Message message, string stockSymbol)
+        {
+            if (string.IsNullOrWhiteSpace(stockSymbol))
+            {
+                await _botClient.SendMessage(message.Chat.Id, "Please provide a stock symbol.");
+                return;
+            }
+
+            if (stockSymbol.Length > 10)
+            {
+                await _botClient.SendMessage(message.Chat.Id, "Stock symbol is too long.");
+                return;
+            }
+
+            if (stockSymbol.Any(char.IsDigit))
+            {
+                await _botClient.SendMessage(message.Chat.Id, "Stock symbol cannot contain digits.");
+                return;
+            }
+
+            if (stockSymbol.Any(char.IsWhiteSpace))
+            {
+                await _botClient.SendMessage(message.Chat.Id, "Stock symbol cannot contain whitespace.");
+                return;
+            }
         }
 
     }
