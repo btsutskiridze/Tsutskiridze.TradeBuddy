@@ -54,12 +54,19 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                 return BadRequest();
             }
 
-            if (update.Type == UpdateType.Message)
+            try
             {
-                await _telegramService.HandleUpdate(update);
-                //var message = update.Message;
-                //_logger.LogInformation("Processing message update");
-                //await _botClient.SendMessage(message.Chat.Id, $"You said: {message.Text}");
+                if (update.Type == UpdateType.Message)
+                {
+                    await _telegramService.HandleUpdate(update);
+                    //var message = update.Message;
+                    //_logger.LogInformation("Processing message update");
+                    //await _botClient.SendMessage(message.Chat.Id, $"You said: {message.Text}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error handling update");
             }
 
             return Ok();

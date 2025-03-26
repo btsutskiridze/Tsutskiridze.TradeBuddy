@@ -68,28 +68,50 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
                 return;
             }
 
-            await _botClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
-            string stockSymbol = message.Text!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
-
-            await ValidateSymbol(message, stockSymbol);
-
-            _logger.LogInformation("Received stock command for symbol {StockSymbol}", stockSymbol);
-
-            var analysis = await _stockService.GenerateAiStockAnalysis(stockSymbol);
-
-            lock (_lock)
+            try
             {
-                _analysisCount++;
-                _lastExecution = DateTime.UtcNow;
+                await _botClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
+
+                await ValidateSymbol(message);
+
+                string stockSymbol = message.Text!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+
+                _logger.LogInformation("Received stock command for symbol {StockSymbol}", stockSymbol);
+
+                var analysis = await _stockService.GenerateAiStockAnalysis(stockSymbol);
+
+                lock (_lock)
+                {
+                    _analysisCount++;
+                    _lastExecution = DateTime.UtcNow;
+                }
+
+                await _stockService.SendStockAnalysisToTelegram(message.Chat.Id, analysis);
+
+                await _botClient.SendMessage(message.Chat.Id, "Number of analyses left: " + (20 - _analysisCount));
             }
-
-            await _stockService.SendStockAnalysisToTelegram(message.Chat.Id, analysis);
-
-            await _botClient.SendMessage(message.Chat.Id, "Number of analyses left: " + (20 - _analysisCount));
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error handling stock command");
+                await _botClient.SendMessage(message.Chat.Id, "Failed to analyze stock.");
+            }
         }
 
-        private async Task ValidateSymbol(Message message, string stockSymbol)
+        private async Task ValidateSymbol(Message message)
         {
+            string stockSymbol = message.Text!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+
+            if (stockSymbol == Command)
+            {
+                await _botClient.SendMessage(message.Chat.Id, "Please provide a stock symbol.");
+            }
+
+            if (stockSymbol.Length < 2)
+            {
+                await _botClient.SendMessage(message.Chat.Id, "Stock symbol is too short.");
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(stockSymbol))
             {
                 await _botClient.SendMessage(message.Chat.Id, "Please provide a stock symbol.");
