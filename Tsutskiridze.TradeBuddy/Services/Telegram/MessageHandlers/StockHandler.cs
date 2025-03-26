@@ -27,26 +27,26 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
 
         public async Task HandleMessage(Message message)
         {
+            bool isRateLimited = false;
+            bool isCoolingDown = false;
+
             lock (_lock)
             {
-                // Reset daily counter if day has changed
                 if (_lastReset.Date < DateTime.UtcNow.Date)
                 {
                     _analysisCount = 0;
                     _lastReset = DateTime.UtcNow.Date;
                 }
 
-                // Check daily limit
                 if (_analysisCount >= 20)
                 {
-                    _logger.LogInformation("Daily analysis limit reached");
+                    isRateLimited = true;
                     return;
                 }
 
-                // Check cooldown
                 if ((DateTime.UtcNow - _lastExecution) < TimeSpan.FromMinutes(5))
                 {
-                    _logger.LogInformation("Cooldown in effect, try again later");
+                    isCoolingDown = true;
                     return;
                 }
 
@@ -54,11 +54,31 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
                 _lastExecution = DateTime.UtcNow;
             }
 
+            if (isRateLimited)
+            {
+                await _botClient.SendMessage(
+                    message.Chat.Id,
+                    "You've reached the daily limit of 20 stock analyses. Please try again tomorrow.");
+                return;
+            }
+
+            if (isCoolingDown)
+            {
+                await _botClient.SendMessage(
+                    message.Chat.Id,
+                    $"Next stock analysis is available in {TimeSpan.FromMinutes(5) - (DateTime.UtcNow - _lastExecution)}.");
+                return;
+            }
+
+            // Proceed with actual logic
             string stockSymbol = message.Text!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
             _logger.LogInformation("Received stock command for symbol {StockSymbol}", stockSymbol);
 
             var analysis = await _stockService.GenerateAiStockAnalysis(stockSymbol);
             await _stockService.SendStockAnalysisToTelegram(message.Chat.Id, analysis);
+
+            await _botClient.SendMessage(message.Chat.Id, "Number of analyses left: " + (20 - _analysisCount));
         }
+
     }
 }
