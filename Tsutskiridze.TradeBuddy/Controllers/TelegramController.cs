@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.Bloom.Core.Common.Base;
+using Tsutskiridze.TradeBuddy.Services.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.Controllers
 {
@@ -12,12 +12,12 @@ namespace Tsutskiridze.TradeBuddy.Controllers
     [Route("api/[controller]")]
     public class TelegramController : ApiControllerBase
     {
-        private readonly ITelegramBotClient _botClient;
+        private readonly TelegramService _telegramService;
         private readonly ILogger<TelegramController> _logger;
 
-        public TelegramController(ITelegramBotClient botClient, ILogger<TelegramController> logger)
+        public TelegramController(TelegramService handler, ILogger<TelegramController> logger)
         {
-            _botClient = botClient;
+            _telegramService = handler;
             _logger = logger;
         }
 
@@ -29,7 +29,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             _logger.LogInformation("Received JSON: {json}", json);
             reader.Close();
 
-            var options = new Newtonsoft.Json.JsonSerializerSettings
+            var options = new JsonSerializerSettings
             {
                 Converters = { new UnixDateTimeConverter() },
                 Error = (sender, args) =>
@@ -47,23 +47,15 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                 return BadRequest();
             }
 
-            try
+            if (update.Type == UpdateType.Message)
             {
-                if (update.Type == UpdateType.Message)
-                {
-                    var message = update.Message;
-                    _logger.LogInformation("Processing message update");
-                    await _botClient.SendMessage(message.Chat.Id, $"You said: {message.Text}");
-                }
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Processing failed");
-                return BadRequest();
+                await _telegramService.HandleUpdate(update);
+                //var message = update.Message;
+                //_logger.LogInformation("Processing message update");
+                //await _botClient.SendMessage(message.Chat.Id, $"You said: {message.Text}");
             }
 
+            return Ok();
         }
     }
 }

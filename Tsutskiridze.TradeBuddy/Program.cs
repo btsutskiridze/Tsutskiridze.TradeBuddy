@@ -46,6 +46,8 @@ builder.Services.AddHttpClientConfigs();
 
 builder.Services.AddServiceConfigs();
 
+builder.Services.AddTelegramServiceConfigs();
+
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 builder.Services.ConfigureBloomServices((s) =>

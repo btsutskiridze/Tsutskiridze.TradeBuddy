@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
+using Telegram.Bot;
 using Tsutskiridze.TradeBuddy.DTOs;
 using Tsutskiridze.TradeBuddy.Jobs;
 using Tsutskiridze.TradeBuddy.Models;
@@ -11,7 +12,7 @@ namespace Tsutskiridze.TradeBuddy.Services
     {
         private readonly StockPromptService _stockPromptService;
         private readonly IAIService _aiService;
-        private readonly TelegramService _telegramService;
+        private readonly ITelegramBotClient _telegramBot;
         private readonly ILogger<StockBuddyJob> _logger;
 
         private static JsonSerializerSettings _jsonSettings = new()
@@ -19,11 +20,11 @@ namespace Tsutskiridze.TradeBuddy.Services
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        public StockAnalysisService(StockPromptService stockPromptService, IAIService geminiService, TelegramService telegramService, ILogger<StockBuddyJob> logger)
+        public StockAnalysisService(StockPromptService stockPromptService, IAIService geminiService, ITelegramBotClient telegramBot, ILogger<StockBuddyJob> logger)
         {
             _stockPromptService = stockPromptService;
             _aiService = geminiService;
-            _telegramService = telegramService;
+            _telegramBot = telegramBot;
             _logger = logger;
         }
 
@@ -97,7 +98,7 @@ namespace Tsutskiridze.TradeBuddy.Services
             }
         }
 
-        private async Task<StockAnalysisModels.StockAnalysis> GenerateAiStockAnalysis(string stock)
+        public async Task<StockAnalysisModels.StockAnalysis> GenerateAiStockAnalysis(string stock)
         {
             var watch = Stopwatch.StartNew();
 
@@ -128,10 +129,25 @@ namespace Tsutskiridze.TradeBuddy.Services
         private async Task SendTelegramMessage(StockAnalysisModels.StockAnalysis analysis)
         {
             var message = CreateStockTelegramMessage(analysis);
-            await _telegramService.SendMessage(message);
+            await _telegramBot.SendMessage(SecretsManager.GetSecret("Telegram:GroupChatID"), message);
         }
 
-        private static string CreateStockTelegramMessage(StockAnalysisModels.StockAnalysis analysis)
+        public async Task SendStockAnalysisToTelegram(long chatID, StockAnalysisModels.StockAnalysis analysis)
+        {
+            try
+            {
+                var message = CreateStockTelegramMessage(analysis);
+                await _telegramBot.SendMessage(chatID, message);
+                _logger.LogInformation("Stock analysis sent to Telegram");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending stock analysis to Telegram");
+                await _telegramBot.SendMessage(chatID, "Failed to send stock analysis");
+            }
+        }
+
+        public static string CreateStockTelegramMessage(StockAnalysisModels.StockAnalysis analysis)
         {
             // Build the message using string interpolation
             var message = $"🚨 Stock Alert: {analysis.Symbol} 🚨\n" +
