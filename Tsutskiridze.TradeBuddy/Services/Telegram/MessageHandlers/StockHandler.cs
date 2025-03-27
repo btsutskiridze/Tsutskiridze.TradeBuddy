@@ -66,7 +66,7 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
 
                 await _botClient.SendMessage(
                     message.Chat.Id,
-                    $"Next stock analysis is available in {formattedTime}.");
+                    $"Next stock analysis is available in {formattedTime} minutes.");
                 return;
             }
 
