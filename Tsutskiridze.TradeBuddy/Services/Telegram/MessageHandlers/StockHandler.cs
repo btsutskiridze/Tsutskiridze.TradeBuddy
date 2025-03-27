@@ -61,9 +61,12 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
 
             if (isCoolingDown)
             {
+                var nextExecutionIn = TimeSpan.FromMinutes(5) - (DateTime.UtcNow - _lastExecution);
+                string formattedTime = nextExecutionIn.ToString("mm\\:ss");
+
                 await _botClient.SendMessage(
                     message.Chat.Id,
-                    $"Next stock analysis is available in {TimeSpan.FromMinutes(5) - (DateTime.UtcNow - _lastExecution)}.");
+                    $"Next stock analysis is available in {formattedTime}.");
                 return;
             }
 
