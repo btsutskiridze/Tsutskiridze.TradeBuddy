@@ -24,7 +24,7 @@ namespace Tsutskiridze.TradeBuddy.Models.Fmp
         public decimal Open { get; set; }
         public decimal PreviousClose { get; set; }
         public decimal Eps { get; set; }
-        public decimal Pe { get; set; }
+        public decimal? Pe { get; set; }
         public string EarningsAnnouncement { get; set; }
         public long SharesOutstanding { get; set; }
         public string Timestamp { get; set; }
