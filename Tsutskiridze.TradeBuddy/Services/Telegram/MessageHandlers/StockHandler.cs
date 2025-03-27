@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using System.Text.RegularExpressions;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Helpers;
@@ -42,13 +43,11 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
                 if (_analysisCount >= 20)
                 {
                     isRateLimited = true;
-                    return;
                 }
 
                 if ((DateTime.UtcNow - _lastExecution) < TimeSpan.FromMinutes(5))
                 {
                     isCoolingDown = true;
-                    return;
                 }
             }
 
@@ -72,19 +71,24 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
             {
                 await _botClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
 
-                await ValidateSymbol(message);
-
                 string stockSymbol = message.Text!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
 
-                _logger.LogInformation("Received stock command for symbol {StockSymbol}", stockSymbol);
+                if (!IsValidStockSymbol(stockSymbol))
+                {
+                    await _botClient.SendMessage(message.Chat.Id, "Invalid stock symbol. Please provide a valid stock symbol.");
+                    return;
+                }
 
-                var analysis = await _stockService.GenerateAiStockAnalysis(stockSymbol);
+
+                _logger.LogInformation("Received stock command for symbol {StockSymbol}", stockSymbol);
 
                 lock (_lock)
                 {
                     _analysisCount++;
                     _lastExecution = DateTime.UtcNow;
                 }
+
+                var analysis = await _stockService.GenerateAiStockAnalysis(stockSymbol);
 
                 await _stockService.SendStockAnalysisToTelegram(message.Chat.Id, analysis);
 
@@ -97,44 +101,16 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
             }
         }
 
-        private async Task ValidateSymbol(Message message)
+        public bool IsValidStockSymbol(string symbol)
         {
-            string stockSymbol = message.Text!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+            if (string.IsNullOrWhiteSpace(symbol) || symbol == Command)
+                return false;
 
-            if (stockSymbol == Command)
-            {
-                await _botClient.SendMessage(message.Chat.Id, "Please provide a stock symbol.");
-            }
+            symbol = symbol.Trim().ToUpperInvariant();
 
-            if (stockSymbol.Length < 2)
-            {
-                await _botClient.SendMessage(message.Chat.Id, "Stock symbol is too short.");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(stockSymbol))
-            {
-                await _botClient.SendMessage(message.Chat.Id, "Please provide a stock symbol.");
-                return;
-            }
-
-            if (stockSymbol.Length > 10)
-            {
-                await _botClient.SendMessage(message.Chat.Id, "Stock symbol is too long.");
-                return;
-            }
-
-            if (stockSymbol.Any(char.IsDigit))
-            {
-                await _botClient.SendMessage(message.Chat.Id, "Stock symbol cannot contain digits.");
-                return;
-            }
-
-            if (stockSymbol.Any(char.IsWhiteSpace))
-            {
-                await _botClient.SendMessage(message.Chat.Id, "Stock symbol cannot contain whitespace.");
-                return;
-            }
+            // Basic pattern: 1 to 5 uppercase letters, optionally followed by a dot and a class (e.g., BRK.A)
+            var regex = new Regex(@"^[A-Z]{1,5}([.-][A-Z]{1,2})?$");
+            return regex.IsMatch(symbol);
         }
 
     }

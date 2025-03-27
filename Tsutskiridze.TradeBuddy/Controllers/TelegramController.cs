@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using Tsutskiridze.Bloom.Core.Common.Base;
 using Tsutskiridze.TradeBuddy.Services.Telegram;
 
@@ -33,11 +32,14 @@ namespace Tsutskiridze.TradeBuddy.Controllers
             {
                 Converters = {
                     new UnixDateTimeConverter(),
-                    new StringEnumConverter(new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy
-                    {
-                        ProcessDictionaryKeys = true,
-                        OverrideSpecifiedNames = true
-                    }, allowIntegerValues: false)
+                    new StringEnumConverter(
+                        new Newtonsoft.Json.Serialization.SnakeCaseNamingStrategy
+                        {
+                            ProcessDictionaryKeys = true,
+                            OverrideSpecifiedNames = true
+                        },
+                        allowIntegerValues: false
+                    )
                 },
                 Error = (sender, args) =>
                 {
@@ -54,14 +56,7 @@ namespace Tsutskiridze.TradeBuddy.Controllers
                 return BadRequest();
             }
 
-            if (update.Type == UpdateType.Message)
-            {
-                await _telegramService.HandleUpdate(update);
-                //var message = update.Message;
-                //_logger.LogInformation("Processing message update");
-                //await _botClient.SendMessage(message.Chat.Id, $"You said: {message.Text}");
-            }
-
+            await _telegramService.HandleUpdate(update);
 
             return Ok();
         }

@@ -33,6 +33,12 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram
                 return;
             }
 
+            if (message.Chat.Id != long.Parse(SecretsManager.GetSecret("Telegram:GroupChatID")))
+            {
+                _logger.LogInformation("Received message from chat {ChatId} that is not the group chat", message.Chat.Id);
+                return;
+            }
+
             _logger.LogInformation("Received message '{MessageText}' from chat {ChatId}", message.Text, message.Chat.Id);
 
             string command = GetCommand(message.Text);
