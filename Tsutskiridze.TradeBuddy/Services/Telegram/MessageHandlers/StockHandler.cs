@@ -112,7 +112,7 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
             symbol = symbol.Trim().ToUpperInvariant();
 
             // Basic pattern: 1 to 10 uppercase letters, optionally followed by a dot and a class (e.g., BRK.A)
-            var regex = new Regex(@"^[A-Z]{1,8}([.-][A-Z]{1,2})?$");
+            var regex = new Regex(@"^([A-Z]{1,5}(\.[A-Z]{1,2})?|[A-Z]{2,}:[A-Z0-9]+(\s[A-Z])?)$");
             return regex.IsMatch(symbol);
         }
 
