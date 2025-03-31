@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Newtonsoft.Json.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using Tsutskiridze.TradeBuddy.DTOs.Reddit;
 using Tsutskiridze.TradeBuddy.Helpers;
@@ -38,7 +39,8 @@ namespace Tsutskiridze.TradeBuddy.Services.News
                 $"{RedditParams.SearchEndpoint}?q={keyword}&sort={sortType.ToString().ToLower()}&type=posts{limitQuery}"
             );
             requestMessage.Headers.Add("User-Agent", RedditParams.UserAgent);
-            requestMessage.Headers.Add("Authorization", $"Bearer {await GetAccessToken()}");
+            //requestMessage.Headers.Add("Authorization", $"Bearer {await GetAccessToken()}");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetAccessToken());
 
             var response = await _httpClient.SendAsync(requestMessage);
             response.EnsureSuccessStatusCode();
@@ -107,7 +109,7 @@ namespace Tsutskiridze.TradeBuddy.Services.News
             _httpClient.DefaultRequestHeaders.Add("User-Agent", RedditParams.UserAgent);
 
             var authHeaderValue = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{RedditParams.ClientId}:{RedditParams.ClientSecret}"));
-            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Basic {authHeaderValue}");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authHeaderValue);
 
             try
             {
