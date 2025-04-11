@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Tsutskiridze.TradeBuddy.DTOs.Yahoo;
 using Tsutskiridze.TradeBuddy.Models.AlphaVantage;
+using Tsutskiridze.TradeBuddy.Models.Fmp;
 
 namespace Tsutskiridze.TradeBuddy.Services.Yahoo
 {
@@ -285,6 +286,43 @@ namespace Tsutskiridze.TradeBuddy.Services.Yahoo
                 _logger.LogWarning("Quarterly Revenue Growth row not found.");
             }
 
+
+            // 4. Extract 50-Day Moving Average (PriceAvg50) from the Trading Information section.
+            var ma50Node = htmlDocument.DocumentNode.SelectSingleNode(
+                "//section[contains(., 'Trading Information')]//tr[td[contains(., '50-Day Moving Average')]]/td[contains(@class, 'value')]");
+            if (ma50Node != null)
+            {
+                overview.PriceAvg50 = ma50Node.InnerText.Trim();
+            }
+            else
+            {
+                _logger.LogWarning("50-Day Moving Average node not found.");
+            }
+
+            // 5. Extract 200-Day Moving Average (PriceAvg200) from the Trading Information section.
+            var ma200Node = htmlDocument.DocumentNode.SelectSingleNode(
+                "//section[contains(., 'Trading Information')]//tr[td[contains(., '200-Day Moving Average')]]/td[contains(@class, 'value')]");
+            if (ma200Node != null)
+            {
+                overview.PriceAvg200 = ma200Node.InnerText.Trim();
+            }
+            else
+            {
+                _logger.LogWarning("200-Day Moving Average node not found.");
+            }
+
+            // 6. Extract Shares Outstanding from the Share Statistics section.
+            var soNode = htmlDocument.DocumentNode.SelectSingleNode(
+                "//section[contains(., 'Share Statistics')]//tr[td[contains(., 'Shares Outstanding')]]/td[contains(@class, 'value')]");
+            if (soNode != null)
+            {
+                overview.SharesOutstanding = soNode.InnerText.Trim();
+            }
+            else
+            {
+                _logger.LogWarning("Shares Outstanding node not found.");
+            }
+
             return overview;
         }
 
@@ -385,6 +423,265 @@ namespace Tsutskiridze.TradeBuddy.Services.Yahoo
             return report;
         }
 
+        public async Task<StockQuote?> GetStockQuote(string symbol)
+        {
+            // First call gets the initial HTML (which may contain a cookie form)
+            var response = await _httpClient.GetAsync($"quote/{symbol}?lang=en-US&region=US");
+            response.EnsureSuccessStatusCode();
+
+            var html = await response.Content.ReadAsStringAsync();
+
+            Dictionary<string, string> formData;
+
+            try
+            {
+                formData = YahooCookieAvoider.ExtractFormData(html);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to extract Yahoo cookie form data");
+                formData = null;
+            }
+
+            if (formData != null)
+            {
+                try
+                {
+                    string pageContent = await YahooCookieAvoider.SubmitFormAsync(formData);
+                    html = pageContent;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to extract Yahoo cookie form data");
+                }
+            }
+
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(html);
+
+            // Initialize the stock quote with the passed symbol.
+            var stockQuote = new StockQuote { Symbol = symbol };
+
+            // --- Extract header values ---
+
+            // Name from the <h1> element
+            var nameNode = htmlDocument.DocumentNode.SelectSingleNode("//h1[contains(@class, 'yf-xxbei9')]");
+            if (nameNode != null)
+            {
+                stockQuote.Name = nameNode.InnerText.Trim();
+            }
+
+
+
+
+
+            // Exchange from the exchange <span>; get the first child span's text.
+            var exchangeNode = htmlDocument.DocumentNode.SelectSingleNode("//span[contains(@class, 'exchange')]");
+            if (exchangeNode != null)
+            {
+                var exchangeSpan = exchangeNode.SelectSingleNode(".//span[1]");
+                var currencySpan = exchangeNode.SelectSingleNode(".//span[3]");
+                stockQuote.Exchange = exchangeSpan != null ? exchangeSpan.InnerText.Trim() : exchangeNode.InnerText.Trim();
+                stockQuote.Currency = currencySpan != null ? currencySpan.InnerText.Trim() : "n/a";
+            }
+
+            // --- Extract the quote values from the price container ---
+            // Price
+            var priceNode = htmlDocument.DocumentNode.SelectSingleNode("//span[@data-testid='qsp-price']");
+            if (priceNode != null)
+            {
+                stockQuote.Price = priceNode.InnerText.Trim();
+            }
+            else
+            {
+                _logger.LogWarning("Price node not found.");
+            }
+
+            // Change
+            var changeNode = htmlDocument.DocumentNode.SelectSingleNode("//span[@data-testid='qsp-price-change']");
+            if (changeNode != null)
+            {
+                stockQuote.Change = changeNode.InnerText.Trim();
+            }
+            else
+            {
+                _logger.LogWarning("Price change node not found.");
+            }
+
+            // ChangesPercentage (clean up the string by removing parentheses, % and plus signs)
+            var changePercentNode = htmlDocument.DocumentNode.SelectSingleNode("//span[@data-testid='qsp-price-change-percent']");
+            if (changePercentNode != null)
+            {
+                string percentText = changePercentNode.InnerText
+                                       .Replace("(", "")
+                                       .Replace(")", "")
+                                       .Trim();
+
+                stockQuote.ChangesPercentage = percentText;
+            }
+            else
+            {
+                _logger.LogWarning("Price change percentage node not found.");
+            }
+
+            // Timestamp from the price section (e.g., "At close: 4:00:00 PM EDT")
+            var timestampNode = htmlDocument.DocumentNode.SelectSingleNode("//div[@slot='marketTimeNotice']//span[contains(@class, 'yf-ipw1h0')]");
+            if (timestampNode != null)
+            {
+                stockQuote.Timestamp = timestampNode.InnerText.Trim();
+            }
+
+            // --- Extract statistics values from the statistics list ---
+
+            // Previous Close
+            var prevCloseNode = htmlDocument.DocumentNode.SelectSingleNode("//li[.//span[@title='Previous Close']]//fin-streamer");
+            if (prevCloseNode != null)
+            {
+                string prevCloseText = prevCloseNode.GetAttributeValue("data-value", "0");
+
+                stockQuote.PreviousClose = prevCloseText;
+            }
+
+            // Open
+            var openNode = htmlDocument.DocumentNode.SelectSingleNode("//li[.//span[@title='Open']]//fin-streamer");
+            if (openNode != null)
+            {
+                string openText = openNode.GetAttributeValue("data-value", "0");
+
+                stockQuote.Open = openText;
+            }
+
+            // Day's Range (e.g., "5.50 - 6.27")
+            var dayRangeNode = htmlDocument.DocumentNode.SelectSingleNode("//fin-streamer[@data-field='regularMarketDayRange']");
+            if (dayRangeNode != null)
+            {
+                string[] parts = dayRangeNode.InnerText.Split('-');
+                if (parts.Length == 2)
+                {
+                    stockQuote.DayLow = parts[0].Trim();
+                    stockQuote.DayHigh = parts[1].Trim();
+                }
+            }
+
+            // 52 Week Range for YearLow and YearHigh (e.g., "0.80 - 15.27")
+            var weekRangeNode = htmlDocument.DocumentNode.SelectSingleNode("//fin-streamer[@data-field='fiftyTwoWeekRange']");
+            if (weekRangeNode != null)
+            {
+                string[] parts = weekRangeNode.InnerText.Split('-');
+                if (parts.Length == 2)
+                {
+                    stockQuote.YearLow = parts[0].Trim();
+                    stockQuote.YearHigh = parts[1].Trim();
+                }
+            }
+
+            // Market Cap (e.g., "527.589M")
+            var marketCapNode = htmlDocument.DocumentNode.SelectSingleNode("//li[.//span[@title='Market Cap (intraday)']]//fin-streamer");
+            if (marketCapNode != null)
+            {
+                stockQuote.MarketCap = marketCapNode.InnerText.Trim();
+            }
+
+            // Volume
+            var volumeNode = htmlDocument.DocumentNode.SelectSingleNode("//li[.//span[@title='Volume']]//fin-streamer");
+            if (volumeNode != null)
+            {
+                string volumeText = volumeNode.InnerText.Replace(",", "").Trim();
+                stockQuote.Volume = volumeText;
+            }
+
+            // Avg. Volume
+            var avgVolumeNode = htmlDocument.DocumentNode.SelectSingleNode("//li[.//span[@title='Avg. Volume']]//fin-streamer");
+            if (avgVolumeNode != null)
+            {
+                string avgVolumeText = avgVolumeNode.InnerText.Replace(",", "").Trim();
+                stockQuote.AvgVolume = avgVolumeText;
+            }
+
+            // EPS (TTM)
+            var epsNode = htmlDocument.DocumentNode.SelectSingleNode("//li[.//span[@title='EPS (TTM)']]//fin-streamer");
+            if (epsNode != null)
+            {
+                stockQuote.Eps = epsNode.InnerText.Trim();
+            }
+
+            // PE Ratio (TTM)
+            var peNode = htmlDocument.DocumentNode.SelectSingleNode("//li[.//span[@title='PE Ratio (TTM)']]//fin-streamer");
+            if (peNode != null)
+            {
+                string peText = peNode.InnerText.Trim();
+                if (peText == "--" || string.IsNullOrWhiteSpace(peText))
+                {
+                    stockQuote.Pe = null;
+                }
+                else
+                {
+                    stockQuote.Pe = peText;
+                }
+            }
+
+            // Earnings Announcement (Earnings Date)
+            var earningsNode = htmlDocument.DocumentNode.SelectSingleNode("//li[.//span[@title='Earnings Date']]");
+            if (earningsNode != null)
+            {
+                // Attempt to locate a child element with the value
+                var earningsValueNode = earningsNode.SelectSingleNode(".//span[contains(@class, 'value')]");
+                if (earningsValueNode != null)
+                {
+                    stockQuote.EarningsAnnouncement = earningsValueNode.InnerText.Trim();
+                }
+                else
+                {
+                    // Fallback: remove the label text from the whole node
+                    stockQuote.EarningsAnnouncement = earningsNode.InnerText.Replace("Earnings Date", "").Trim();
+                }
+            }
+
+            // PriceAvg50, PriceAvg200, and SharesOutstanding are not present on this page.
+            // They remain at their default values.
+
+            // First call gets the initial HTML (which may contain a cookie form)
+            var response2 = await _httpClient.GetAsync($"quote/{symbol}/key-statistics?lang=en-US&region=US");
+            response.EnsureSuccessStatusCode();
+
+            var html2 = await response.Content.ReadAsStringAsync();
+
+            Dictionary<string, string> formData2;
+
+            try
+            {
+                formData2 = YahooCookieAvoider.ExtractFormData(html);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to extract Yahoo cookie form data");
+                formData2 = null;
+            }
+
+            if (formData2 != null)
+            {
+                try
+                {
+                    string pageContent = await YahooCookieAvoider.SubmitFormAsync(formData2);
+                    html2 = pageContent;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to extract Yahoo cookie form data");
+                }
+            }
+
+            var htmlDocument2 = new HtmlDocument();
+            htmlDocument2.LoadHtml(html2);
+
+
+
+
+
+
+
+            return stockQuote;
+        }
     }
 }
 

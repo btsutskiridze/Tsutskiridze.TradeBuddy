@@ -20,6 +20,9 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
         private static DateTime _lastExecution = DateTime.MinValue;
         private static readonly object _lock = new();
 
+        private const int MaxAnalysisCount = 40; // Daily limit for analyses
+        private const int DelayBetweenAnalyses = 30; // Delay in seconds between analyses
+
         public StockHandler(ILogger<StockHandler> logger, StockAnalysisService stockService, ITelegramBotClient botClient)
         {
             _logger = logger;
@@ -40,12 +43,12 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
                     _lastReset = DateTime.UtcNow.Date;
                 }
 
-                if (_analysisCount >= 20)
+                if (_analysisCount >= MaxAnalysisCount)
                 {
                     isRateLimited = true;
                 }
 
-                if ((DateTime.UtcNow - _lastExecution) < TimeSpan.FromMinutes(5))
+                if ((DateTime.UtcNow - _lastExecution) < TimeSpan.FromSeconds(DelayBetweenAnalyses))
                 {
                     isCoolingDown = true;
                 }
@@ -61,7 +64,7 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
 
             if (isCoolingDown)
             {
-                var nextExecutionIn = TimeSpan.FromMinutes(5) - (DateTime.UtcNow - _lastExecution);
+                var nextExecutionIn = TimeSpan.FromSeconds(DelayBetweenAnalyses) - (DateTime.UtcNow - _lastExecution);
                 string formattedTime = nextExecutionIn.ToString("mm\\:ss");
 
                 await _botClient.SendMessage(
@@ -95,7 +98,7 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
 
                 await _stockService.SendStockAnalysisToTelegram(message.Chat.Id, analysis);
 
-                await _botClient.SendMessage(message.Chat.Id, "Number of analyses left: " + (20 - _analysisCount));
+                await _botClient.SendMessage(message.Chat.Id, "Number of analyses left: " + (MaxAnalysisCount - _analysisCount));
             }
             catch (Exception ex)
             {
