@@ -1,7 +1,7 @@
 ﻿using HtmlAgilityPack;
 using System.Net;
 
-namespace Tsutskiridze.TradeBuddy.Services.News.Yahoo
+namespace Tsutskiridze.TradeBuddy.Services.Yahoo
 {
     public class YahooCookieAvoider
     {

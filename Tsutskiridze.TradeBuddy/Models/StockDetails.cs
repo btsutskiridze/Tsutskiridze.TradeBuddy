@@ -6,6 +6,8 @@ namespace Tsutskiridze.TradeBuddy.Models
 {
     public class StockDetails : StockOverview
     {
+        public string Symbol { get; set; }
+        public string Name { get; set; }
         public StockQuote? Quote { get; set; }
         public List<StockDayPrice>? PrevDays { get; set; }
         public AnnualReport? AnnualReport { get; set; }

@@ -2,19 +2,21 @@
 using Tsutskiridze.TradeBuddy.Models;
 using Tsutskiridze.TradeBuddy.Services.News;
 using Tsutskiridze.TradeBuddy.Services.Stocks;
+using Tsutskiridze.TradeBuddy.Services.Yahoo;
 
 namespace Tsutskiridze.TradeBuddy.Services
 {
     public class StockPromptService
     {
-        private readonly AlphaVantageService _alphaVantage;
         private readonly FMPService _fmp;
         private readonly NewsService _news;
-        public StockPromptService(AlphaVantageService alphaVantage, FMPService fmp, NewsService news)
+        private readonly YahooSraper _yahooSraper;
+
+        public StockPromptService(FMPService fmp, NewsService news, YahooSraper yahooSraper)
         {
-            _alphaVantage = alphaVantage;
             _fmp = fmp;
             _news = news;
+            _yahooSraper = yahooSraper;
         }
 
         public async Task<StockPrompt?> GetStockPrompt(string symbol)
@@ -22,16 +24,16 @@ namespace Tsutskiridze.TradeBuddy.Services
             try
             {
                 var quote = _fmp.GetStockQuote(symbol);
-                var stockOverview = _alphaVantage.GetStockOverview(symbol);
-                var prevDayPrices = _alphaVantage.GetStockPrevDaysClosePrices(symbol, 10);
-                var annualReport = _alphaVantage.GetStockLastAnnualReport(symbol);
+                var stockOverview = _yahooSraper.GetStockOverview(symbol);
+                var prevDayPrices = _yahooSraper.GetStockPrevDaysClosePrices(symbol, 10);
+                var annualReport = _yahooSraper.GetStockLastAnnualReport(symbol);
                 var allNews = _news.GetAllNews(symbol, 3);
 
                 await Task.WhenAll(quote, stockOverview, prevDayPrices, annualReport, allNews);
 
                 var stock = new StockDetails
                 {
-                    Name = stockOverview.Result.Name,
+                    Name = quote.Result.Name,
                     Symbol = symbol,
                     ReturnOnEquityTTM = stockOverview.Result.ReturnOnEquityTTM,
                     PriceToSalesRatioTTM = stockOverview.Result.PriceToSalesRatioTTM,

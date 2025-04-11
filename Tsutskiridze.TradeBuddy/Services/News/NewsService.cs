@@ -4,7 +4,7 @@ using Tsutskiridze.TradeBuddy.DTOs.Google;
 using Tsutskiridze.TradeBuddy.DTOs.Reddit;
 using Tsutskiridze.TradeBuddy.DTOs.Yahoo;
 using Tsutskiridze.TradeBuddy.Helpers;
-using Tsutskiridze.TradeBuddy.Services.News.Yahoo;
+using Tsutskiridze.TradeBuddy.Services.Yahoo;
 
 namespace Tsutskiridze.TradeBuddy.Services.News
 {
