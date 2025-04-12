@@ -1,6 +1,7 @@
 ﻿using Tsutskiridze.TradeBuddy.Services;
 using Tsutskiridze.TradeBuddy.Services.AI;
 using Tsutskiridze.TradeBuddy.Services.News;
+using Tsutskiridze.TradeBuddy.Services.Yahoo.Utilities;
 
 namespace Tsutskiridze.TradeBuddy.Configs
 {
@@ -16,6 +17,8 @@ namespace Tsutskiridze.TradeBuddy.Configs
             services.AddTransient<StockAnalysisService>();
 
             services.AddTransient<IAIService, OpenAiService>();
+
+            services.AddTransient<IYahooCookieBypassService, YahooCookieBypassService>();
 
             return services;
         }

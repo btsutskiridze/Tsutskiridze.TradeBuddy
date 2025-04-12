@@ -4,7 +4,7 @@ using Tsutskiridze.TradeBuddy.DTOs.Google;
 using Tsutskiridze.TradeBuddy.DTOs.Reddit;
 using Tsutskiridze.TradeBuddy.DTOs.Yahoo;
 using Tsutskiridze.TradeBuddy.Helpers;
-using Tsutskiridze.TradeBuddy.Services.Yahoo;
+using Tsutskiridze.TradeBuddy.Services.Yahoo.Scrapers;
 
 namespace Tsutskiridze.TradeBuddy.Services.News
 {
@@ -12,10 +12,10 @@ namespace Tsutskiridze.TradeBuddy.Services.News
     {
         private readonly FinnhubService _finnhub;
         private readonly RedditService _reddit;
-        private readonly YahooSraper _yahooSraper;
+        private readonly YahooNewsScraper _yahooSraper;
         private readonly GoogleScraper _googleScraper;
 
-        public NewsService(FinnhubService finnhub, RedditService reddit, YahooSraper yahooSraper, GoogleScraper googleScraper)
+        public NewsService(FinnhubService finnhub, RedditService reddit, YahooNewsScraper yahooSraper, GoogleScraper googleScraper)
         {
             _finnhub = finnhub;
             _reddit = reddit;

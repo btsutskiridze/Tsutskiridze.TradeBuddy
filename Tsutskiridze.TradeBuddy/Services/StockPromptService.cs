@@ -2,7 +2,7 @@
 using Tsutskiridze.TradeBuddy.Models;
 using Tsutskiridze.TradeBuddy.Services.News;
 using Tsutskiridze.TradeBuddy.Services.Stocks;
-using Tsutskiridze.TradeBuddy.Services.Yahoo;
+using Tsutskiridze.TradeBuddy.Services.Yahoo.Scrapers;
 
 namespace Tsutskiridze.TradeBuddy.Services
 {
@@ -10,9 +10,9 @@ namespace Tsutskiridze.TradeBuddy.Services
     {
         private readonly FMPService _fmp;
         private readonly NewsService _news;
-        private readonly YahooSraper _yahooSraper;
+        private readonly YahooStockScraper _yahooSraper;
 
-        public StockPromptService(FMPService fmp, NewsService news, YahooSraper yahooSraper)
+        public StockPromptService(FMPService fmp, NewsService news, YahooStockScraper yahooSraper)
         {
             _fmp = fmp;
             _news = news;

@@ -1,11 +1,36 @@
 ﻿using HtmlAgilityPack;
 using System.Net;
 
-namespace Tsutskiridze.TradeBuddy.Services.Yahoo
+namespace Tsutskiridze.TradeBuddy.Services.Yahoo.Utilities
 {
-    public class YahooCookieAvoider
+    public class YahooCookieBypassService : IYahooCookieBypassService
     {
-        public static Dictionary<string, string> ExtractFormData(string html)
+        /// <summary>
+        /// Loads the HTML content from the given URL and, if a cookie consent form is found,
+        /// bypasses it by submitting the form.
+        /// </summary>
+        public async Task<string> GetHtmlContentWithCookieBypass(HttpClient client, string url, ILogger logger)
+        {
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            string html = await response.Content.ReadAsStringAsync();
+
+            try
+            {
+                // Try to extract and submit the form.
+                var formData = ExtractFormData(html);
+                html = await SubmitFormAsync(formData);
+                logger.LogDebug("Yahoo cookie bypass successful for URL {Url}", url);
+            }
+            catch (Exception ex)
+            {
+                logger.LogDebug(ex, "No cookie bypass needed or failed for URL {Url}", url);
+            }
+
+            return html;
+        }
+
+        private Dictionary<string, string> ExtractFormData(string html)
         {
             var formData = new Dictionary<string, string>();
             var doc = new HtmlDocument();
@@ -19,7 +44,6 @@ namespace Tsutskiridze.TradeBuddy.Services.Yahoo
             }
 
             // Get the action attribute from the form.
-            // If empty, you'll need to use a default URL (the same page URL)
             var action = form.GetAttributeValue("action", string.Empty);
             formData["__formAction"] = string.IsNullOrEmpty(action) ? "https://uk.yahoo.com/" : action;
 
@@ -38,9 +62,7 @@ namespace Tsutskiridze.TradeBuddy.Services.Yahoo
                 }
             }
 
-            // Check for the Accept button. Since it’s a <button> element,
-            // it might not have been captured in the input collection.
-            // Here we simulate the "click" by adding the "agree" field.
+            // Simulate the "accept" click if necessary.
             if (!formData.ContainsKey("agree"))
             {
                 formData["agree"] = "agree";
@@ -49,14 +71,12 @@ namespace Tsutskiridze.TradeBuddy.Services.Yahoo
             return formData;
         }
 
-
-        public static async Task<string> SubmitFormAsync(Dictionary<string, string> formData)
+        private async Task<string> SubmitFormAsync(Dictionary<string, string> formData)
         {
-            // Retrieve the action URL (remove the temporary key)
-            string actionUrl = "https://consent.yahoo.com/v2/collectConsent?sessionid=" + formData["sessionId"]; //formData["__formAction"];
+            // Retrieve the action URL (here we assume sessionId is part of formData)
+            string actionUrl = "https://consent.yahoo.com/v2/collectConsent?sessionid=" + formData["sessionId"];
             formData.Remove("__formAction");
 
-            // Create an HttpClient with a cookie container (if needed)
             var handler = new HttpClientHandler
             {
                 CookieContainer = new CookieContainer()
@@ -64,21 +84,11 @@ namespace Tsutskiridze.TradeBuddy.Services.Yahoo
 
             using (var client = new HttpClient(handler))
             {
-                // (Optional) Add any needed headers like User-Agent or Referer
                 client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
-
-                // Create the POST content with the form data
                 var content = new FormUrlEncodedContent(formData);
-
-                // Submit the form
                 var response = await client.PostAsync(actionUrl, content);
-
-                // Ensure success or handle errors
                 response.EnsureSuccessStatusCode();
-
-                // Get the response content (which should be the page after accepting cookies)
-                string responseContent = await response.Content.ReadAsStringAsync();
-                return responseContent;
+                return await response.Content.ReadAsStringAsync();
             }
         }
     }
