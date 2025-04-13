@@ -15,6 +15,16 @@ namespace Tsutskiridze.TradeBuddy.Services.Yahoo.Scrapers
         {
         }
 
+        public async Task<bool> StockSymbolExits(string symbol)
+        {
+            var document = await GetHtmlDocumentAsync($"quote/{symbol}");
+
+            var nameNode = document.DocumentNode.SelectSingleNode("//h1[contains(@class, 'yf-xxbei9')]");
+
+            return nameNode != null && !string.IsNullOrWhiteSpace(nameNode.InnerText.Trim());
+        }
+
+
         public async Task<List<StockDayPrice>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
         {
             var document = await GetHtmlDocumentAsync($"quote/{symbol}/history");

@@ -1,8 +1,8 @@
-﻿using System.Text.RegularExpressions;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Helpers;
+using Tsutskiridze.TradeBuddy.Services.Yahoo.Scrapers;
 
 namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
 {
@@ -14,6 +14,7 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
         private readonly ILogger<StockHandler> _logger;
         private readonly StockAnalysisService _stockService;
         private readonly ITelegramBotClient _botClient;
+        private readonly YahooStockScraper _yahooStockScraper;
 
         private static int _analysisCount = 0;
         private static DateTime _lastReset = DateTime.UtcNow.Date;
@@ -23,11 +24,12 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
         private const int MaxAnalysisCount = 40; // Daily limit for analyses
         private const int DelayBetweenAnalyses = 30; // Delay in seconds between analyses
 
-        public StockHandler(ILogger<StockHandler> logger, StockAnalysisService stockService, ITelegramBotClient botClient)
+        public StockHandler(ILogger<StockHandler> logger, StockAnalysisService stockService, ITelegramBotClient botClient, YahooStockScraper yahooStockScraper)
         {
             _logger = logger;
             _stockService = stockService;
             _botClient = botClient;
+            _yahooStockScraper = yahooStockScraper;
         }
 
         public async Task HandleMessage(Message message)
@@ -79,7 +81,7 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
 
                 string stockSymbol = message.Text!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
 
-                if (!IsValidStockSymbol(stockSymbol))
+                if (!(await _yahooStockScraper.StockSymbolExits(stockSymbol)))
                 {
                     await _botClient.SendMessage(message.Chat.Id, "Invalid stock symbol. Please provide a valid stock symbol.");
                     return;
@@ -106,18 +108,5 @@ namespace Tsutskiridze.TradeBuddy.Services.Telegram.MessageHandlers
                 await _botClient.SendMessage(message.Chat.Id, "Failed to analyze stock.");
             }
         }
-
-        public bool IsValidStockSymbol(string symbol)
-        {
-            if (string.IsNullOrWhiteSpace(symbol) || symbol == Command)
-                return false;
-
-            symbol = symbol.Trim().ToUpperInvariant();
-
-            // Basic pattern: 1 to 10 uppercase letters, optionally followed by a dot and a class (e.g., BRK.A)
-            var regex = new Regex(@"^([A-Z]{1,5}(\.[A-Z]{1,2})?|[A-Z]{2,}:[A-Z0-9]+(\s[A-Z])?)$");
-            return regex.IsMatch(symbol);
-        }
-
     }
 }
