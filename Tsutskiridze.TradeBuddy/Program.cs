@@ -4,9 +4,9 @@ using System.Text.Json.Serialization;
 using Tsutskiridze.Bloom.Core;
 using Tsutskiridze.Bloom.Core.Common.Options;
 using Tsutskiridze.Bloom.Core.Configurations;
-using Tsutskiridze.TradeBuddy.Configs;
-using Tsutskiridze.TradeBuddy.Jobs;
-using Tsutskiridze.TradeBuddy.Mappers;
+using Tsutskiridze.TradeBuddy.Application.Jobs;
+using Tsutskiridze.TradeBuddy.Application.Mapping;
+using Tsutskiridze.TradeBuddy.Infrastructure.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 

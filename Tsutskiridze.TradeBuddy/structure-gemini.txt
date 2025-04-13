@@ -1,0 +1,137 @@
+﻿Tsutskiridze.TradeBuddy/
+├── .config/
+│   └── dotnet-tools.json
+├── .vs/                             # IDE specific, ignore
+├── bin/                             # Build output, ignore
+├── obj/                             # Build output, ignore
+│
+├── src/                             # Source code root
+│   ├── Core/                        # Domain Layer (Entities, Enums, Core Interfaces)
+│   │   ├── Entities/
+│   │   │   ├── Stock.cs             # Example: Core Stock concept
+│   │   │   ├── NewsArticle.cs       # Example: Core News concept
+│   │   │   ├── StockAnalysis.cs     # Renamed from StockAnalysisModels?
+│   │   │   ├── StockDetails.cs
+│   │   │   └── UserInteraction.cs   # Example: Representing Telegram interactions?
+│   │   ├── Enums/
+│   │   │   └── RedditSortType.cs
+│   │   ├── Constants/
+│   │   │   ├── Stocks.cs
+│   │   │   └── TelegramCommands.cs
+│   │   └── Exceptions/              # Domain specific exceptions
+│   │       └── StockNotFoundException.cs # Example
+│   │
+│   ├── Application/                 # Application Logic Layer (Use Cases, DTOs, App Interfaces)
+│   │   ├── Interfaces/              # Interfaces implemented by Infrastructure
+│   │   │   ├── AI/
+│   │   │   │   └── IAIService.cs
+│   │   │   ├── Infrastructure/      # General infrastructure interfaces if needed
+│   │   │   │   └── IDateTimeProvider.cs # Example
+│   │   │   ├── News/
+│   │   │   │   └── INewsProvider.cs     # Interface for any news source
+│   │   │   ├── Stocks/
+│   │   │   │   └── IStockDataProvider.cs # Interface for any stock data source
+│   │   │   └── Telegram/
+│   │   │       └── ITelegramService.cs # High-level Telegram interaction
+│   │   ├── DTOs/                    # Data Transfer Objects for API/Service communication
+│   │   │   ├── StockAnalysisRequest.cs
+│   │   │   ├── ExecuteStockAnalysisResponse.cs
+│   │   │   ├── AllNews.cs
+│   │   │   └── StockPromptParams.cs # Renamed? Input for a service/use case
+│   │   ├── Features/                # Optional: Organize by feature/use case
+│   │   │   ├── StockAnalysis/
+│   │   │   │   ├── AnalyzeStockCommandHandler.cs # Example if using CQRS
+│   │   │   │   └── StockAnalysisService.cs # Orchestrates analysis
+│   │   │   ├── NewsAggregation/
+│   │   │   │   └── NewsService.cs     # Aggregates news from providers
+│   │   │   ├── StockData/
+│   │   │   │   └── StockDataService.cs # Orchestrates fetching stock data
+│   │   │   └── TelegramBot/
+│   │   │       ├── Handlers/          # Command handlers
+│   │   │       │   ├── ITelegramMessageHandler.cs
+│   │   │       │   ├── StockHandler.cs
+│   │   │       │   └── UnknownCommandHandler.cs
+│   │   │       ├── TelegramHandlerRegistry.cs
+│   │   │       └── TelegramWebhookService.cs # Processes incoming updates
+│   │   ├── Services/                # Can keep high-level services here if not using Features
+│   │   │   ├── StockPromptService.cs # Moved here
+│   │   ├── Mapping/                 # AutoMapper Profiles
+│   │   │   └── AutoMapperProfile.cs
+│   │   └── BackgroundJobs/          # Background job definitions
+│   │       └── StockBuddyJob.cs
+│   │
+│   ├── Infrastructure/              # External Concerns (API Clients, DB, Scrapers)
+│   │   ├── AI/                      # AI Service Implementations
+│   │   │   ├── Gemini/
+│   │   │   │   └── GeminiService.cs
+│   │   │   └── OpenAI/
+│   │   │       ├── OpenAiService.cs
+│   │   │       ├── JsSchema/        # Moved JsSchema stuff here
+│   │   │       │   ├── OpenaiJSSchemaGenerator.cs
+│   │   │       │   └── OpenaiJsSchemaGeneratorProvider.cs
+│   │   ├── Configuration/           # Configuration loading and binding
+│   │   │   ├── HttpClientConfigs.cs
+│   │   │   ├── ServiceConfigs.cs
+│   │   │   └── TelegramServiceConfigs.cs
+│   │   ├── HttpClients/             # External API Clients
+│   │   │   ├── AlphaVantage/
+│   │   │   │   ├── AlphaVantageClient.cs # Was AlphaVantageService
+│   │   │   │   └── Models/          # Models/DTOs specific to this API response
+│   │   │   │       ├── AnnualReportDto.cs
+│   │   │   │       ├── AnnualReportsResponse.cs
+│   │   │   │       ├── DayPriceResponse.cs
+│   │   │   │       ├── StockDayPriceDto.cs
+│   │   │   │       ├── AnnualReport.cs # If only used for mapping AV response
+│   │   │   │       ├── StockDayPrice.cs # If only used for mapping AV response
+│   │   │   │       └── StockOverview.cs # If only used for mapping AV response
+│   │   │   ├── Finnhub/
+│   │   │   │   ├── FinnhubClient.cs # Was FinnhubService
+│   │   │   │   └── Models/
+│   │   │   │       └── FinnhubNews.cs
+│   │   │   ├── Fmp/
+│   │   │   │   ├── FmpClient.cs     # Was FMPService
+│   │   │   │   └── Models/
+│   │   │   │       └── StockQuoteDto.cs
+│   │   │   │       └── StockQuote.cs # If only used for mapping FMP response
+│   │   │   └── Reddit/
+│   │   │       ├── RedditClient.cs # Was RedditService
+│   │   │       └── Models/
+│   │   │           └── RedditPost.cs
+│   │   ├── Scraping/                # Web Scraping implementations
+│   │   │   ├── Google/
+│   │   │   │   ├── GoogleNewsScraper.cs # Was GoogleScraper
+│   │   │   │   └── Models/
+│   │   │   │       └── GoogleNews.cs
+│   │   │   └── Yahoo/
+│   │   │       ├── YahooNewsScraper.cs
+│   │   │       ├── YahooStockScraper.cs
+│   │   │       ├── Utilities/
+│   │   │       │   ├── IYahooCookieBypassService.cs
+│   │   │       │   └── YahooCookieBypassService.cs
+│   │   │       ├── Models/           # DTOs/Models specific to Yahoo scraping
+│   │   │       │   └── YahooNews.cs
+│   │   │       └── YahooScraperBase.cs
+│   │   ├── Persistence/             # Database access (if any)
+│   │   │   └── Repositories/        # Repository implementations
+│   │   └── Telegram/                # Telegram client implementation
+│   │       └── TelegramService.cs   # Actual client interaction logic
+│   │
+│   └── Api/                         # Presentation Layer (ASP.NET Core)
+│       ├── Controllers/
+│       │   ├── NewsController.cs
+│       │   ├── StockController.cs
+│       │   └── TelegramController.cs # Likely for setting up the webhook
+│       ├── Properties/
+│       │   └── launchSettings.json
+│       ├── appsettings.Development.json
+│       ├── appsettings.json
+│       ├── Dockerfile
+│       ├── Dockerfile.optimized
+│       ├── Dockerfile.prod
+│       ├── GlobalUsings.cs
+│       ├── Program.cs
+│       ├── Tsutskiridze.TradeBuddy.csproj
+│       └── Tsutskiridze.TradeBuddy.http
+│
+├── Tsutskiridze.TradeBuddy.sln    # Solution file at the root
+└── README.md

@@ -1,0 +1,74 @@
+﻿using Tsutskiridze.TradeBuddy.Application.Dtos;
+using Tsutskiridze.TradeBuddy.Application.Dtos.Finnhub;
+using Tsutskiridze.TradeBuddy.Application.Dtos.Google;
+using Tsutskiridze.TradeBuddy.Application.Dtos.Reddit;
+using Tsutskiridze.TradeBuddy.Application.Dtos.Yahoo;
+using Tsutskiridze.TradeBuddy.Core.Enums;
+using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.Finnhub;
+using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.Reddit;
+using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Google;
+using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo;
+
+namespace Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation
+{
+    public class NewsService
+    {
+        private readonly FinnhubClient _finnhub;
+        private readonly RedditClient _reddit;
+        private readonly YahooNewsScraper _yahooSraper;
+        private readonly GoogleScraper _googleScraper;
+
+        public NewsService(FinnhubClient finnhub, RedditClient reddit, YahooNewsScraper yahooSraper, GoogleScraper googleScraper)
+        {
+            _finnhub = finnhub;
+            _reddit = reddit;
+            _yahooSraper = yahooSraper;
+            _googleScraper = googleScraper;
+        }
+
+        public async Task<AllNews?> GetAllNews(string symbol, int? limit = null)
+        {
+            var googleTask = GetGoogleNews(symbol, limit);
+            var redditTask = GetRedditNews(symbol, RedditSortType.New, limit);
+            var yahooTask = GetYahooNews(symbol, limit);
+            var finnhubTask = GetFinnhubNews(symbol, DateTime.UtcNow.AddDays(-7), DateTime.UtcNow, limit);
+
+            await Task.WhenAll(googleTask, redditTask, yahooTask, finnhubTask);
+
+            if (googleTask.Result == null && redditTask.Result == null &&
+                yahooTask.Result == null && finnhubTask.Result == null)
+            {
+                throw new Exception("Failed to get news");
+            }
+
+            return new AllNews
+            {
+                Google = googleTask.Result,
+                Reddit = redditTask.Result,
+                Yahoo = yahooTask.Result,
+                Finnhub = finnhubTask.Result
+            };
+        }
+
+
+        public async Task<List<GoogleNews>?> GetGoogleNews(string symbol, int? limit = null)
+        {
+            return await _googleScraper.GetNewsAsync(symbol, limit);
+        }
+
+        public async Task<List<RedditPost>?> GetRedditNews(string symbol, RedditSortType sort, int? limit = null)
+        {
+            return await _reddit.GetRedditPosts(symbol, sort, limit);
+        }
+
+        public async Task<List<YahooNews>?> GetYahooNews(string symbol, int? limit = null)
+        {
+            return await _yahooSraper.GetNewsAsync(symbol, limit);
+        }
+
+        public async Task<List<FinnhubNews>?> GetFinnhubNews(string symbol, DateTime from, DateTime to, int? limit = null)
+        {
+            return await _finnhub.GetCompanyNewsAsync(symbol, from, to, limit);
+        }
+    }
+}
