@@ -25,7 +25,7 @@ RUN dotnet restore "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.cspr
 WORKDIR /src/Tsutskiridze.TradeBuddy.API
 
 # 4. Copy the local tool manifest (so dotnet tool restore can find it)
-COPY [".config/dotnet-tools.json", ".config/"]
+COPY ["Tsutskiridze.TradeBuddy.API.config/dotnet-tools.json", ".config/"]
 
 # 5. Restore the local tools (includes Microsoft.Playwright.CLI if that's in your manifest)
 RUN dotnet tool restore
