@@ -1,0 +1,6 @@
+@Tsutskiridze.TradeBuddy.API_HostAddress = http://localhost:5004
+
+GET {{Tsutskiridze.TradeBuddy.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
