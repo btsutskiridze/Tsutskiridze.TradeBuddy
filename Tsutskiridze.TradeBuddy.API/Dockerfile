@@ -16,7 +16,7 @@ WORKDIR /src
 COPY ["Tsutskiridze.TradeBuddy.API.csproj", "Tsutskiridze.TradeBuddy.API/"]
 RUN dotnet restore "./Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj"
 
-WORKDIR "/src/Tsutskiridze.TradeBuddy"
+WORKDIR "/src/Tsutskiridze.TradeBuddy.API"
 COPY . .
 
 RUN dotnet build "./Tsutskiridze.TradeBuddy.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
@@ -32,4 +32,4 @@ WORKDIR /app
 
 COPY --from=publish /app/publish .
 USER app
-ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.dll"]
+ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.API.dll"]

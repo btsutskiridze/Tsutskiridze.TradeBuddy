@@ -19,7 +19,7 @@ COPY ["Tsutskiridze.TradeBuddy.API.csproj", "Tsutskiridze.TradeBuddy.API/"]
 # 3. Restore NuGet packages. If csproj is unchanged, this layer remains cached.
 RUN dotnet restore "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj"
 
-WORKDIR /src/Tsutskiridze.TradeBuddy
+WORKDIR /src/Tsutskiridze.TradeBuddy.API
 
 # 4. Copy the local tool manifest (so dotnet tool restore can find it)
 COPY [".config/dotnet-tools.json", ".config/"]
