@@ -28,13 +28,13 @@ WORKDIR /src/Tsutskiridze.TradeBuddy.API
 COPY ["Tsutskiridze.TradeBuddy.API/.config/dotnet-tools.json", ".config/"]
 
 # 5. Restore the local tools (includes Microsoft.Playwright.CLI if that's in your manifest)
-RUN dotnet tool restore
+RUN dotnet tool restore 
 
 # 6. Now copy the rest of your source code
 COPY . .
 
 # 7. Build your project. This ensures Microsoft.Playwright assemblies are present.
-RUN dotnet build --no-restore -c Release
+RUN dotnet build --no-restore -c Release Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj
 
 # 8. Now that the app is built (and Microsoft.Playwright is compiled), install Chromium
 #    using the local Playwright CLI. Then copy the browser cache out.
