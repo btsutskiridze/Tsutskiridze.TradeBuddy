@@ -15,17 +15,15 @@ RUN apt-get update && apt-get install -y wget unzip \
 # 2. Copy project files for NuGet restore.
 #    (If you have .sln or multiple csproj, copy those too.)
 COPY ["Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj", "Tsutskiridze.TradeBuddy.API/"]
-COPY ["Tsutskiridze.TradeBuddy.Application/", "Tsutskiridze.TradeBuddy.Application/"]
-COPY ["Tsutskiridze.TradeBuddy.Infrastructure/", "Tsutskiridze.TradeBuddy.Infrastructure/"]
-COPY ["Tsutskiridze.TradeBuddy.Core/", "Tsutskiridze.TradeBuddy.Core/"]
+COPY ["Tsutskiridze.TradeBuddy.Application/Tsutskiridze.TradeBuddy.Application.csproj", "Tsutskiridze.TradeBuddy.Application/"]
+COPY ["Tsutskiridze.TradeBuddy.Infrastructure/Tsutskiridze.TradeBuddy.Infrastructure.csproj", "Tsutskiridze.TradeBuddy.Infrastructure/"]
+COPY ["Tsutskiridze.TradeBuddy.Core/Tsutskiridze.TradeBuddy.Core.csproj", "Tsutskiridze.TradeBuddy.Core/"]
 
 # 3. Restore NuGet packages. If csproj is unchanged, this layer remains cached.
 RUN dotnet restore "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj"
 
-WORKDIR /src/Tsutskiridze.TradeBuddy.API
-
 # 4. Copy the local tool manifest (so dotnet tool restore can find it)
-COPY ["Tsutskiridze.TradeBuddy.API/.config/dotnet-tools.json", ".config/"]
+COPY ["Tsutskiridze.TradeBuddy.API/.config/dotnet-tools.json", "Tsutskiridze.TradeBuddy.API/.config/"]
 
 # 5. Restore the local tools (includes Microsoft.Playwright.CLI if that's in your manifest)
 RUN dotnet tool restore 
@@ -34,7 +32,7 @@ RUN dotnet tool restore
 COPY . .
 
 # 7. Build your project. This ensures Microsoft.Playwright assemblies are present.
-RUN dotnet build --no-restore -c Release Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj
+RUN dotnet build "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" --no-restore -c Release
 
 # 8. Now that the app is built (and Microsoft.Playwright is compiled), install Chromium
 #    using the local Playwright CLI. Then copy the browser cache out.
@@ -42,7 +40,7 @@ RUN dotnet tool run playwright install chromium
 RUN mkdir -p /app && cp -R /root/.cache/ms-playwright /app/ms-playwright
 
 # 9. Finally, publish your application
-RUN dotnet publish -c Release -o /app/build
+RUN dotnet publish "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" -c Release -o /app/build
 
 # --------------------------------------------
 # Stage 2: Runtime
@@ -79,4 +77,3 @@ USER app
 # Expose the desired port and set the application entrypoint
 EXPOSE 80
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.API.dll"]
-        
