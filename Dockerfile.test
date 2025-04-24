@@ -31,16 +31,13 @@ RUN dotnet tool install --global Microsoft.Playwright.CLI
 # 5. Copy the rest of your source code
 COPY . .
 
-# 6. Build your project
-RUN dotnet build "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" --no-restore -c Release -o /app/build
-
 # 7. Now that the app is built, install Chromium using the global Playwright CLI
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
 RUN playwright install chromium --with-deps
 
 # 8. Publish your application
-RUN dotnet publish "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" -c Release -o /app/build
-
+RUN dotnet publish "Tsutskiridze.TradeBuddy.API.csproj" \
+    --no-restore -c Release -o /app/build
 # --------------------------------------------
 # Stage 2: Runtime
 # --------------------------------------------
