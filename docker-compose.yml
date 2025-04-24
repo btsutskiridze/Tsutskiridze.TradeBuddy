@@ -7,8 +7,6 @@ services:
     container_name: tradebuddy-api
     env_file:
       - .env                                   # put your connection-strings, API keys here
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
     ports:
       - "80:80"                                # maps host port 80 -> container port 80
     volumes:
