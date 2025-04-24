@@ -39,8 +39,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
 # Create non-root user first
-RUN groupadd -g 1001 app && \
-    useradd -m -u 1001 -g app app
+RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
+    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
+
 
 # Set PATH so Playwright CLI (installed globally later) is found
 ENV PATH="/root/.dotnet/tools:${PATH}"
