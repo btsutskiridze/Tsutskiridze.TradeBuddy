@@ -31,6 +31,8 @@ RUN dotnet tool install --global Microsoft.Playwright.CLI
 # 5. Copy the rest of your source code
 COPY . .
 
+RUN mkdir -p /app && cp -R /root/.cache/ms-playwright /app/ms-playwright
+
 # 7. Now that the app is built, install Chromium using the global Playwright CLI
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
 RUN playwright install chromium --with-deps
