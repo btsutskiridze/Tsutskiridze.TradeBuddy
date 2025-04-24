@@ -2,8 +2,8 @@
 services:
   app:
     build:
-      context: .
-      dockerfile: Tsutskiridze.TradeBuddy.API/Dockerfile.optimized
+      context: ./Tsutskiridze.TradeBuddy.API
+      dockerfile: Dockerfile.optimized
       target: runtime
     ports:
       - "80:80"
@@ -15,8 +15,8 @@ services:
 
   playwright-tests:
     build:
-      context: .
-      dockerfile: Tsutskiridze.TradeBuddy.API/Dockerfile.optimized
+      context: ./Tsutskiridze.TradeBuddy.API
+      dockerfile: Dockerfile.optimized
       target: build
     command: ["playwright", "test"]
     env_file:
