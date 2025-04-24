@@ -46,16 +46,16 @@ RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
 # Set PATH so Playwright CLI (installed globally later) is found
 ENV PATH="/root/.dotnet/tools:${PATH}"
 
-# Install OS dependencies for ASP.NET Core Runtime AND Playwright/Chromium
-# Added ca-certificates as they are often needed for downloads/https connections
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
+    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
+
+# Install OS-level dependencies required by Chromium and Playwright at runtime
+RUN apt-get update && apt-get install -y \
     libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
     libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
     libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 \
-    libxfixes3 libxkbcommon0 wget unzip ca-certificates \
-    # Install dotnet-sdk-8.0 temporarily ONLY to get the 'dotnet tool install' command
-    dotnet-sdk-8.0 \
-    && rm -rf /var/lib/apt/lists/*
+    libxfixes3 libxkbcommon0 wget unzip && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install Playwright CLI globally (needs SDK temporarily)
 RUN dotnet tool install --global Microsoft.Playwright.CLI
