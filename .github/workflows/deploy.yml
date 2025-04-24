@@ -9,14 +9,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    environment: Development
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Setup SSH agent
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Deploy to Droplet
         run: |
@@ -25,14 +26,44 @@ jobs:
               ${{ secrets.SSH_USER }}@${{ secrets.DROPLET_HOST }} << 'EOF'
             
             # ensure project dir exists
-            mkdir -p ~/stockbuddy
-            cd ~/stockbuddy
+            mkdir -p ~/StockBuddy.Api
+            cd ~/StockBuddy.Api
 
             # (Re-)write env file from GitHub Secrets
             cat > .env <<EOL
             ASPNETCORE_ENVIRONMENT=${{ secrets.ASPNETCORE_ENVIRONMENT }}
-            ConnectionStrings__Default=${{ secrets.ConnectionStrings__Default }}
+            ASPNETCORE_URLS=${{ secrets.ASPNETCORE_URLS }}
+            ALLOWEDHOSTS=${{ secrets.ALLOWEDHOSTS }}
+            SMTP__USER=${{ secrets.SMTP__USER }}
+            SMTP__PASSWORD=${{ secrets.SMTP__PASSWORD }}
+            SMTP__HOST=${{ secrets.SMTP__HOST }}
+            SMTP__PORT=${{ secrets.SMTP__PORT }}
+            SMTP__ENABLESSL=${{ secrets.SMTP__ENABLESSL }}
+            CORS__ALLOWEDORIGINS=${{ secrets.CORS__ALLOWEDORIGINS }}
+            ALPHAVANTAGE__APIKEY=${{ secrets.ALPHAVANTAGE__APIKEY }}
+            ALPHAVANTAGE__BASEURL=${{ secrets.ALPHAVANTAGE__BASEURL }}
+            FMP__APIKEY=${{ secrets.FMP__APIKEY }}
+            FMP__BASEURL=${{ secrets.FMP__BASEURL }}
+            REDDIT__SEARCHENDPOINT=${{ secrets.REDDIT__SEARCHENDPOINT }}
+            REDDIT__AUTHENDPOINT=${{ secrets.REDDIT__AUTHENDPOINT }}
+            REDDIT__CLIENTID=${{ secrets.REDDIT__CLIENTID }}
+            REDDIT__CLIENTSECRET=${{ secrets.REDDIT__CLIENTSECRET }}
+            REDDIT__USERNAME=${{ secrets.REDDIT__USERNAME }}
+            REDDIT__PASSWORD=${{ secrets.REDDIT__PASSWORD }}
+            REDDIT__USERAGENT=${{ secrets.REDDIT__USERAGENT }}
+            FINNHUB__BASEURL=${{ secrets.FINNHUB__BASEURL }}
+            FINNHUB__APIKEY=${{ secrets.FINNHUB__APIKEY }}
+            YAHOO__BASEURL=${{ secrets.YAHOO__BASEURL }}
+            AI__GEMINI__APIKEY=${{ secrets.AI__GEMINI__APIKEY }}
+            AI__GEMINI__MODELID=${{ secrets.AI__GEMINI__MODELID }}
+            AI__OPENAI__APIKEY=${{ secrets.AI__OPENAI__APIKEY }}
+            AI__OPENAI__MODELID=${{ secrets.AI__OPENAI__MODELID }}
+            TELEGRAM__BOTTOKEN=${{ secrets.TELEGRAM__BOTTOKEN }}
+            TELEGRAM__GROUPCHATID=${{ secrets.TELEGRAM__GROUPCHATID }}
+            TELEGRAM__PERSONALCHATID=${{ secrets.TELEGRAM__PERSONALCHATID }}
             EOL
+
+            chmod 600 .env
 
             # Clone or update source
             if [ -d .git ]; then
