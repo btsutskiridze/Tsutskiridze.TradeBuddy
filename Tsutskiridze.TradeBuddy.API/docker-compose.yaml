@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.optimized
+      target: runtime
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    volumes:
+      - playwright_cache:/app/ms-playwright
+      - ./logs:/app/logs
+
+  playwright-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.optimized
+      target: build
+    command: ["playwright", "test"]
+    env_file:
+      - .env
+    volumes:
+      - playwright_cache:/app/ms-playwright
+    depends_on:
+      - app
+
+volumes:
+  playwright_cache:
