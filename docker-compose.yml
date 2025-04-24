@@ -1,30 +1,24 @@
-
 services:
-  app:
+  api:
     build:
-      context: ./Tsutskiridze.TradeBuddy.API
-      dockerfile: Dockerfile.optimized
+      context: ./Tsutskiridze.TradeBuddy.API    # where your Dockerfile lives
+      dockerfile: Dockerfile                   # your existing multi-stage Dockerfile
       target: runtime
+    container_name: tradebuddy-api
+    env_file:
+      - .env                                   # put your connection-strings, API keys here
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
     ports:
-      - "80:80"
-    env_file:
-      - .env
+      - "80:80"                                # maps host port 80 -> container port 80
     volumes:
-      - playwright_cache:/app/ms-playwright
-      - ./logs:/app/logs
-
-  playwright-tests:
-    build:
-      context: ./Tsutskiridze.TradeBuddy.API
-      dockerfile: Dockerfile.optimized
-      target: build
-    command: ["playwright", "test"]
-    env_file:
-      - .env
-    volumes:
-      - playwright_cache:/app/ms-playwright
-    depends_on:
-      - app
+      - ./logs:/app/logs                      # scrape or runtime logs to host for inspection
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]  
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
-  playwright_cache:
+  playwright_cache:                           # if you still need Playwright cache shared
