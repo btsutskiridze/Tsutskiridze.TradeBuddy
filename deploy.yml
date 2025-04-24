@@ -1,0 +1,47 @@
+name: CI/CD -> DigitalOcean Droplet
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to Droplet
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              -p ${{ secrets.SSH_PORT }} \
+              ${{ secrets.SSH_USER }}@${{ secrets.DROPLET_HOST }} << 'EOF'
+            
+            # ensure project dir exists
+            mkdir -p ~/stockbuddy
+            cd ~/stockbuddy
+
+            # (Re-)write env file from GitHub Secrets
+            cat > .env <<EOL
+            ASPNETCORE_ENVIRONMENT=${{ secrets.ASPNETCORE_ENVIRONMENT }}
+            ConnectionStrings__Default=${{ secrets.ConnectionStrings__Default }}
+            EOL
+
+            # Clone or update source
+            if [ -d .git ]; then
+              git pull origin main
+            else
+              git clone https://github.com/${{ github.repository }} . 
+            fi
+
+            # Build & launch
+            docker compose pull || true
+            docker compose up -d --build
+          EOF
