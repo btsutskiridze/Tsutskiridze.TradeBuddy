@@ -1,51 +1,53 @@
 # --------------------------------------------
-# Stage 1: Build - Focused on .NET Compilation/Publish
+# Stage 1: Build
 # --------------------------------------------
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# 1. Install minimal build-stage dependencies (if any specific are needed beyond SDK)
-#    (wget/unzip removed as Playwright install is moved)
-# RUN apt-get update && apt-get install -y --no-install-recommends <any_build_specific_tools_here> \
-#     && rm -rf /var/lib/apt/lists/*
+# Set PATH so that dotnet global tools (like Playwright CLI) are available
+ENV PATH="/root/.dotnet/tools:${PATH}"
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
+
+# 1. Install build-stage dependencies BEFORE copying project files
+#    so this layer is re-used as long as apt packages don't change.
+RUN apt-get update \
+ && apt-get install -y wget unzip \
+ && rm -rf /var/lib/apt/lists/*
+
 
 # 2. Copy project files for NuGet restore.
+#    (If you have .sln or multiple csproj, copy those too.)
 COPY ["Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj", "Tsutskiridze.TradeBuddy.API/"]
 COPY ["Tsutskiridze.TradeBuddy.Application/Tsutskiridze.TradeBuddy.Application.csproj", "Tsutskiridze.TradeBuddy.Application/"]
 COPY ["Tsutskiridze.TradeBuddy.Infrastructure/Tsutskiridze.TradeBuddy.Infrastructure.csproj", "Tsutskiridze.TradeBuddy.Infrastructure/"]
 COPY ["Tsutskiridze.TradeBuddy.Core/Tsutskiridze.TradeBuddy.Core.csproj", "Tsutskiridze.TradeBuddy.Core/"]
-# If using a .sln file, copying it first is often better:
-# COPY Tsutskiridze.TradeBuddy.sln ./
-# RUN dotnet restore Tsutskiridze.TradeBuddy.sln
 
-# 3. Restore NuGet packages.
+# 3. Restore NuGet packages. If csproj is unchanged, this layer remains cached.
 RUN dotnet restore "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj"
 
-# 4. Copy the rest of your source code
+# 4. Install Playwright globally
+RUN dotnet tool install --global Microsoft.Playwright.CLI
+
+# 5. Copy the rest of your source code
 COPY . .
 
-# 5. Build your project (Build is implicitly done by Publish)
-#    We can often skip the separate build step if publish does it.
-# RUN dotnet build "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" --no-restore -c Release
+# 6. Build your project
+RUN dotnet build "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" --no-restore -c Release -o /app/build
 
-# 6. Publish your application
-WORKDIR /src/Tsutskiridze.TradeBuddy.API
-RUN dotnet publish "Tsutskiridze.TradeBuddy.API.csproj" -c Release -o /app/publish --no-restore --self-contained false --no-build # Assuming you are not using self-contained
+# 7. Now that the app is built, install Chromium using the global Playwright CLI
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
+RUN playwright install chromium --with-deps
+
+# 8. Publish your application
+RUN dotnet publish "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" -c Release -o /app/build
 
 # --------------------------------------------
-# Stage 2: Runtime - Prepares final environment + Installs Playwright
+# Stage 2: Runtime
 # --------------------------------------------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
-# Create non-root user first
-RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
-    if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
-
-
-# Set PATH so Playwright CLI (installed globally later) is found
-ENV PATH="/root/.dotnet/tools:${PATH}"
-
+# Create a non-root user and group if it doesn't exist
 RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
     if ! id -u app > /dev/null 2>&1; then useradd -m -u 1001 -g app app; fi
 
@@ -57,27 +59,16 @@ RUN apt-get update && apt-get install -y \
     libxfixes3 libxkbcommon0 wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Playwright CLI globally (needs SDK temporarily)
-RUN dotnet tool install --global Microsoft.Playwright.CLI
+# Copy the published app from build image
+COPY --from=build /app/build .
+# Copy Playwright's cached browser binaries
+COPY --from=build /app/ms-playwright /app/ms-playwright
 
-# Define where Playwright should store browsers BEFORE installing
-# Using /app/ms-playwright to keep it within the app dir and manage permissions easily
-ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
-
-# Install the specific browser needed by Playwright
-# This will download Chromium to /app/ms-playwright
-RUN playwright install chromium --with-deps
-
-# Remove the temporarily installed SDK to keep the image lean
-RUN apt-get purge -y --auto-remove dotnet-sdk-8.0 && \
-    rm -rf /var/lib/apt/lists/*
-
-# Copy the published app from the build stage
-COPY --from=build /app/publish .
-
-# Set ownership for the app directory (including the downloaded browser)
-# Do this AFTER copying app and installing browser
+# Adjust permissions for the non-root user
 RUN chown -R app:app /app
+
+# Let Playwright know where the browsers live
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
 
 # Switch to non-root user
 USER app
