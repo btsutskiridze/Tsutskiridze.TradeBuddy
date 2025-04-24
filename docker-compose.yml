@@ -1,22 +1,17 @@
+version: "3.9"
+
 services:
-  api:
+  tradebuddy:
     build:
-      context: ./Tsutskiridze.TradeBuddy.API    # where your Dockerfile lives
-      dockerfile: Dockerfile                   # your existing multi-stage Dockerfile
-      target: runtime
-    container_name: tradebuddy-api
-    env_file:
-      - .env                                   # put your connection-strings, API keys here
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "80:80"                                # maps host port 80 -> container port 80
+      - "80:80"
+    env_file:
+      - .env
     volumes:
-      - ./logs:/app/logs                      # scrape or runtime logs to host for inspection
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]  
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      - playwright_cache:/app/ms-playwright
+      - ./logs:/app/logs
 
 volumes:
-  playwright_cache:                           # if you still need Playwright cache shared
+  playwright_cache:
