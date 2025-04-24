@@ -1,7 +1,7 @@
 services:
   tradebuddy:
     build:
-      context: ./Tsutskiridze.TradeBuddy.API
+      context: .
       dockerfile: Dockerfile.optimized
     ports:
       - "80:80"
