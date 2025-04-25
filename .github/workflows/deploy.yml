@@ -73,4 +73,7 @@ jobs:
             # Build & launch
             docker compose pull || true
             docker compose up -d --build
+
+            docker system prune -af --volumes
+          
           EOF
