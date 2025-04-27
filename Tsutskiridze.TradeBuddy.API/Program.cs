@@ -41,6 +41,7 @@ builder.Services.AddBloom((opt) =>
 });
 
 builder.Services.AddAppOptions(builder.Configuration)
+    .AddDbConfiguration(builder.Configuration)
     .AddInfrastructureServices()
     .AddApplicationServices();
 
