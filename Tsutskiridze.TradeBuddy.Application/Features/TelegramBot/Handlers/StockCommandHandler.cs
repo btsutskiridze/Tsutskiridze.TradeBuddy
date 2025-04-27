@@ -83,6 +83,14 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 
                 string stockSymbol = message.Text!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
 
+                if (string.IsNullOrWhiteSpace(stockSymbol))
+                {
+                    await _botClient.SendMessage(message.Chat.Id, "Please provide a stock symbol e.g: /stock AAPL");
+                    return;
+                }
+
+
+
                 if (!await _yahooStockScraper.StockSymbolExits(stockSymbol))
                 {
                     await _botClient.SendMessage(message.Chat.Id, "Invalid stock symbol. Please provide a valid stock symbol.");
