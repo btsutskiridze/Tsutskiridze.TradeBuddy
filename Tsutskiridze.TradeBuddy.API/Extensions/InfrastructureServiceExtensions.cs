@@ -60,8 +60,18 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
             });
             services.AddTransient<IAIService, OpenAIService>();
 
+            services.AddHostedServices();
+
             return services;
         }
+
+        private static IServiceCollection AddHostedServices(this IServiceCollection services)
+        {
+            services.AddHostedService<TelegramCommandsRegisterService>();
+            return services;
+        }
+
+
 
         private static readonly Action<IServiceProvider, HttpClient> configureYahooClient = (serviceProvider, client) =>
         {

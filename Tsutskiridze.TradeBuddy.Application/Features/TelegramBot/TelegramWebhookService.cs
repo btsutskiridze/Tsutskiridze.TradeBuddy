@@ -59,7 +59,15 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
 
         private static string GetCommand(string messageText)
         {
-            return messageText.Split(' ', StringSplitOptions.RemoveEmptyEntries).First();
+            var parts = messageText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            string command = parts[0].TrimStart('/').ToLowerInvariant();
+            return command;
         }
 
     }

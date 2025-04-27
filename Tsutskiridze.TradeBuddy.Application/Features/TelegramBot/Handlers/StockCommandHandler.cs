@@ -12,7 +12,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
     public class StockCommandHandler : ITelegramCommandHandler
     {
         public string Command => TelegramCommands.Stock;
-
+        public string Description => "Get stock analysis for a given stock symbol. Usage: /stock <symbol>";
         private readonly ILogger<StockCommandHandler> _logger;
         private readonly StockAnalysisService _stockService;
         private readonly ITelegramBotClient _botClient;

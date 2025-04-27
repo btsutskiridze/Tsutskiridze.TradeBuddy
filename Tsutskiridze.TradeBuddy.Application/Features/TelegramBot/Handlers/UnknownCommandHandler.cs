@@ -8,6 +8,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
     public class UnknownCommandHandler : ITelegramCommandHandler
     {
         public string Command => TelegramCommands.Unknown;
+        public string Description => "Unknown command. Please use /help to see the list of available commands.";
 
         private readonly ITelegramBotClient _botClient;
         private readonly ILogger<UnknownCommandHandler> _logger;

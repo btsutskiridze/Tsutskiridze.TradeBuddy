@@ -16,6 +16,11 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
         {
             return _handlers.TryGetValue(command, out var handler) ? handler : _handlers[TelegramCommands.Unknown];
         }
+
+        public IEnumerable<ITelegramCommandHandler> GetHandlers()
+        {
+            return _handlers.Values;
+        }
     }
 
 }
