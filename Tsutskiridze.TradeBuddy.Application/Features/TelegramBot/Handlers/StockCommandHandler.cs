@@ -89,8 +89,6 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                     return;
                 }
 
-
-
                 if (!await _yahooStockScraper.StockSymbolExits(stockSymbol))
                 {
                     await _botClient.SendMessage(message.Chat.Id, "Invalid stock symbol. Please provide a valid stock symbol.");
