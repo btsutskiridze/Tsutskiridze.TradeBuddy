@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
+using Tsutskiridze.TradeBuddy.Core.Constants;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Telegram
 {
@@ -29,7 +30,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Telegram
 
             var commands = _registry
                 .GetHandlers()
-                .Where(h => !string.IsNullOrWhiteSpace(h.Command))
+                .Where(h => !string.IsNullOrWhiteSpace(h.Command) && h.Command != TelegramCommands.Unknown)
                 .Select(h => new BotCommand
                 {
                     Command = h.Command!,
