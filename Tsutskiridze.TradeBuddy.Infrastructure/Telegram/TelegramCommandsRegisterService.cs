@@ -26,8 +26,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Telegram
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-
-
             var commands = _registry
                 .GetHandlers()
                 .Where(h => !string.IsNullOrWhiteSpace(h.Command) && h.Command != TelegramCommands.Unknown)
@@ -37,6 +35,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Telegram
                     Description = h.Description
                 })
                 .ToArray();
+
+            await _bot.DeleteMyCommands(cancellationToken: cancellationToken);
 
             await _bot.SetMyCommands(commands, cancellationToken: cancellationToken);
 
