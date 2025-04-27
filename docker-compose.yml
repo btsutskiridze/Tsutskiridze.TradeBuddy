@@ -2,7 +2,7 @@ services:
   tradebuddy:
     build:
       context: .
-      dockerfile: Dockerfile.optimized
+      dockerfile: Dockerfile
     ports:
       - "5000:80"
     env_file:
