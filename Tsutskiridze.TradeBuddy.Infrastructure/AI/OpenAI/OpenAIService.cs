@@ -27,6 +27,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI
             ChatCompletionOptions options = new()
             {
                 MaxOutputTokenCount = 500,
+                Temperature = 0.2,
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                     jsonSchemaFormatName: "stock_analysis",
                     jsonSchema: BinaryData.FromString(_openaiJsSchemaGenerator.FromType(typeof(T))),
