@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using OpenAI.Chat;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.AI;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.AI.OpenAI;
@@ -27,7 +27,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI
             ChatCompletionOptions options = new()
             {
                 MaxOutputTokenCount = 500,
-                Temperature = 0.2,
+                Temperature = (float?)0.2,
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                     jsonSchemaFormatName: "stock_analysis",
                     jsonSchema: BinaryData.FromString(_openaiJsSchemaGenerator.FromType(typeof(T))),
