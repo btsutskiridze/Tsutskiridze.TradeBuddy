@@ -3,9 +3,11 @@ using OpenAI.Chat;
 using Telegram.Bot;
 using Tsutskiridze.TradeBuddy.Application.Interfaces;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.AI;
+using Tsutskiridze.TradeBuddy.Application.Interfaces.AI.OpenAI;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.News;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI;
+using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema;
 using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.AlphaVantage;
 using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.FinancialModelingPreg;
 using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.Finnhub;
@@ -58,6 +60,7 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
                 var options = serviceProvider.GetRequiredService<IOptions<OpenAIOptions>>().Value;
                 return new ChatClient(options.ModelID, options.ApiKey);
             });
+            services.AddSingleton<IOpenaiJsSchemaGenerator, OpenaiJsSchemaGenerator>();
             services.AddTransient<IAIService, OpenAIService>();
 
             services.AddHostedServices();

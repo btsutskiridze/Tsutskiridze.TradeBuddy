@@ -22,6 +22,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Jobs
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             //await _stockAnalysis.ExecuteStockAnalysisMultiple(Stocks.Favorites, TimeSpan.FromMinutes(5));
+            //await _stockAnalysis.ExecuteStockAnalysis("MVST");
+
             //var quote = await _yahooSraper.GetStockQuote("AAPL");
             //var overview = await _yahooSraper.GetStockOverview("AAPL");
             //var anual = await _yahooSraper.GetStockLastAnnualReport("AAPL");
