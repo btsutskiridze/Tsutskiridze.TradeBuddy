@@ -23,8 +23,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         private static DateTime _lastExecution = DateTime.MinValue;
         private static readonly object _lock = new();
 
-        private const int MaxAnalysisCount = 40; // Daily limit for analyses
-        private const int DelayBetweenAnalyses = 30; // Delay in seconds between analyses
+        private const int MaxAnalysisCount = 100; // Daily limit for analyses
+        private const int DelayBetweenAnalyses = 5; // Delay in seconds between analyses
 
         public StockCommandHandler(ILogger<StockCommandHandler> logger, StockAnalysisService stockService, ITelegramBotClient botClient, IYahooStockScraper yahooStockScraper)
         {
@@ -62,7 +62,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             {
                 await _botClient.SendMessage(
                     message.Chat.Id,
-                    "You've reached the daily limit of 20 stock analyses. Please try again tomorrow.");
+                    $"You've reached the daily limit of {MaxAnalysisCount} stock analyses. Please try again tomorrow.");
                 return;
             }
 
