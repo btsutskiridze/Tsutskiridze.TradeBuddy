@@ -2,7 +2,8 @@
 {
     public class TelegramCommands
     {
-        public const string Stock = "stock";
+        public const string Quote = "quote";
+        public const string Alert = "alert";
         public const string Unknown = "unknown";
     }
 }
