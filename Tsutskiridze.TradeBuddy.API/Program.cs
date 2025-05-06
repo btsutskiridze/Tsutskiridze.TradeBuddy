@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Tsutskiridze.Bloom.Core;
@@ -7,6 +8,7 @@ using Tsutskiridze.Bloom.Core.Configurations;
 using Tsutskiridze.TradeBuddy.API.Extensions;
 using Tsutskiridze.TradeBuddy.Application.Jobs;
 using Tsutskiridze.TradeBuddy.Infrastructure.Extensions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +55,12 @@ builder.Services.ConfigureBloomServices((s) =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 app.UseBloom();
 

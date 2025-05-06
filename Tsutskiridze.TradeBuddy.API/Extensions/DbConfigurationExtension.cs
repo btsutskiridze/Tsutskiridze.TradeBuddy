@@ -15,6 +15,7 @@ public static class DbConfigurationExtension
                     pg.EnableRetryOnFailure();
                     pg.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                 })
+        .UseSnakeCaseNamingConvention()
         );
 
         return services;
