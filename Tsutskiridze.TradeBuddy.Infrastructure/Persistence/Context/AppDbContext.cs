@@ -10,7 +10,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Context
         }
         public DbSet<Chat> Chats { get; set; }
         public DbSet<Stock> Stocks { get; set; }
-        public DbSet<PriceAlert> ChatPriceAlerts { get; set; }
+        public DbSet<PriceAlert> PriceAlerts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
