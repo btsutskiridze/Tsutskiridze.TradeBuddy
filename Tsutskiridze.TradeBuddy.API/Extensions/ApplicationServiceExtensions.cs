@@ -2,7 +2,6 @@
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers;
-using Tsutskiridze.TradeBuddy.Application.Jobs;
 using Tsutskiridze.TradeBuddy.Application.Mapping;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Extensions
@@ -24,8 +23,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Extensions
             services.AddTransient<TelegramWebhookService>();
 
             services.AddAutoMapper(typeof(AutoMapperProfile));
-
-            services.AddHostedService<TestJob>();
 
             return services;
         }
