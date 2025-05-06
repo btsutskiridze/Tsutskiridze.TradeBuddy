@@ -9,11 +9,11 @@ using Tsutskiridze.TradeBuddy.Core.Constants;
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 {
 
-    public class StockCommandHandler : ITelegramCommandHandler
+    public class QuoteCommandHandler : ITelegramCommandHandler
     {
-        public string Command => TelegramCommands.Stock;
+        public string Command => TelegramCommands.Quote;
         public string Description => "Get stock analysis for a given stock symbol. Usage: /stock <symbol>";
-        private readonly ILogger<StockCommandHandler> _logger;
+        private readonly ILogger<QuoteCommandHandler> _logger;
         private readonly StockAnalysisService _stockService;
         private readonly ITelegramBotClient _botClient;
         private readonly IYahooStockScraper _yahooStockScraper;
@@ -26,7 +26,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         private const int MaxAnalysisCount = 100; // Daily limit for analyses
         private const int DelayBetweenAnalyses = 5; // Delay in seconds between analyses
 
-        public StockCommandHandler(ILogger<StockCommandHandler> logger, StockAnalysisService stockService, ITelegramBotClient botClient, IYahooStockScraper yahooStockScraper)
+        public QuoteCommandHandler(ILogger<QuoteCommandHandler> logger, StockAnalysisService stockService, ITelegramBotClient botClient, IYahooStockScraper yahooStockScraper)
         {
             _logger = logger;
             _stockService = stockService;

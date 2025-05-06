@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Context;
 
 public static class DbConfigurationExtension
@@ -20,6 +21,8 @@ public static class DbConfigurationExtension
             )
             .UseSnakeCaseNamingConvention()
         );
+
+        services.AddTransient<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
 
         return services;
     }

@@ -8,6 +8,7 @@
 
 
   <ItemGroup>
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.*" />
 	  <PackageReference Include="AutoMapper" Version="14.0.0" />
 	  <PackageReference Include="Google.Protobuf" Version="3.30.2" />
 	  <PackageReference Include="Telegram.Bot" Version="22.4.4" />

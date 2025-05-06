@@ -16,7 +16,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Extensions
 
             services.AddTransient<StockAnalysisService>();
 
-            services.AddTransient<ITelegramCommandHandler, StockCommandHandler>();
+            services.AddTransient<ITelegramCommandHandler, QuoteCommandHandler>();
             services.AddTransient<ITelegramCommandHandler, UnknownCommandHandler>();
 
             services.AddSingleton<ITelegramHandlerRegistry, TelegramHandlerRegistry>();
