@@ -15,6 +15,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Google;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo.Utilities;
+using Tsutskiridze.TradeBuddy.Infrastructure.Services;
 using Tsutskiridze.TradeBuddy.Infrastructure.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.API.Extensions
@@ -71,9 +72,10 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
         private static IServiceCollection AddHostedServices(this IServiceCollection services)
         {
             services.AddHostedService<TelegramCommandsRegisterService>();
+            services.AddHostedService<StockPriceWebSocketListener>();
+
             return services;
         }
-
 
 
         private static readonly Action<IServiceProvider, HttpClient> configureYahooClient = (serviceProvider, client) =>

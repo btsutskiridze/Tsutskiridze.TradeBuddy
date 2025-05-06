@@ -24,58 +24,46 @@ namespace MarketData {
     static MarketDataReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFtYXJrZXRfZGF0YS5wcm90bxILbWFya2V0X2RhdGEiLAoMRGVjaW1hbFZh",
-            "bHVlEg0KBXVuaXRzGAEgASgDEg0KBW5hbm9zGAIgASgPIvwICgtQcmljaW5n",
-            "RGF0YRIKCgJpZBgBIAEoCRIoCgVwcmljZRgCIAEoCzIZLm1hcmtldF9kYXRh",
-            "LkRlY2ltYWxWYWx1ZRIMCgR0aW1lGAMgASgSEhAKCGN1cnJlbmN5GAQgASgJ",
-            "EhAKCGV4Y2hhbmdlGAUgASgJEioKCnF1b3RlX3R5cGUYBiABKA4yFi5tYXJr",
-            "ZXRfZGF0YS5RdW90ZVR5cGUSLgoMbWFya2V0X2hvdXJzGAcgASgOMhgubWFy",
-            "a2V0X2RhdGEuTWFya2V0SG91cnMSMQoOY2hhbmdlX3BlcmNlbnQYCCABKAsy",
-            "GS5tYXJrZXRfZGF0YS5EZWNpbWFsVmFsdWUSEgoKZGF5X3ZvbHVtZRgJIAEo",
-            "EhIrCghkYXlfaGlnaBgKIAEoCzIZLm1hcmtldF9kYXRhLkRlY2ltYWxWYWx1",
-            "ZRIqCgdkYXlfbG93GAsgASgLMhkubWFya2V0X2RhdGEuRGVjaW1hbFZhbHVl",
-            "EikKBmNoYW5nZRgMIAEoCzIZLm1hcmtldF9kYXRhLkRlY2ltYWxWYWx1ZRIS",
-            "CgpzaG9ydF9uYW1lGA0gASgJEhMKC2V4cGlyZV9kYXRlGA4gASgSEi0KCm9w",
-            "ZW5fcHJpY2UYDyABKAsyGS5tYXJrZXRfZGF0YS5EZWNpbWFsVmFsdWUSMQoO",
-            "cHJldmlvdXNfY2xvc2UYECABKAsyGS5tYXJrZXRfZGF0YS5EZWNpbWFsVmFs",
-            "dWUSLwoMc3RyaWtlX3ByaWNlGBEgASgLMhkubWFya2V0X2RhdGEuRGVjaW1h",
-            "bFZhbHVlEhkKEXVuZGVybHlpbmdfc3ltYm9sGBIgASgJEhUKDW9wZW5faW50",
-            "ZXJlc3QYEyABKBISLQoMb3B0aW9uc190eXBlGBQgASgOMhcubWFya2V0X2Rh",
-            "dGEuT3B0aW9uVHlwZRITCgttaW5pX29wdGlvbhgVIAEoCBIRCglsYXN0X3Np",
-            "emUYFiABKBISJgoDYmlkGBcgASgLMhkubWFya2V0X2RhdGEuRGVjaW1hbFZh",
-            "bHVlEhAKCGJpZF9zaXplGBggASgSEiYKA2FzaxgZIAEoCzIZLm1hcmtldF9k",
-            "YXRhLkRlY2ltYWxWYWx1ZRIQCghhc2tfc2l6ZRgaIAEoEhISCgpwcmljZV9o",
-            "aW50GBsgASgSEhAKCHZvbF8yNGhyGBwgASgSEhoKEnZvbF9hbGxfY3VycmVu",
-            "Y2llcxgdIAEoEhIUCgxmcm9tY3VycmVuY3kYHiABKAkSEwoLbGFzdF9tYXJr",
-            "ZXQYHyABKAkSNQoSY2lyY3VsYXRpbmdfc3VwcGx5GCAgASgLMhkubWFya2V0",
-            "X2RhdGEuRGVjaW1hbFZhbHVlEiwKCW1hcmtldGNhcBghIAEoCzIZLm1hcmtl",
-            "dF9kYXRhLkRlY2ltYWxWYWx1ZRISCgpjb21wb25lbnRzGCIgASgJEg8KB2lu",
-            "ZGljZXMYIyADKAkSEAoIY21jX3JhbmsYJCABKBISHAoUdW5kZXJseWluZ19z",
-            "aG9ydG5hbWUYJSABKAkitwIKClN0YXRpY0RhdGESCgoCaWQYASABKAkSFAoM",
-            "ZGlzcGxheV9uYW1lGAIgASgJEhAKCGN1cnJlbmN5GAMgASgJEhAKCGV4Y2hh",
-            "bmdlGAQgASgJEi0KCm9wZW5fcHJpY2UYBSABKAsyGS5tYXJrZXRfZGF0YS5E",
-            "ZWNpbWFsVmFsdWUSLgoLY2xvc2VfcHJpY2UYBiABKAsyGS5tYXJrZXRfZGF0",
-            "YS5EZWNpbWFsVmFsdWUSPwocZmlmdHl0d29fd2tfbW92aW5nX2F2Z19wcmlj",
-            "ZRgHIAEoCzIZLm1hcmtldF9kYXRhLkRlY2ltYWxWYWx1ZRJDCiB0d29odW5k",
-            "cmVkX2RhdGFfbW92aW5nX2F2Z19wcmljZRgIIAEoCzIZLm1hcmtldF9kYXRh",
-            "LkRlY2ltYWxWYWx1ZSI9CgtQcmljZVVwZGF0ZRIuCgxwcmljaW5nX2RhdGEY",
-            "ASABKAsyGC5tYXJrZXRfZGF0YS5QcmljaW5nRGF0YSI8CgxTdGF0aWNVcGRh",
-            "dGUSLAoLc3RhdGljX2RhdGEYASABKAsyFy5tYXJrZXRfZGF0YS5TdGF0aWNE",
-            "YXRhKq0CCglRdW90ZVR5cGUSCAoETk9ORRAAEg0KCUFMVFNZTUJPTBAFEg0K",
-            "CUhFQVJUQkVBVBAHEgoKBkVRVUlUWRAIEgkKBUlOREVYEAkSDgoKTVVUVUFM",
-            "RlVORBALEg8KC01PTkVZTUFSS0VUEAwSCgoGT1BUSU9OEA0SDAoIQ1VSUkVO",
-            "Q1kQDhILCgdXQVJSQU5UEA8SCAoEQk9ORBAREgoKBkZVVFVSRRASEgcKA0VU",
-            "RhAUEg0KCUNPTU1PRElUWRAXEgwKCEVDTlFVT1RFEBwSEgoOQ1JZUFRPQ1VS",
-            "UkVOQ1kQKRINCglJTkRJQ0FUT1IQKhILCgdDVUxfSURYECsSDwoLQ1VMX1NV",
-            "Ql9JRFgQLBINCglDVUxfQVNTRVQQLRINCghJTkRVU1RSWRDoBypzCgtNYXJr",
-            "ZXRIb3VycxIOCgpQUkVfTUFSS0VUEAASEgoOUkVHVUxBUl9NQVJLRVQQARIP",
-            "CgtQT1NUX01BUktFVBACEhkKFUVYVEVOREVEX0hPVVJTX01BUktFVBADEhQK",
-            "EE9WRVJOSUdIVF9NQVJLRVQQBCofCgpPcHRpb25UeXBlEggKBENBTEwQABIH",
-            "CgNQVVQQAWIGcHJvdG8z"));
+            "ChFtYXJrZXRfZGF0YS5wcm90bxILbWFya2V0X2RhdGEiuAYKC1ByaWNpbmdE",
+            "YXRhEgoKAmlkGAEgASgJEg0KBXByaWNlGAIgASgCEgwKBHRpbWUYAyABKBIS",
+            "EAoIY3VycmVuY3kYBCABKAkSEAoIZXhjaGFuZ2UYBSABKAkSKgoKcXVvdGVf",
+            "dHlwZRgGIAEoDjIWLm1hcmtldF9kYXRhLlF1b3RlVHlwZRIuCgxtYXJrZXRf",
+            "aG91cnMYByABKA4yGC5tYXJrZXRfZGF0YS5NYXJrZXRIb3VycxIWCg5jaGFu",
+            "Z2VfcGVyY2VudBgIIAEoAhISCgpkYXlfdm9sdW1lGAkgASgSEhAKCGRheV9o",
+            "aWdoGAogASgCEg8KB2RheV9sb3cYCyABKAISDgoGY2hhbmdlGAwgASgCEhIK",
+            "CnNob3J0X25hbWUYDSABKAkSEwoLZXhwaXJlX2RhdGUYDiABKBISEgoKb3Bl",
+            "bl9wcmljZRgPIAEoAhIWCg5wcmV2aW91c19jbG9zZRgQIAEoAhIUCgxzdHJp",
+            "a2VfcHJpY2UYESABKAISGQoRdW5kZXJseWluZ19zeW1ib2wYEiABKAkSFQoN",
+            "b3Blbl9pbnRlcmVzdBgTIAEoEhItCgxvcHRpb25zX3R5cGUYFCABKA4yFy5t",
+            "YXJrZXRfZGF0YS5PcHRpb25UeXBlEhMKC21pbmlfb3B0aW9uGBUgASgIEhEK",
+            "CWxhc3Rfc2l6ZRgWIAEoEhILCgNiaWQYFyABKAISEAoIYmlkX3NpemUYGCAB",
+            "KBISCwoDYXNrGBkgASgCEhAKCGFza19zaXplGBogASgSEhIKCnByaWNlX2hp",
+            "bnQYGyABKBISEAoIdm9sXzI0aHIYHCABKBISGgoSdm9sX2FsbF9jdXJyZW5j",
+            "aWVzGB0gASgSEhQKDGZyb21jdXJyZW5jeRgeIAEoCRITCgtsYXN0X21hcmtl",
+            "dBgfIAEoCRIaChJjaXJjdWxhdGluZ19zdXBwbHkYICABKAISEQoJbWFya2V0",
+            "Y2FwGCEgASgCEhIKCmNvbXBvbmVudHMYIiABKAkSDwoHaW5kaWNlcxgjIAMo",
+            "CRIQCghjbWNfcmFuaxgkIAEoEhIcChR1bmRlcmx5aW5nX3Nob3J0bmFtZRgl",
+            "IAEoCSLLAQoKU3RhdGljRGF0YRIKCgJpZBgBIAEoCRIUCgxkaXNwbGF5X25h",
+            "bWUYAiABKAkSEAoIY3VycmVuY3kYAyABKAkSEAoIZXhjaGFuZ2UYBCABKAkS",
+            "EgoKb3Blbl9wcmljZRgFIAEoAhITCgtjbG9zZV9wcmljZRgGIAEoAhIkChxm",
+            "aWZ0eXR3b193a19tb3ZpbmdfYXZnX3ByaWNlGAcgASgCEigKIHR3b2h1bmRy",
+            "ZWRfZGF0YV9tb3ZpbmdfYXZnX3ByaWNlGAggASgCIj0KC1ByaWNlVXBkYXRl",
+            "Ei4KDHByaWNpbmdfZGF0YRgBIAEoCzIYLm1hcmtldF9kYXRhLlByaWNpbmdE",
+            "YXRhIjwKDFN0YXRpY1VwZGF0ZRIsCgtzdGF0aWNfZGF0YRgBIAEoCzIXLm1h",
+            "cmtldF9kYXRhLlN0YXRpY0RhdGEqrQIKCVF1b3RlVHlwZRIICgROT05FEAAS",
+            "DQoJQUxUU1lNQk9MEAUSDQoJSEVBUlRCRUFUEAcSCgoGRVFVSVRZEAgSCQoF",
+            "SU5ERVgQCRIOCgpNVVRVQUxGVU5EEAsSDwoLTU9ORVlNQVJLRVQQDBIKCgZP",
+            "UFRJT04QDRIMCghDVVJSRU5DWRAOEgsKB1dBUlJBTlQQDxIICgRCT05EEBES",
+            "CgoGRlVUVVJFEBISBwoDRVRGEBQSDQoJQ09NTU9ESVRZEBcSDAoIRUNOUVVP",
+            "VEUQHBISCg5DUllQVE9DVVJSRU5DWRApEg0KCUlORElDQVRPUhAqEgsKB0NV",
+            "TF9JRFgQKxIPCgtDVUxfU1VCX0lEWBAsEg0KCUNVTF9BU1NFVBAtEg0KCElO",
+            "RFVTVFJZEOgHKnMKC01hcmtldEhvdXJzEg4KClBSRV9NQVJLRVQQABISCg5S",
+            "RUdVTEFSX01BUktFVBABEg8KC1BPU1RfTUFSS0VUEAISGQoVRVhURU5ERURf",
+            "SE9VUlNfTUFSS0VUEAMSFAoQT1ZFUk5JR0hUX01BUktFVBAEKh8KCk9wdGlv",
+            "blR5cGUSCAoEQ0FMTBAAEgcKA1BVVBABYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::MarketData.QuoteType), typeof(global::MarketData.MarketHours), typeof(global::MarketData.OptionType), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MarketData.DecimalValue), global::MarketData.DecimalValue.Parser, new[]{ "Units", "Nanos" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::MarketData.PricingData), global::MarketData.PricingData.Parser, new[]{ "Id", "Price", "Time", "Currency", "Exchange", "QuoteType", "MarketHours", "ChangePercent", "DayVolume", "DayHigh", "DayLow", "Change", "ShortName", "ExpireDate", "OpenPrice", "PreviousClose", "StrikePrice", "UnderlyingSymbol", "OpenInterest", "OptionsType", "MiniOption", "LastSize", "Bid", "BidSize", "Ask", "AskSize", "PriceHint", "Vol24Hr", "VolAllCurrencies", "Fromcurrency", "LastMarket", "CirculatingSupply", "Marketcap", "Components", "Indices", "CmcRank", "UnderlyingShortname" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::MarketData.StaticData), global::MarketData.StaticData.Parser, new[]{ "Id", "DisplayName", "Currency", "Exchange", "OpenPrice", "ClosePrice", "FiftytwoWkMovingAvgPrice", "TwohundredDataMovingAvgPrice" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::MarketData.PriceUpdate), global::MarketData.PriceUpdate.Parser, new[]{ "PricingData" }, null, null, null, null),
@@ -130,251 +118,6 @@ namespace MarketData {
 
   #region Messages
   /// <summary>
-  /// Example: 12345.6789 -> { units = 12345, nanos = 678900000 }
-  /// </summary>
-  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class DecimalValue : pb::IMessage<DecimalValue>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
-    private static readonly pb::MessageParser<DecimalValue> _parser = new pb::MessageParser<DecimalValue>(() => new DecimalValue());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<DecimalValue> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::MarketData.MarketDataReflection.Descriptor.MessageTypes[0]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DecimalValue() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DecimalValue(DecimalValue other) : this() {
-      units_ = other.units_;
-      nanos_ = other.nanos_;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DecimalValue Clone() {
-      return new DecimalValue(this);
-    }
-
-    /// <summary>Field number for the "units" field.</summary>
-    public const int UnitsFieldNumber = 1;
-    private long units_;
-    /// <summary>
-    /// Whole units part of the amount
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public long Units {
-      get { return units_; }
-      set {
-        units_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "nanos" field.</summary>
-    public const int NanosFieldNumber = 2;
-    private int nanos_;
-    /// <summary>
-    /// Nano units of the amount (10^-9)
-    /// Must be same sign as units
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int Nanos {
-      get { return nanos_; }
-      set {
-        nanos_ = value;
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as DecimalValue);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(DecimalValue other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (Units != other.Units) return false;
-      if (Nanos != other.Nanos) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (Units != 0L) hash ^= Units.GetHashCode();
-      if (Nanos != 0) hash ^= Nanos.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
-      if (Units != 0L) {
-        output.WriteRawTag(8);
-        output.WriteInt64(Units);
-      }
-      if (Nanos != 0) {
-        output.WriteRawTag(21);
-        output.WriteSFixed32(Nanos);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Units != 0L) {
-        output.WriteRawTag(8);
-        output.WriteInt64(Units);
-      }
-      if (Nanos != 0) {
-        output.WriteRawTag(21);
-        output.WriteSFixed32(Nanos);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize() {
-      int size = 0;
-      if (Units != 0L) {
-        size += 1 + pb::CodedOutputStream.ComputeInt64Size(Units);
-      }
-      if (Nanos != 0) {
-        size += 1 + 4;
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(DecimalValue other) {
-      if (other == null) {
-        return;
-      }
-      if (other.Units != 0L) {
-        Units = other.Units;
-      }
-      if (other.Nanos != 0) {
-        Nanos = other.Nanos;
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 8: {
-            Units = input.ReadInt64();
-            break;
-          }
-          case 21: {
-            Nanos = input.ReadSFixed32();
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-      if ((tag & 7) == 4) {
-        // Abort on any end group tag.
-        return;
-      }
-      switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            Units = input.ReadInt64();
-            break;
-          }
-          case 21: {
-            Nanos = input.ReadSFixed32();
-            break;
-          }
-        }
-      }
-    }
-    #endif
-
-  }
-
-  /// <summary>
   /// ===== MESSAGES =====
   /// </summary>
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
@@ -392,7 +135,7 @@ namespace MarketData {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MarketData.MarketDataReflection.Descriptor.MessageTypes[1]; }
+      get { return global::MarketData.MarketDataReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -413,38 +156,38 @@ namespace MarketData {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PricingData(PricingData other) : this() {
       id_ = other.id_;
-      price_ = other.price_ != null ? other.price_.Clone() : null;
+      price_ = other.price_;
       time_ = other.time_;
       currency_ = other.currency_;
       exchange_ = other.exchange_;
       quoteType_ = other.quoteType_;
       marketHours_ = other.marketHours_;
-      changePercent_ = other.changePercent_ != null ? other.changePercent_.Clone() : null;
+      changePercent_ = other.changePercent_;
       dayVolume_ = other.dayVolume_;
-      dayHigh_ = other.dayHigh_ != null ? other.dayHigh_.Clone() : null;
-      dayLow_ = other.dayLow_ != null ? other.dayLow_.Clone() : null;
-      change_ = other.change_ != null ? other.change_.Clone() : null;
+      dayHigh_ = other.dayHigh_;
+      dayLow_ = other.dayLow_;
+      change_ = other.change_;
       shortName_ = other.shortName_;
       expireDate_ = other.expireDate_;
-      openPrice_ = other.openPrice_ != null ? other.openPrice_.Clone() : null;
-      previousClose_ = other.previousClose_ != null ? other.previousClose_.Clone() : null;
-      strikePrice_ = other.strikePrice_ != null ? other.strikePrice_.Clone() : null;
+      openPrice_ = other.openPrice_;
+      previousClose_ = other.previousClose_;
+      strikePrice_ = other.strikePrice_;
       underlyingSymbol_ = other.underlyingSymbol_;
       openInterest_ = other.openInterest_;
       optionsType_ = other.optionsType_;
       miniOption_ = other.miniOption_;
       lastSize_ = other.lastSize_;
-      bid_ = other.bid_ != null ? other.bid_.Clone() : null;
+      bid_ = other.bid_;
       bidSize_ = other.bidSize_;
-      ask_ = other.ask_ != null ? other.ask_.Clone() : null;
+      ask_ = other.ask_;
       askSize_ = other.askSize_;
       priceHint_ = other.priceHint_;
       vol24Hr_ = other.vol24Hr_;
       volAllCurrencies_ = other.volAllCurrencies_;
       fromcurrency_ = other.fromcurrency_;
       lastMarket_ = other.lastMarket_;
-      circulatingSupply_ = other.circulatingSupply_ != null ? other.circulatingSupply_.Clone() : null;
-      marketcap_ = other.marketcap_ != null ? other.marketcap_.Clone() : null;
+      circulatingSupply_ = other.circulatingSupply_;
+      marketcap_ = other.marketcap_;
       components_ = other.components_;
       indices_ = other.indices_.Clone();
       cmcRank_ = other.cmcRank_;
@@ -472,10 +215,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "price" field.</summary>
     public const int PriceFieldNumber = 2;
-    private global::MarketData.DecimalValue price_;
+    private float price_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue Price {
+    public float Price {
       get { return price_; }
       set {
         price_ = value;
@@ -544,10 +287,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "change_percent" field.</summary>
     public const int ChangePercentFieldNumber = 8;
-    private global::MarketData.DecimalValue changePercent_;
+    private float changePercent_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue ChangePercent {
+    public float ChangePercent {
       get { return changePercent_; }
       set {
         changePercent_ = value;
@@ -568,10 +311,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "day_high" field.</summary>
     public const int DayHighFieldNumber = 10;
-    private global::MarketData.DecimalValue dayHigh_;
+    private float dayHigh_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue DayHigh {
+    public float DayHigh {
       get { return dayHigh_; }
       set {
         dayHigh_ = value;
@@ -580,10 +323,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "day_low" field.</summary>
     public const int DayLowFieldNumber = 11;
-    private global::MarketData.DecimalValue dayLow_;
+    private float dayLow_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue DayLow {
+    public float DayLow {
       get { return dayLow_; }
       set {
         dayLow_ = value;
@@ -592,10 +335,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "change" field.</summary>
     public const int ChangeFieldNumber = 12;
-    private global::MarketData.DecimalValue change_;
+    private float change_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue Change {
+    public float Change {
       get { return change_; }
       set {
         change_ = value;
@@ -628,10 +371,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "open_price" field.</summary>
     public const int OpenPriceFieldNumber = 15;
-    private global::MarketData.DecimalValue openPrice_;
+    private float openPrice_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue OpenPrice {
+    public float OpenPrice {
       get { return openPrice_; }
       set {
         openPrice_ = value;
@@ -640,10 +383,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "previous_close" field.</summary>
     public const int PreviousCloseFieldNumber = 16;
-    private global::MarketData.DecimalValue previousClose_;
+    private float previousClose_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue PreviousClose {
+    public float PreviousClose {
       get { return previousClose_; }
       set {
         previousClose_ = value;
@@ -652,10 +395,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "strike_price" field.</summary>
     public const int StrikePriceFieldNumber = 17;
-    private global::MarketData.DecimalValue strikePrice_;
+    private float strikePrice_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue StrikePrice {
+    public float StrikePrice {
       get { return strikePrice_; }
       set {
         strikePrice_ = value;
@@ -724,10 +467,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "bid" field.</summary>
     public const int BidFieldNumber = 23;
-    private global::MarketData.DecimalValue bid_;
+    private float bid_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue Bid {
+    public float Bid {
       get { return bid_; }
       set {
         bid_ = value;
@@ -748,10 +491,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "ask" field.</summary>
     public const int AskFieldNumber = 25;
-    private global::MarketData.DecimalValue ask_;
+    private float ask_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue Ask {
+    public float Ask {
       get { return ask_; }
       set {
         ask_ = value;
@@ -832,10 +575,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "circulating_supply" field.</summary>
     public const int CirculatingSupplyFieldNumber = 32;
-    private global::MarketData.DecimalValue circulatingSupply_;
+    private float circulatingSupply_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue CirculatingSupply {
+    public float CirculatingSupply {
       get { return circulatingSupply_; }
       set {
         circulatingSupply_ = value;
@@ -844,10 +587,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "marketcap" field.</summary>
     public const int MarketcapFieldNumber = 33;
-    private global::MarketData.DecimalValue marketcap_;
+    private float marketcap_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue Marketcap {
+    public float Marketcap {
       get { return marketcap_; }
       set {
         marketcap_ = value;
@@ -917,38 +660,38 @@ namespace MarketData {
         return true;
       }
       if (Id != other.Id) return false;
-      if (!object.Equals(Price, other.Price)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Price, other.Price)) return false;
       if (Time != other.Time) return false;
       if (Currency != other.Currency) return false;
       if (Exchange != other.Exchange) return false;
       if (QuoteType != other.QuoteType) return false;
       if (MarketHours != other.MarketHours) return false;
-      if (!object.Equals(ChangePercent, other.ChangePercent)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(ChangePercent, other.ChangePercent)) return false;
       if (DayVolume != other.DayVolume) return false;
-      if (!object.Equals(DayHigh, other.DayHigh)) return false;
-      if (!object.Equals(DayLow, other.DayLow)) return false;
-      if (!object.Equals(Change, other.Change)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(DayHigh, other.DayHigh)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(DayLow, other.DayLow)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Change, other.Change)) return false;
       if (ShortName != other.ShortName) return false;
       if (ExpireDate != other.ExpireDate) return false;
-      if (!object.Equals(OpenPrice, other.OpenPrice)) return false;
-      if (!object.Equals(PreviousClose, other.PreviousClose)) return false;
-      if (!object.Equals(StrikePrice, other.StrikePrice)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(OpenPrice, other.OpenPrice)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(PreviousClose, other.PreviousClose)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(StrikePrice, other.StrikePrice)) return false;
       if (UnderlyingSymbol != other.UnderlyingSymbol) return false;
       if (OpenInterest != other.OpenInterest) return false;
       if (OptionsType != other.OptionsType) return false;
       if (MiniOption != other.MiniOption) return false;
       if (LastSize != other.LastSize) return false;
-      if (!object.Equals(Bid, other.Bid)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Bid, other.Bid)) return false;
       if (BidSize != other.BidSize) return false;
-      if (!object.Equals(Ask, other.Ask)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Ask, other.Ask)) return false;
       if (AskSize != other.AskSize) return false;
       if (PriceHint != other.PriceHint) return false;
       if (Vol24Hr != other.Vol24Hr) return false;
       if (VolAllCurrencies != other.VolAllCurrencies) return false;
       if (Fromcurrency != other.Fromcurrency) return false;
       if (LastMarket != other.LastMarket) return false;
-      if (!object.Equals(CirculatingSupply, other.CirculatingSupply)) return false;
-      if (!object.Equals(Marketcap, other.Marketcap)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(CirculatingSupply, other.CirculatingSupply)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Marketcap, other.Marketcap)) return false;
       if (Components != other.Components) return false;
       if(!indices_.Equals(other.indices_)) return false;
       if (CmcRank != other.CmcRank) return false;
@@ -961,38 +704,38 @@ namespace MarketData {
     public override int GetHashCode() {
       int hash = 1;
       if (Id.Length != 0) hash ^= Id.GetHashCode();
-      if (price_ != null) hash ^= Price.GetHashCode();
+      if (Price != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Price);
       if (Time != 0L) hash ^= Time.GetHashCode();
       if (Currency.Length != 0) hash ^= Currency.GetHashCode();
       if (Exchange.Length != 0) hash ^= Exchange.GetHashCode();
       if (QuoteType != global::MarketData.QuoteType.None) hash ^= QuoteType.GetHashCode();
       if (MarketHours != global::MarketData.MarketHours.PreMarket) hash ^= MarketHours.GetHashCode();
-      if (changePercent_ != null) hash ^= ChangePercent.GetHashCode();
+      if (ChangePercent != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(ChangePercent);
       if (DayVolume != 0L) hash ^= DayVolume.GetHashCode();
-      if (dayHigh_ != null) hash ^= DayHigh.GetHashCode();
-      if (dayLow_ != null) hash ^= DayLow.GetHashCode();
-      if (change_ != null) hash ^= Change.GetHashCode();
+      if (DayHigh != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(DayHigh);
+      if (DayLow != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(DayLow);
+      if (Change != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Change);
       if (ShortName.Length != 0) hash ^= ShortName.GetHashCode();
       if (ExpireDate != 0L) hash ^= ExpireDate.GetHashCode();
-      if (openPrice_ != null) hash ^= OpenPrice.GetHashCode();
-      if (previousClose_ != null) hash ^= PreviousClose.GetHashCode();
-      if (strikePrice_ != null) hash ^= StrikePrice.GetHashCode();
+      if (OpenPrice != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(OpenPrice);
+      if (PreviousClose != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PreviousClose);
+      if (StrikePrice != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(StrikePrice);
       if (UnderlyingSymbol.Length != 0) hash ^= UnderlyingSymbol.GetHashCode();
       if (OpenInterest != 0L) hash ^= OpenInterest.GetHashCode();
       if (OptionsType != global::MarketData.OptionType.Call) hash ^= OptionsType.GetHashCode();
       if (MiniOption != false) hash ^= MiniOption.GetHashCode();
       if (LastSize != 0L) hash ^= LastSize.GetHashCode();
-      if (bid_ != null) hash ^= Bid.GetHashCode();
+      if (Bid != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Bid);
       if (BidSize != 0L) hash ^= BidSize.GetHashCode();
-      if (ask_ != null) hash ^= Ask.GetHashCode();
+      if (Ask != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Ask);
       if (AskSize != 0L) hash ^= AskSize.GetHashCode();
       if (PriceHint != 0L) hash ^= PriceHint.GetHashCode();
       if (Vol24Hr != 0L) hash ^= Vol24Hr.GetHashCode();
       if (VolAllCurrencies != 0L) hash ^= VolAllCurrencies.GetHashCode();
       if (Fromcurrency.Length != 0) hash ^= Fromcurrency.GetHashCode();
       if (LastMarket.Length != 0) hash ^= LastMarket.GetHashCode();
-      if (circulatingSupply_ != null) hash ^= CirculatingSupply.GetHashCode();
-      if (marketcap_ != null) hash ^= Marketcap.GetHashCode();
+      if (CirculatingSupply != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(CirculatingSupply);
+      if (Marketcap != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Marketcap);
       if (Components.Length != 0) hash ^= Components.GetHashCode();
       hash ^= indices_.GetHashCode();
       if (CmcRank != 0L) hash ^= CmcRank.GetHashCode();
@@ -1019,9 +762,9 @@ namespace MarketData {
         output.WriteRawTag(10);
         output.WriteString(Id);
       }
-      if (price_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Price);
+      if (Price != 0F) {
+        output.WriteRawTag(21);
+        output.WriteFloat(Price);
       }
       if (Time != 0L) {
         output.WriteRawTag(24);
@@ -1043,25 +786,25 @@ namespace MarketData {
         output.WriteRawTag(56);
         output.WriteEnum((int) MarketHours);
       }
-      if (changePercent_ != null) {
-        output.WriteRawTag(66);
-        output.WriteMessage(ChangePercent);
+      if (ChangePercent != 0F) {
+        output.WriteRawTag(69);
+        output.WriteFloat(ChangePercent);
       }
       if (DayVolume != 0L) {
         output.WriteRawTag(72);
         output.WriteSInt64(DayVolume);
       }
-      if (dayHigh_ != null) {
-        output.WriteRawTag(82);
-        output.WriteMessage(DayHigh);
+      if (DayHigh != 0F) {
+        output.WriteRawTag(85);
+        output.WriteFloat(DayHigh);
       }
-      if (dayLow_ != null) {
-        output.WriteRawTag(90);
-        output.WriteMessage(DayLow);
+      if (DayLow != 0F) {
+        output.WriteRawTag(93);
+        output.WriteFloat(DayLow);
       }
-      if (change_ != null) {
-        output.WriteRawTag(98);
-        output.WriteMessage(Change);
+      if (Change != 0F) {
+        output.WriteRawTag(101);
+        output.WriteFloat(Change);
       }
       if (ShortName.Length != 0) {
         output.WriteRawTag(106);
@@ -1071,17 +814,17 @@ namespace MarketData {
         output.WriteRawTag(112);
         output.WriteSInt64(ExpireDate);
       }
-      if (openPrice_ != null) {
-        output.WriteRawTag(122);
-        output.WriteMessage(OpenPrice);
+      if (OpenPrice != 0F) {
+        output.WriteRawTag(125);
+        output.WriteFloat(OpenPrice);
       }
-      if (previousClose_ != null) {
-        output.WriteRawTag(130, 1);
-        output.WriteMessage(PreviousClose);
+      if (PreviousClose != 0F) {
+        output.WriteRawTag(133, 1);
+        output.WriteFloat(PreviousClose);
       }
-      if (strikePrice_ != null) {
-        output.WriteRawTag(138, 1);
-        output.WriteMessage(StrikePrice);
+      if (StrikePrice != 0F) {
+        output.WriteRawTag(141, 1);
+        output.WriteFloat(StrikePrice);
       }
       if (UnderlyingSymbol.Length != 0) {
         output.WriteRawTag(146, 1);
@@ -1103,17 +846,17 @@ namespace MarketData {
         output.WriteRawTag(176, 1);
         output.WriteSInt64(LastSize);
       }
-      if (bid_ != null) {
-        output.WriteRawTag(186, 1);
-        output.WriteMessage(Bid);
+      if (Bid != 0F) {
+        output.WriteRawTag(189, 1);
+        output.WriteFloat(Bid);
       }
       if (BidSize != 0L) {
         output.WriteRawTag(192, 1);
         output.WriteSInt64(BidSize);
       }
-      if (ask_ != null) {
-        output.WriteRawTag(202, 1);
-        output.WriteMessage(Ask);
+      if (Ask != 0F) {
+        output.WriteRawTag(205, 1);
+        output.WriteFloat(Ask);
       }
       if (AskSize != 0L) {
         output.WriteRawTag(208, 1);
@@ -1139,13 +882,13 @@ namespace MarketData {
         output.WriteRawTag(250, 1);
         output.WriteString(LastMarket);
       }
-      if (circulatingSupply_ != null) {
-        output.WriteRawTag(130, 2);
-        output.WriteMessage(CirculatingSupply);
+      if (CirculatingSupply != 0F) {
+        output.WriteRawTag(133, 2);
+        output.WriteFloat(CirculatingSupply);
       }
-      if (marketcap_ != null) {
-        output.WriteRawTag(138, 2);
-        output.WriteMessage(Marketcap);
+      if (Marketcap != 0F) {
+        output.WriteRawTag(141, 2);
+        output.WriteFloat(Marketcap);
       }
       if (Components.Length != 0) {
         output.WriteRawTag(146, 2);
@@ -1174,9 +917,9 @@ namespace MarketData {
         output.WriteRawTag(10);
         output.WriteString(Id);
       }
-      if (price_ != null) {
-        output.WriteRawTag(18);
-        output.WriteMessage(Price);
+      if (Price != 0F) {
+        output.WriteRawTag(21);
+        output.WriteFloat(Price);
       }
       if (Time != 0L) {
         output.WriteRawTag(24);
@@ -1198,25 +941,25 @@ namespace MarketData {
         output.WriteRawTag(56);
         output.WriteEnum((int) MarketHours);
       }
-      if (changePercent_ != null) {
-        output.WriteRawTag(66);
-        output.WriteMessage(ChangePercent);
+      if (ChangePercent != 0F) {
+        output.WriteRawTag(69);
+        output.WriteFloat(ChangePercent);
       }
       if (DayVolume != 0L) {
         output.WriteRawTag(72);
         output.WriteSInt64(DayVolume);
       }
-      if (dayHigh_ != null) {
-        output.WriteRawTag(82);
-        output.WriteMessage(DayHigh);
+      if (DayHigh != 0F) {
+        output.WriteRawTag(85);
+        output.WriteFloat(DayHigh);
       }
-      if (dayLow_ != null) {
-        output.WriteRawTag(90);
-        output.WriteMessage(DayLow);
+      if (DayLow != 0F) {
+        output.WriteRawTag(93);
+        output.WriteFloat(DayLow);
       }
-      if (change_ != null) {
-        output.WriteRawTag(98);
-        output.WriteMessage(Change);
+      if (Change != 0F) {
+        output.WriteRawTag(101);
+        output.WriteFloat(Change);
       }
       if (ShortName.Length != 0) {
         output.WriteRawTag(106);
@@ -1226,17 +969,17 @@ namespace MarketData {
         output.WriteRawTag(112);
         output.WriteSInt64(ExpireDate);
       }
-      if (openPrice_ != null) {
-        output.WriteRawTag(122);
-        output.WriteMessage(OpenPrice);
+      if (OpenPrice != 0F) {
+        output.WriteRawTag(125);
+        output.WriteFloat(OpenPrice);
       }
-      if (previousClose_ != null) {
-        output.WriteRawTag(130, 1);
-        output.WriteMessage(PreviousClose);
+      if (PreviousClose != 0F) {
+        output.WriteRawTag(133, 1);
+        output.WriteFloat(PreviousClose);
       }
-      if (strikePrice_ != null) {
-        output.WriteRawTag(138, 1);
-        output.WriteMessage(StrikePrice);
+      if (StrikePrice != 0F) {
+        output.WriteRawTag(141, 1);
+        output.WriteFloat(StrikePrice);
       }
       if (UnderlyingSymbol.Length != 0) {
         output.WriteRawTag(146, 1);
@@ -1258,17 +1001,17 @@ namespace MarketData {
         output.WriteRawTag(176, 1);
         output.WriteSInt64(LastSize);
       }
-      if (bid_ != null) {
-        output.WriteRawTag(186, 1);
-        output.WriteMessage(Bid);
+      if (Bid != 0F) {
+        output.WriteRawTag(189, 1);
+        output.WriteFloat(Bid);
       }
       if (BidSize != 0L) {
         output.WriteRawTag(192, 1);
         output.WriteSInt64(BidSize);
       }
-      if (ask_ != null) {
-        output.WriteRawTag(202, 1);
-        output.WriteMessage(Ask);
+      if (Ask != 0F) {
+        output.WriteRawTag(205, 1);
+        output.WriteFloat(Ask);
       }
       if (AskSize != 0L) {
         output.WriteRawTag(208, 1);
@@ -1294,13 +1037,13 @@ namespace MarketData {
         output.WriteRawTag(250, 1);
         output.WriteString(LastMarket);
       }
-      if (circulatingSupply_ != null) {
-        output.WriteRawTag(130, 2);
-        output.WriteMessage(CirculatingSupply);
+      if (CirculatingSupply != 0F) {
+        output.WriteRawTag(133, 2);
+        output.WriteFloat(CirculatingSupply);
       }
-      if (marketcap_ != null) {
-        output.WriteRawTag(138, 2);
-        output.WriteMessage(Marketcap);
+      if (Marketcap != 0F) {
+        output.WriteRawTag(141, 2);
+        output.WriteFloat(Marketcap);
       }
       if (Components.Length != 0) {
         output.WriteRawTag(146, 2);
@@ -1328,8 +1071,8 @@ namespace MarketData {
       if (Id.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
       }
-      if (price_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Price);
+      if (Price != 0F) {
+        size += 1 + 4;
       }
       if (Time != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeSInt64Size(Time);
@@ -1346,20 +1089,20 @@ namespace MarketData {
       if (MarketHours != global::MarketData.MarketHours.PreMarket) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) MarketHours);
       }
-      if (changePercent_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ChangePercent);
+      if (ChangePercent != 0F) {
+        size += 1 + 4;
       }
       if (DayVolume != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeSInt64Size(DayVolume);
       }
-      if (dayHigh_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(DayHigh);
+      if (DayHigh != 0F) {
+        size += 1 + 4;
       }
-      if (dayLow_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(DayLow);
+      if (DayLow != 0F) {
+        size += 1 + 4;
       }
-      if (change_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Change);
+      if (Change != 0F) {
+        size += 1 + 4;
       }
       if (ShortName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(ShortName);
@@ -1367,14 +1110,14 @@ namespace MarketData {
       if (ExpireDate != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeSInt64Size(ExpireDate);
       }
-      if (openPrice_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(OpenPrice);
+      if (OpenPrice != 0F) {
+        size += 1 + 4;
       }
-      if (previousClose_ != null) {
-        size += 2 + pb::CodedOutputStream.ComputeMessageSize(PreviousClose);
+      if (PreviousClose != 0F) {
+        size += 2 + 4;
       }
-      if (strikePrice_ != null) {
-        size += 2 + pb::CodedOutputStream.ComputeMessageSize(StrikePrice);
+      if (StrikePrice != 0F) {
+        size += 2 + 4;
       }
       if (UnderlyingSymbol.Length != 0) {
         size += 2 + pb::CodedOutputStream.ComputeStringSize(UnderlyingSymbol);
@@ -1391,14 +1134,14 @@ namespace MarketData {
       if (LastSize != 0L) {
         size += 2 + pb::CodedOutputStream.ComputeSInt64Size(LastSize);
       }
-      if (bid_ != null) {
-        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Bid);
+      if (Bid != 0F) {
+        size += 2 + 4;
       }
       if (BidSize != 0L) {
         size += 2 + pb::CodedOutputStream.ComputeSInt64Size(BidSize);
       }
-      if (ask_ != null) {
-        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Ask);
+      if (Ask != 0F) {
+        size += 2 + 4;
       }
       if (AskSize != 0L) {
         size += 2 + pb::CodedOutputStream.ComputeSInt64Size(AskSize);
@@ -1418,11 +1161,11 @@ namespace MarketData {
       if (LastMarket.Length != 0) {
         size += 2 + pb::CodedOutputStream.ComputeStringSize(LastMarket);
       }
-      if (circulatingSupply_ != null) {
-        size += 2 + pb::CodedOutputStream.ComputeMessageSize(CirculatingSupply);
+      if (CirculatingSupply != 0F) {
+        size += 2 + 4;
       }
-      if (marketcap_ != null) {
-        size += 2 + pb::CodedOutputStream.ComputeMessageSize(Marketcap);
+      if (Marketcap != 0F) {
+        size += 2 + 4;
       }
       if (Components.Length != 0) {
         size += 2 + pb::CodedOutputStream.ComputeStringSize(Components);
@@ -1449,11 +1192,8 @@ namespace MarketData {
       if (other.Id.Length != 0) {
         Id = other.Id;
       }
-      if (other.price_ != null) {
-        if (price_ == null) {
-          Price = new global::MarketData.DecimalValue();
-        }
-        Price.MergeFrom(other.Price);
+      if (other.Price != 0F) {
+        Price = other.Price;
       }
       if (other.Time != 0L) {
         Time = other.Time;
@@ -1470,32 +1210,20 @@ namespace MarketData {
       if (other.MarketHours != global::MarketData.MarketHours.PreMarket) {
         MarketHours = other.MarketHours;
       }
-      if (other.changePercent_ != null) {
-        if (changePercent_ == null) {
-          ChangePercent = new global::MarketData.DecimalValue();
-        }
-        ChangePercent.MergeFrom(other.ChangePercent);
+      if (other.ChangePercent != 0F) {
+        ChangePercent = other.ChangePercent;
       }
       if (other.DayVolume != 0L) {
         DayVolume = other.DayVolume;
       }
-      if (other.dayHigh_ != null) {
-        if (dayHigh_ == null) {
-          DayHigh = new global::MarketData.DecimalValue();
-        }
-        DayHigh.MergeFrom(other.DayHigh);
+      if (other.DayHigh != 0F) {
+        DayHigh = other.DayHigh;
       }
-      if (other.dayLow_ != null) {
-        if (dayLow_ == null) {
-          DayLow = new global::MarketData.DecimalValue();
-        }
-        DayLow.MergeFrom(other.DayLow);
+      if (other.DayLow != 0F) {
+        DayLow = other.DayLow;
       }
-      if (other.change_ != null) {
-        if (change_ == null) {
-          Change = new global::MarketData.DecimalValue();
-        }
-        Change.MergeFrom(other.Change);
+      if (other.Change != 0F) {
+        Change = other.Change;
       }
       if (other.ShortName.Length != 0) {
         ShortName = other.ShortName;
@@ -1503,23 +1231,14 @@ namespace MarketData {
       if (other.ExpireDate != 0L) {
         ExpireDate = other.ExpireDate;
       }
-      if (other.openPrice_ != null) {
-        if (openPrice_ == null) {
-          OpenPrice = new global::MarketData.DecimalValue();
-        }
-        OpenPrice.MergeFrom(other.OpenPrice);
+      if (other.OpenPrice != 0F) {
+        OpenPrice = other.OpenPrice;
       }
-      if (other.previousClose_ != null) {
-        if (previousClose_ == null) {
-          PreviousClose = new global::MarketData.DecimalValue();
-        }
-        PreviousClose.MergeFrom(other.PreviousClose);
+      if (other.PreviousClose != 0F) {
+        PreviousClose = other.PreviousClose;
       }
-      if (other.strikePrice_ != null) {
-        if (strikePrice_ == null) {
-          StrikePrice = new global::MarketData.DecimalValue();
-        }
-        StrikePrice.MergeFrom(other.StrikePrice);
+      if (other.StrikePrice != 0F) {
+        StrikePrice = other.StrikePrice;
       }
       if (other.UnderlyingSymbol.Length != 0) {
         UnderlyingSymbol = other.UnderlyingSymbol;
@@ -1536,20 +1255,14 @@ namespace MarketData {
       if (other.LastSize != 0L) {
         LastSize = other.LastSize;
       }
-      if (other.bid_ != null) {
-        if (bid_ == null) {
-          Bid = new global::MarketData.DecimalValue();
-        }
-        Bid.MergeFrom(other.Bid);
+      if (other.Bid != 0F) {
+        Bid = other.Bid;
       }
       if (other.BidSize != 0L) {
         BidSize = other.BidSize;
       }
-      if (other.ask_ != null) {
-        if (ask_ == null) {
-          Ask = new global::MarketData.DecimalValue();
-        }
-        Ask.MergeFrom(other.Ask);
+      if (other.Ask != 0F) {
+        Ask = other.Ask;
       }
       if (other.AskSize != 0L) {
         AskSize = other.AskSize;
@@ -1569,17 +1282,11 @@ namespace MarketData {
       if (other.LastMarket.Length != 0) {
         LastMarket = other.LastMarket;
       }
-      if (other.circulatingSupply_ != null) {
-        if (circulatingSupply_ == null) {
-          CirculatingSupply = new global::MarketData.DecimalValue();
-        }
-        CirculatingSupply.MergeFrom(other.CirculatingSupply);
+      if (other.CirculatingSupply != 0F) {
+        CirculatingSupply = other.CirculatingSupply;
       }
-      if (other.marketcap_ != null) {
-        if (marketcap_ == null) {
-          Marketcap = new global::MarketData.DecimalValue();
-        }
-        Marketcap.MergeFrom(other.Marketcap);
+      if (other.Marketcap != 0F) {
+        Marketcap = other.Marketcap;
       }
       if (other.Components.Length != 0) {
         Components = other.Components;
@@ -1614,11 +1321,8 @@ namespace MarketData {
             Id = input.ReadString();
             break;
           }
-          case 18: {
-            if (price_ == null) {
-              Price = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(Price);
+          case 21: {
+            Price = input.ReadFloat();
             break;
           }
           case 24: {
@@ -1641,36 +1345,24 @@ namespace MarketData {
             MarketHours = (global::MarketData.MarketHours) input.ReadEnum();
             break;
           }
-          case 66: {
-            if (changePercent_ == null) {
-              ChangePercent = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(ChangePercent);
+          case 69: {
+            ChangePercent = input.ReadFloat();
             break;
           }
           case 72: {
             DayVolume = input.ReadSInt64();
             break;
           }
-          case 82: {
-            if (dayHigh_ == null) {
-              DayHigh = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(DayHigh);
+          case 85: {
+            DayHigh = input.ReadFloat();
             break;
           }
-          case 90: {
-            if (dayLow_ == null) {
-              DayLow = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(DayLow);
+          case 93: {
+            DayLow = input.ReadFloat();
             break;
           }
-          case 98: {
-            if (change_ == null) {
-              Change = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(Change);
+          case 101: {
+            Change = input.ReadFloat();
             break;
           }
           case 106: {
@@ -1681,25 +1373,16 @@ namespace MarketData {
             ExpireDate = input.ReadSInt64();
             break;
           }
-          case 122: {
-            if (openPrice_ == null) {
-              OpenPrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(OpenPrice);
+          case 125: {
+            OpenPrice = input.ReadFloat();
             break;
           }
-          case 130: {
-            if (previousClose_ == null) {
-              PreviousClose = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(PreviousClose);
+          case 133: {
+            PreviousClose = input.ReadFloat();
             break;
           }
-          case 138: {
-            if (strikePrice_ == null) {
-              StrikePrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(StrikePrice);
+          case 141: {
+            StrikePrice = input.ReadFloat();
             break;
           }
           case 146: {
@@ -1722,22 +1405,16 @@ namespace MarketData {
             LastSize = input.ReadSInt64();
             break;
           }
-          case 186: {
-            if (bid_ == null) {
-              Bid = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(Bid);
+          case 189: {
+            Bid = input.ReadFloat();
             break;
           }
           case 192: {
             BidSize = input.ReadSInt64();
             break;
           }
-          case 202: {
-            if (ask_ == null) {
-              Ask = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(Ask);
+          case 205: {
+            Ask = input.ReadFloat();
             break;
           }
           case 208: {
@@ -1764,18 +1441,12 @@ namespace MarketData {
             LastMarket = input.ReadString();
             break;
           }
-          case 258: {
-            if (circulatingSupply_ == null) {
-              CirculatingSupply = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(CirculatingSupply);
+          case 261: {
+            CirculatingSupply = input.ReadFloat();
             break;
           }
-          case 266: {
-            if (marketcap_ == null) {
-              Marketcap = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(Marketcap);
+          case 269: {
+            Marketcap = input.ReadFloat();
             break;
           }
           case 274: {
@@ -1817,11 +1488,8 @@ namespace MarketData {
             Id = input.ReadString();
             break;
           }
-          case 18: {
-            if (price_ == null) {
-              Price = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(Price);
+          case 21: {
+            Price = input.ReadFloat();
             break;
           }
           case 24: {
@@ -1844,36 +1512,24 @@ namespace MarketData {
             MarketHours = (global::MarketData.MarketHours) input.ReadEnum();
             break;
           }
-          case 66: {
-            if (changePercent_ == null) {
-              ChangePercent = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(ChangePercent);
+          case 69: {
+            ChangePercent = input.ReadFloat();
             break;
           }
           case 72: {
             DayVolume = input.ReadSInt64();
             break;
           }
-          case 82: {
-            if (dayHigh_ == null) {
-              DayHigh = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(DayHigh);
+          case 85: {
+            DayHigh = input.ReadFloat();
             break;
           }
-          case 90: {
-            if (dayLow_ == null) {
-              DayLow = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(DayLow);
+          case 93: {
+            DayLow = input.ReadFloat();
             break;
           }
-          case 98: {
-            if (change_ == null) {
-              Change = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(Change);
+          case 101: {
+            Change = input.ReadFloat();
             break;
           }
           case 106: {
@@ -1884,25 +1540,16 @@ namespace MarketData {
             ExpireDate = input.ReadSInt64();
             break;
           }
-          case 122: {
-            if (openPrice_ == null) {
-              OpenPrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(OpenPrice);
+          case 125: {
+            OpenPrice = input.ReadFloat();
             break;
           }
-          case 130: {
-            if (previousClose_ == null) {
-              PreviousClose = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(PreviousClose);
+          case 133: {
+            PreviousClose = input.ReadFloat();
             break;
           }
-          case 138: {
-            if (strikePrice_ == null) {
-              StrikePrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(StrikePrice);
+          case 141: {
+            StrikePrice = input.ReadFloat();
             break;
           }
           case 146: {
@@ -1925,22 +1572,16 @@ namespace MarketData {
             LastSize = input.ReadSInt64();
             break;
           }
-          case 186: {
-            if (bid_ == null) {
-              Bid = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(Bid);
+          case 189: {
+            Bid = input.ReadFloat();
             break;
           }
           case 192: {
             BidSize = input.ReadSInt64();
             break;
           }
-          case 202: {
-            if (ask_ == null) {
-              Ask = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(Ask);
+          case 205: {
+            Ask = input.ReadFloat();
             break;
           }
           case 208: {
@@ -1967,18 +1608,12 @@ namespace MarketData {
             LastMarket = input.ReadString();
             break;
           }
-          case 258: {
-            if (circulatingSupply_ == null) {
-              CirculatingSupply = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(CirculatingSupply);
+          case 261: {
+            CirculatingSupply = input.ReadFloat();
             break;
           }
-          case 266: {
-            if (marketcap_ == null) {
-              Marketcap = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(Marketcap);
+          case 269: {
+            Marketcap = input.ReadFloat();
             break;
           }
           case 274: {
@@ -2019,7 +1654,7 @@ namespace MarketData {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MarketData.MarketDataReflection.Descriptor.MessageTypes[2]; }
+      get { return global::MarketData.MarketDataReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2043,10 +1678,10 @@ namespace MarketData {
       displayName_ = other.displayName_;
       currency_ = other.currency_;
       exchange_ = other.exchange_;
-      openPrice_ = other.openPrice_ != null ? other.openPrice_.Clone() : null;
-      closePrice_ = other.closePrice_ != null ? other.closePrice_.Clone() : null;
-      fiftytwoWkMovingAvgPrice_ = other.fiftytwoWkMovingAvgPrice_ != null ? other.fiftytwoWkMovingAvgPrice_.Clone() : null;
-      twohundredDataMovingAvgPrice_ = other.twohundredDataMovingAvgPrice_ != null ? other.twohundredDataMovingAvgPrice_.Clone() : null;
+      openPrice_ = other.openPrice_;
+      closePrice_ = other.closePrice_;
+      fiftytwoWkMovingAvgPrice_ = other.fiftytwoWkMovingAvgPrice_;
+      twohundredDataMovingAvgPrice_ = other.twohundredDataMovingAvgPrice_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -2106,10 +1741,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "open_price" field.</summary>
     public const int OpenPriceFieldNumber = 5;
-    private global::MarketData.DecimalValue openPrice_;
+    private float openPrice_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue OpenPrice {
+    public float OpenPrice {
       get { return openPrice_; }
       set {
         openPrice_ = value;
@@ -2118,10 +1753,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "close_price" field.</summary>
     public const int ClosePriceFieldNumber = 6;
-    private global::MarketData.DecimalValue closePrice_;
+    private float closePrice_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue ClosePrice {
+    public float ClosePrice {
       get { return closePrice_; }
       set {
         closePrice_ = value;
@@ -2130,10 +1765,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "fiftytwo_wk_moving_avg_price" field.</summary>
     public const int FiftytwoWkMovingAvgPriceFieldNumber = 7;
-    private global::MarketData.DecimalValue fiftytwoWkMovingAvgPrice_;
+    private float fiftytwoWkMovingAvgPrice_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue FiftytwoWkMovingAvgPrice {
+    public float FiftytwoWkMovingAvgPrice {
       get { return fiftytwoWkMovingAvgPrice_; }
       set {
         fiftytwoWkMovingAvgPrice_ = value;
@@ -2142,10 +1777,10 @@ namespace MarketData {
 
     /// <summary>Field number for the "twohundred_data_moving_avg_price" field.</summary>
     public const int TwohundredDataMovingAvgPriceFieldNumber = 8;
-    private global::MarketData.DecimalValue twohundredDataMovingAvgPrice_;
+    private float twohundredDataMovingAvgPrice_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::MarketData.DecimalValue TwohundredDataMovingAvgPrice {
+    public float TwohundredDataMovingAvgPrice {
       get { return twohundredDataMovingAvgPrice_; }
       set {
         twohundredDataMovingAvgPrice_ = value;
@@ -2171,10 +1806,10 @@ namespace MarketData {
       if (DisplayName != other.DisplayName) return false;
       if (Currency != other.Currency) return false;
       if (Exchange != other.Exchange) return false;
-      if (!object.Equals(OpenPrice, other.OpenPrice)) return false;
-      if (!object.Equals(ClosePrice, other.ClosePrice)) return false;
-      if (!object.Equals(FiftytwoWkMovingAvgPrice, other.FiftytwoWkMovingAvgPrice)) return false;
-      if (!object.Equals(TwohundredDataMovingAvgPrice, other.TwohundredDataMovingAvgPrice)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(OpenPrice, other.OpenPrice)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(ClosePrice, other.ClosePrice)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(FiftytwoWkMovingAvgPrice, other.FiftytwoWkMovingAvgPrice)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(TwohundredDataMovingAvgPrice, other.TwohundredDataMovingAvgPrice)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -2186,10 +1821,10 @@ namespace MarketData {
       if (DisplayName.Length != 0) hash ^= DisplayName.GetHashCode();
       if (Currency.Length != 0) hash ^= Currency.GetHashCode();
       if (Exchange.Length != 0) hash ^= Exchange.GetHashCode();
-      if (openPrice_ != null) hash ^= OpenPrice.GetHashCode();
-      if (closePrice_ != null) hash ^= ClosePrice.GetHashCode();
-      if (fiftytwoWkMovingAvgPrice_ != null) hash ^= FiftytwoWkMovingAvgPrice.GetHashCode();
-      if (twohundredDataMovingAvgPrice_ != null) hash ^= TwohundredDataMovingAvgPrice.GetHashCode();
+      if (OpenPrice != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(OpenPrice);
+      if (ClosePrice != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(ClosePrice);
+      if (FiftytwoWkMovingAvgPrice != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FiftytwoWkMovingAvgPrice);
+      if (TwohundredDataMovingAvgPrice != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(TwohundredDataMovingAvgPrice);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -2224,21 +1859,21 @@ namespace MarketData {
         output.WriteRawTag(34);
         output.WriteString(Exchange);
       }
-      if (openPrice_ != null) {
-        output.WriteRawTag(42);
-        output.WriteMessage(OpenPrice);
+      if (OpenPrice != 0F) {
+        output.WriteRawTag(45);
+        output.WriteFloat(OpenPrice);
       }
-      if (closePrice_ != null) {
-        output.WriteRawTag(50);
-        output.WriteMessage(ClosePrice);
+      if (ClosePrice != 0F) {
+        output.WriteRawTag(53);
+        output.WriteFloat(ClosePrice);
       }
-      if (fiftytwoWkMovingAvgPrice_ != null) {
-        output.WriteRawTag(58);
-        output.WriteMessage(FiftytwoWkMovingAvgPrice);
+      if (FiftytwoWkMovingAvgPrice != 0F) {
+        output.WriteRawTag(61);
+        output.WriteFloat(FiftytwoWkMovingAvgPrice);
       }
-      if (twohundredDataMovingAvgPrice_ != null) {
-        output.WriteRawTag(66);
-        output.WriteMessage(TwohundredDataMovingAvgPrice);
+      if (TwohundredDataMovingAvgPrice != 0F) {
+        output.WriteRawTag(69);
+        output.WriteFloat(TwohundredDataMovingAvgPrice);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -2266,21 +1901,21 @@ namespace MarketData {
         output.WriteRawTag(34);
         output.WriteString(Exchange);
       }
-      if (openPrice_ != null) {
-        output.WriteRawTag(42);
-        output.WriteMessage(OpenPrice);
+      if (OpenPrice != 0F) {
+        output.WriteRawTag(45);
+        output.WriteFloat(OpenPrice);
       }
-      if (closePrice_ != null) {
-        output.WriteRawTag(50);
-        output.WriteMessage(ClosePrice);
+      if (ClosePrice != 0F) {
+        output.WriteRawTag(53);
+        output.WriteFloat(ClosePrice);
       }
-      if (fiftytwoWkMovingAvgPrice_ != null) {
-        output.WriteRawTag(58);
-        output.WriteMessage(FiftytwoWkMovingAvgPrice);
+      if (FiftytwoWkMovingAvgPrice != 0F) {
+        output.WriteRawTag(61);
+        output.WriteFloat(FiftytwoWkMovingAvgPrice);
       }
-      if (twohundredDataMovingAvgPrice_ != null) {
-        output.WriteRawTag(66);
-        output.WriteMessage(TwohundredDataMovingAvgPrice);
+      if (TwohundredDataMovingAvgPrice != 0F) {
+        output.WriteRawTag(69);
+        output.WriteFloat(TwohundredDataMovingAvgPrice);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -2304,17 +1939,17 @@ namespace MarketData {
       if (Exchange.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Exchange);
       }
-      if (openPrice_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(OpenPrice);
+      if (OpenPrice != 0F) {
+        size += 1 + 4;
       }
-      if (closePrice_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ClosePrice);
+      if (ClosePrice != 0F) {
+        size += 1 + 4;
       }
-      if (fiftytwoWkMovingAvgPrice_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(FiftytwoWkMovingAvgPrice);
+      if (FiftytwoWkMovingAvgPrice != 0F) {
+        size += 1 + 4;
       }
-      if (twohundredDataMovingAvgPrice_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(TwohundredDataMovingAvgPrice);
+      if (TwohundredDataMovingAvgPrice != 0F) {
+        size += 1 + 4;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -2340,29 +1975,17 @@ namespace MarketData {
       if (other.Exchange.Length != 0) {
         Exchange = other.Exchange;
       }
-      if (other.openPrice_ != null) {
-        if (openPrice_ == null) {
-          OpenPrice = new global::MarketData.DecimalValue();
-        }
-        OpenPrice.MergeFrom(other.OpenPrice);
+      if (other.OpenPrice != 0F) {
+        OpenPrice = other.OpenPrice;
       }
-      if (other.closePrice_ != null) {
-        if (closePrice_ == null) {
-          ClosePrice = new global::MarketData.DecimalValue();
-        }
-        ClosePrice.MergeFrom(other.ClosePrice);
+      if (other.ClosePrice != 0F) {
+        ClosePrice = other.ClosePrice;
       }
-      if (other.fiftytwoWkMovingAvgPrice_ != null) {
-        if (fiftytwoWkMovingAvgPrice_ == null) {
-          FiftytwoWkMovingAvgPrice = new global::MarketData.DecimalValue();
-        }
-        FiftytwoWkMovingAvgPrice.MergeFrom(other.FiftytwoWkMovingAvgPrice);
+      if (other.FiftytwoWkMovingAvgPrice != 0F) {
+        FiftytwoWkMovingAvgPrice = other.FiftytwoWkMovingAvgPrice;
       }
-      if (other.twohundredDataMovingAvgPrice_ != null) {
-        if (twohundredDataMovingAvgPrice_ == null) {
-          TwohundredDataMovingAvgPrice = new global::MarketData.DecimalValue();
-        }
-        TwohundredDataMovingAvgPrice.MergeFrom(other.TwohundredDataMovingAvgPrice);
+      if (other.TwohundredDataMovingAvgPrice != 0F) {
+        TwohundredDataMovingAvgPrice = other.TwohundredDataMovingAvgPrice;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -2399,32 +2022,20 @@ namespace MarketData {
             Exchange = input.ReadString();
             break;
           }
-          case 42: {
-            if (openPrice_ == null) {
-              OpenPrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(OpenPrice);
+          case 45: {
+            OpenPrice = input.ReadFloat();
             break;
           }
-          case 50: {
-            if (closePrice_ == null) {
-              ClosePrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(ClosePrice);
+          case 53: {
+            ClosePrice = input.ReadFloat();
             break;
           }
-          case 58: {
-            if (fiftytwoWkMovingAvgPrice_ == null) {
-              FiftytwoWkMovingAvgPrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(FiftytwoWkMovingAvgPrice);
+          case 61: {
+            FiftytwoWkMovingAvgPrice = input.ReadFloat();
             break;
           }
-          case 66: {
-            if (twohundredDataMovingAvgPrice_ == null) {
-              TwohundredDataMovingAvgPrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(TwohundredDataMovingAvgPrice);
+          case 69: {
+            TwohundredDataMovingAvgPrice = input.ReadFloat();
             break;
           }
         }
@@ -2462,32 +2073,20 @@ namespace MarketData {
             Exchange = input.ReadString();
             break;
           }
-          case 42: {
-            if (openPrice_ == null) {
-              OpenPrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(OpenPrice);
+          case 45: {
+            OpenPrice = input.ReadFloat();
             break;
           }
-          case 50: {
-            if (closePrice_ == null) {
-              ClosePrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(ClosePrice);
+          case 53: {
+            ClosePrice = input.ReadFloat();
             break;
           }
-          case 58: {
-            if (fiftytwoWkMovingAvgPrice_ == null) {
-              FiftytwoWkMovingAvgPrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(FiftytwoWkMovingAvgPrice);
+          case 61: {
+            FiftytwoWkMovingAvgPrice = input.ReadFloat();
             break;
           }
-          case 66: {
-            if (twohundredDataMovingAvgPrice_ == null) {
-              TwohundredDataMovingAvgPrice = new global::MarketData.DecimalValue();
-            }
-            input.ReadMessage(TwohundredDataMovingAvgPrice);
+          case 69: {
+            TwohundredDataMovingAvgPrice = input.ReadFloat();
             break;
           }
         }
@@ -2512,7 +2111,7 @@ namespace MarketData {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MarketData.MarketDataReflection.Descriptor.MessageTypes[3]; }
+      get { return global::MarketData.MarketDataReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2719,7 +2318,7 @@ namespace MarketData {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MarketData.MarketDataReflection.Descriptor.MessageTypes[4]; }
+      get { return global::MarketData.MarketDataReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
