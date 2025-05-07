@@ -24,6 +24,8 @@ namespace Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram
         [Column(TypeName = "numeric")]
         public PriceAlertDirection Direction { get; set; }
 
+        [Required, Column(TypeName = "int")]
+        public int AlertCount { get; set; } = 0;
         [Required]
         public DateTime CreatedAt { get; set; }
 
