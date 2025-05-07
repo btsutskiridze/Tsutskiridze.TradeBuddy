@@ -22,7 +22,7 @@ public static class DbConfigurationExtension
             .UseSnakeCaseNamingConvention()
         );
 
-        services.AddTransient<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+        services.AddScoped<IAppDbContext, AppDbContext>();
 
         return services;
     }

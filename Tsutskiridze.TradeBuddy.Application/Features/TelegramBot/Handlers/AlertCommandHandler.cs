@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -19,20 +20,23 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 
         private readonly IYahooStockScraper _scraper;
         private readonly ITelegramBotClient _telegramClient;
-        private readonly IAppDbContext _db;
+        private readonly IServiceScopeFactory _scopes;
 
         public AlertCommandHandler(
-            IYahooStockScraper scraper,
-            IAppDbContext db,
-            ITelegramBotClient telegramClient)
+          IYahooStockScraper scraper,
+          ITelegramBotClient telegramClient,
+          IServiceScopeFactory scopes)
         {
             _scraper = scraper;
             _telegramClient = telegramClient;
-            _db = db;
+            _scopes = scopes;
         }
 
         public async Task HandleMessage(Message message)
         {
+            using var scope = _scopes.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
+
             var parts = message.Text!
                               .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -63,11 +67,11 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 return;
             }
 
-            var chat = await _db.Set<Core.DBEntities.Telegram.Chat>()
+            var chat = await db.Set<Core.DBEntities.Telegram.Chat>()
                 .Where(x => x.TelegramChatID == message.Chat.Id)
                 .FirstOrDefaultAsync();
 
-            var stock = await _db.Set<Stock>()
+            var stock = await db.Set<Stock>()
                 .Where(x => x.Symbol == symbol)
                 .FirstOrDefaultAsync();
 
@@ -89,7 +93,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                     IsWatched = true
                 };
 
-                _db.Set<Stock>().Add(stock);
+                db.Set<Stock>().Add(stock);
             }
             else
             {
@@ -104,9 +108,9 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 Chat = chat
             };
 
-            _db.Set<PriceAlert>().Add(alert);
+            db.Set<PriceAlert>().Add(alert);
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             var alertDirection = direction == PriceAlertDirection.Above ? "above" : "below";
 
