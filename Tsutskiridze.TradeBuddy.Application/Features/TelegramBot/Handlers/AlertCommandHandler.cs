@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
 using Tsutskiridze.TradeBuddy.Core.Constants;
@@ -76,6 +77,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                     "sorry, you are not active user");
                 return;
             }
+
+            await _telegramClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
 
             if (stock == null)
             {
