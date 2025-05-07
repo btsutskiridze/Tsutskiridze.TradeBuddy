@@ -8,6 +8,7 @@ using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 using Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram;
 using Tsutskiridze.TradeBuddy.Core.Enums;
+using Tsutskiridze.TradeBuddy.Core.Helpers;
 
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
@@ -50,6 +51,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 return;
             }
 
+            await _telegramClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
+
             var symbol = parts[1].ToUpperInvariant();
             if (!await _scraper.StockSymbolExits(symbol))
             {
@@ -90,6 +93,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 {
                     Currency = quote.Currency,
                     Symbol = symbol,
+                    Name = quote.Name,
                     IsWatched = true
                 };
 
@@ -115,7 +119,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             var alertDirection = direction == PriceAlertDirection.Above ? "above" : "below";
 
             await _telegramClient.SendMessage(message.Chat.Id,
-                $"Price alert set for {symbol} at {alertDirection} {price} {quote.Currency}");
+                $"✅ Price alert set for {symbol} {alertDirection} {CurrencyHelper.GetCurrencySymbol(quote.Currency)}{price}"
+            );
         }
     }
 }
