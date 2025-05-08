@@ -23,7 +23,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Services
         private static readonly TimeSpan REFRESH_SUBSCRIPTIONS_INTERVAL = TimeSpan.FromSeconds(30);
         private static readonly TimeSpan RECONNECT_DELAY = TimeSpan.FromSeconds(10); // Delay before trying to reconnect
         private const int WEBSOCKET_BUFFER_SIZE = 8192;
-        private const int ALERT_RATE_LIMIT_SECONDS = 3; // Cooldown for a specific alert
+        private const int ALERT_RATE_LIMIT_SECONDS = 10; // Cooldown for a specific alert
         private const int ALERT_MAX_COUNT_BEFORE_REMOVAL = 5; // Remove alert after this many triggers
 
         private readonly ILogger<StockPriceWebSocketListener> _logger;
@@ -68,7 +68,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Services
                     _currentSymbols = await LoadWatchedSymbolsAsync(stoppingToken);
                     if (_currentSymbols.Count != 0)
                     {
-                        await SendSubscriptionAsync(_currentSymbols, Enumerable.Empty<string>(), stoppingToken);
+                        await SendSubscriptionAsync(_currentSymbols, [], stoppingToken);
                     }
                     else
                     {
