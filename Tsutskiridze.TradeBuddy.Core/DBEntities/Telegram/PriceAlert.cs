@@ -27,7 +27,7 @@ namespace Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram
         [Required, Column(TypeName = "int")]
         public int AlertCount { get; set; } = 0;
         [Required]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? UpdatedAt { get; set; }
 

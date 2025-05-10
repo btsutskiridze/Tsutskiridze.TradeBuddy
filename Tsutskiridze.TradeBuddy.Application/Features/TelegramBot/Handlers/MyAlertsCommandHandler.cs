@@ -55,7 +55,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 
             await _bot.SendMessage(
                 chatId: message.Chat.Id,
-                text: $"Your alerts:\n " +
+                text: $"Your alerts:\n" +
                       $"{string.Join("\n", alertList)}",
                 parseMode: ParseMode.Markdown
             );
