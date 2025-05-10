@@ -67,7 +67,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAlerts
 
                     await _bot.SendMessage(
                         alert.Chat.TelegramChatID,
-                        $"🔔 *{symbol}*: {cur}{price:N2} {dirEmoji} {dirText} {cur}{alert.Price:N2}",
+                        $"🔔 *{symbol}*: {cur}{price:N2} 🔔\n{dirEmoji} {dirText} {cur}{alert.Price:N2}",
                         parseMode: ParseMode.Markdown,
                         cancellationToken: ct
                     );
