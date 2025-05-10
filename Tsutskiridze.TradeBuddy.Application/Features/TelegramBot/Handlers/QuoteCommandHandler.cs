@@ -12,7 +12,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
     public class QuoteCommandHandler : ITelegramCommandHandler
     {
         public string Command => TelegramCommands.Quote;
-        public string Description => "Get stock analysis for a given stock symbol. Usage: /stock <symbol>";
+        public string Description => "/quote <symbol>";
+
         private readonly ILogger<QuoteCommandHandler> _logger;
         private readonly StockAnalysisService _stockService;
         private readonly ITelegramBotClient _botClient;

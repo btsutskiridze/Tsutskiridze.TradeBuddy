@@ -1,14 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Mediator;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Tsutskiridze.TradeBuddy.Application.Events;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
+using Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 using Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram;
 using Tsutskiridze.TradeBuddy.Core.Enums;
-using Tsutskiridze.TradeBuddy.Core.Helpers;
 
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
@@ -17,20 +19,25 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
     {
         public string Command => TelegramCommands.Alert;
 
-        public string Description => "Set a price alert: /alert <symbol> <above|below> <price>";
+        public string Description => "/alert <symbol> <above|below> <price>";
 
         private readonly IYahooStockScraper _scraper;
         private readonly ITelegramBotClient _telegramClient;
         private readonly IServiceScopeFactory _scopes;
-
+        private readonly IMediator _publisher;
+        private readonly ICurrencySymbolProvider _currency;
         public AlertCommandHandler(
           IYahooStockScraper scraper,
           ITelegramBotClient telegramClient,
-          IServiceScopeFactory scopes)
+          IServiceScopeFactory scopes,
+          IMediator publisher,
+          ICurrencySymbolProvider currency)
         {
             _scraper = scraper;
             _telegramClient = telegramClient;
             _scopes = scopes;
+            _publisher = publisher;
+            _currency = currency;
         }
 
         public async Task HandleMessage(Message message)
@@ -78,16 +85,9 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 .Where(x => x.Symbol == symbol)
                 .FirstOrDefaultAsync();
 
-            if (chat == null)
-            {
-                await _telegramClient.SendMessage(message.Chat.Id,
-                    "sorry, you are not active user");
-                return;
-            }
+            bool publishEvent = false;
 
-            await _telegramClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
-
-            if (stock == null)
+            if (stock is null)
             {
                 stock = new Stock
                 {
@@ -98,10 +98,12 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 };
 
                 db.Set<Stock>().Add(stock);
+                publishEvent = true;
             }
-            else
+            else if (stock.IsWatched == false)
             {
                 stock.IsWatched = true;
+                publishEvent = true;
             }
 
             var alert = new PriceAlert
@@ -113,13 +115,17 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             };
 
             db.Set<PriceAlert>().Add(alert);
-
             await db.SaveChangesAsync();
+
+            if (publishEvent)
+                await _publisher.Publish(new StockWatchStatusChanged(symbol, true));
 
             var alertDirection = direction == PriceAlertDirection.Above ? "above" : "below";
 
+            var cur = _currency.GetSymbol(quote.Currency) ?? quote.Currency;
+
             await _telegramClient.SendMessage(message.Chat.Id,
-                $"✅ Price alert set for {symbol} {alertDirection} {CurrencyHelper.GetCurrencySymbol(quote.Currency)}{price}"
+                $"✅ Price alert set for {symbol} {alertDirection} {quote.Currency}{price}"
             );
         }
     }

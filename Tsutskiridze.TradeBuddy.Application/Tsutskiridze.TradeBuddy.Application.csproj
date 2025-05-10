@@ -15,11 +15,10 @@
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	  <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
 	  <PackageReference Include="Tsutskiridze.Bloom.Core" Version="1.0.10" />
+	  <PackageReference Include="Mediator.Abstractions" Version="3.0.*-*" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\Stocks\" />
-    <Folder Include="Interfaces\Telegram\" />
     <Folder Include="Protos\Generated\" />
     <Folder Include="Services\" />
   </ItemGroup>
