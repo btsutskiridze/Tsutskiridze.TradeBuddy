@@ -50,13 +50,13 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             }
 
             var alertList = priceAlerts
-                .Select(x => $"{x.Stock.Symbol} {x.Direction} {_currency.GetSymbol(x.Stock.Currency)}{x.Price}")
+                .Select(x => $"*{x.Stock.Symbol}* {x.Direction} {_currency.GetSymbol(x.Stock.Currency)}{x.Price}")
                 .ToList();
 
             await _bot.SendMessage(
                 chatId: message.Chat.Id,
                 text: $"🔔 *Your Active Alerts* 🔔\n"
-                      + string.Join("\n", alertList.Select((a, i) => $"{i + 1}. *{a}*")),
+                      + string.Join("\n", alertList.Select((a, i) => $"{i + 1}. {a}")),
                 parseMode: ParseMode.Markdown
             );
 
