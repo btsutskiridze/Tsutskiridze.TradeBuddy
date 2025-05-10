@@ -10,12 +10,33 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            services.AddNewsServices()
+                    .AddStockServices()
+                    .AddTelegramServices();
+
+            services.AddAutoMapper(typeof(AutoMapperProfile));
+            services.AddMediator(cfg => cfg.ServiceLifetime = ServiceLifetime.Transient);
+
+            return services;
+        }
+
+        private static IServiceCollection AddNewsServices(this IServiceCollection services)
+        {
             services.AddTransient<NewsService>();
 
-            services.AddTransient<StockPromptService>();
+            return services;
+        }
 
+        private static IServiceCollection AddStockServices(this IServiceCollection services)
+        {
+            services.AddTransient<StockPromptService>();
             services.AddTransient<StockAnalysisService>();
 
+            return services;
+        }
+
+        private static IServiceCollection AddTelegramServices(this IServiceCollection services)
+        {
             services.AddTransient<ITelegramCommandHandler, QuoteCommandHandler>();
             services.AddTransient<ITelegramCommandHandler, AlertCommandHandler>();
             services.AddTransient<ITelegramCommandHandler, UnknownCommandHandler>();
@@ -23,9 +44,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Extensions
             services.AddSingleton<ITelegramHandlerRegistry, TelegramHandlerRegistry>();
             services.AddTransient<TelegramWebhookService>();
 
-            services.AddAutoMapper(typeof(AutoMapperProfile));
-
             return services;
         }
+
     }
 }

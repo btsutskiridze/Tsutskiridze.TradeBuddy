@@ -15,7 +15,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Google;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo.Utilities;
-using Tsutskiridze.TradeBuddy.Infrastructure.Services;
+using Tsutskiridze.TradeBuddy.Infrastructure.Services.StockPrice;
 using Tsutskiridze.TradeBuddy.Infrastructure.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.API.Extensions
@@ -24,47 +24,76 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
-            services.AddHttpClient<IAlphaVantageClient, AlphaVantageClient>((serviceProvider, client) =>
+            services
+                .AddDataProviderClients()
+                .AddScrapingClients()
+                .AddThirdPartyIntegrations()
+                .AddHostedAndBackgroundServices();
+
+            return services;
+        }
+
+        private static IServiceCollection AddDataProviderClients(this IServiceCollection services)
+        {
+            services.AddHttpClient<IAlphaVantageClient, AlphaVantageClient>((sp, client) =>
             {
-                var options = serviceProvider.GetRequiredService<IOptions<AlphaVantageOptions>>().Value;
+                var options = sp.GetRequiredService<IOptions<AlphaVantageOptions>>().Value;
                 client.BaseAddress = new Uri(options.BaseUrl);
             });
 
-            services.AddHttpClient<IFinancialModelingPrepClient, FinancialModelingPrepClient>((serviceProvider, client) =>
+            services.AddHttpClient<IFinancialModelingPrepClient, FinancialModelingPrepClient>((sp, client) =>
             {
-                var options = serviceProvider.GetRequiredService<IOptions<FinancialModelingPrepOptions>>().Value;
+                var options = sp.GetRequiredService<IOptions<FinancialModelingPrepOptions>>().Value;
                 client.BaseAddress = new Uri(options.BaseUrl);
             });
 
             services.AddHttpClient<IRedditNewsProvider, RedditClient>();
 
-            services.AddHttpClient<IFinnhubNewsProvider, FinnhubClient>((serviceProvider, client) =>
+            services.AddHttpClient<IFinnhubNewsProvider, FinnhubClient>((sp, client) =>
             {
-                var options = serviceProvider.GetRequiredService<IOptions<FinnhubOptions>>().Value;
+                var options = sp.GetRequiredService<IOptions<FinnhubOptions>>().Value;
                 client.BaseAddress = new Uri(options.BaseUrl);
             });
 
-            services.AddHttpClient<IGoogleNewsProvider, GoogleScraper>();
+            return services;
+        }
 
+        private static IServiceCollection AddScrapingClients(this IServiceCollection services)
+        {
+            services.AddHttpClient<IGoogleNewsProvider, GoogleScraper>();
             services.AddHttpClient<IYahooStockScraper, YahooStockScraper>(configureYahooClient);
             services.AddHttpClient<IYahooNewsProvider, YahooNewsScraper>(configureYahooClient);
             services.AddTransient<IYahooCookieBypassService, YahooCookieBypassService>();
 
-            services.AddSingleton<ITelegramBotClient>((serviceProvider) =>
+            return services;
+        }
+
+        private static IServiceCollection AddThirdPartyIntegrations(this IServiceCollection services)
+        {
+            services.AddSingleton<ITelegramBotClient>(sp =>
             {
-                var options = serviceProvider.GetRequiredService<IOptions<TelegramClientOptions>>().Value;
+                var options = sp.GetRequiredService<IOptions<TelegramClientOptions>>().Value;
                 return new TelegramBotClient(options.BotToken);
             });
 
-            services.AddSingleton((serviceProvider) =>
+            services.AddSingleton(sp =>
             {
-                var options = serviceProvider.GetRequiredService<IOptions<OpenAIOptions>>().Value;
+                var options = sp.GetRequiredService<IOptions<OpenAIOptions>>().Value;
                 return new ChatClient(options.ModelID, options.ApiKey);
             });
+
             services.AddSingleton<IOpenaiJsSchemaGenerator, OpenaiJsSchemaGenerator>();
             services.AddTransient<IAIService, OpenAIService>();
 
+            return services;
+        }
+
+        private static IServiceCollection AddHostedAndBackgroundServices(this IServiceCollection services)
+        {
             services.AddHostedServices();
+
+            services.AddSingleton<StockPriceWebSocketListener>();
+            services.AddSingleton<IHostedService>(sp => sp.GetRequiredService<StockPriceWebSocketListener>());
 
             return services;
         }
@@ -72,15 +101,12 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
         private static IServiceCollection AddHostedServices(this IServiceCollection services)
         {
             services.AddHostedService<TelegramCommandsRegisterService>();
-            services.AddHostedService<StockPriceWebSocketListener>();
-
             return services;
         }
 
-
-        private static readonly Action<IServiceProvider, HttpClient> configureYahooClient = (serviceProvider, client) =>
+        private static readonly Action<IServiceProvider, HttpClient> configureYahooClient = (sp, client) =>
         {
-            var options = serviceProvider.GetRequiredService<IOptions<YahooOptions>>().Value;
+            var options = sp.GetRequiredService<IOptions<YahooOptions>>().Value;
             client.BaseAddress = new Uri(options.BaseUrl);
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
             client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
