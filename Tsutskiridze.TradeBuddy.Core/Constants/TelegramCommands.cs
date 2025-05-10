@@ -4,6 +4,7 @@
     {
         public const string Quote = "quote";
         public const string Alert = "alert";
+        public const string MyAlerts = "myalerts";
         public const string Unknown = "unknown";
     }
 }
