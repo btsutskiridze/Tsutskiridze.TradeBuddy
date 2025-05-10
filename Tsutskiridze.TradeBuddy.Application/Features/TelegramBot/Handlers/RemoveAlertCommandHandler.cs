@@ -7,6 +7,7 @@ using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
 using Tsutskiridze.TradeBuddy.Core.Constants;
+using Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 
 
@@ -65,7 +66,25 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 return;
             }
 
-            await _telegramClient.SendMessage(message.Chat.Id, "Not implemented yet.");
+            var alert = db.Set<PriceAlert>()
+                .Where(x => x.Chat.TelegramChatID == message.Chat.Id &&
+                             x.Stock.Symbol == symbol &&
+                             x.Direction == direction &&
+                             x.Price == price)
+                .FirstOrDefault();
+
+            if (alert == null)
+            {
+                await _telegramClient.SendMessage(message.Chat.Id,
+                 $"No alert found for '{symbol}' with direction '{direction}' and price '{price}'.");
+                return;
+            }
+
+            db.Set<PriceAlert>().Remove(alert);
+            await db.SaveChangesAsync();
+
+            await _telegramClient.SendMessage(message.Chat.Id, "" +
+                $"Alert for '{symbol}' with direction '{direction}' and price '{price}' has been removed.");
         }
     }
 }
