@@ -19,6 +19,17 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         private readonly IServiceScopeFactory _scopes;
         private readonly ICurrencySymbolProvider _currency;
 
+        public MyAlertsCommandHandler(
+            ITelegramBotClient bot,
+            IServiceScopeFactory scopes,
+            ICurrencySymbolProvider currency)
+        {
+            _bot = bot;
+            _scopes = scopes;
+            _currency = currency;
+        }
+
+
         public async Task HandleMessage(Message message)
         {
             using var scope = _scopes.CreateScope();
