@@ -122,8 +122,10 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 
             var alertDirection = direction == PriceAlertDirection.Above ? "above" : "below";
 
+            var cur = _currency.GetSymbol(quote.Currency) ?? quote.Currency;
+
             await _telegramClient.SendMessage(message.Chat.Id,
-                $"✅ Price alert set for {symbol} {alertDirection} {_currency.GetSymbol(quote.Currency)}{price}"
+                $"✅ Price alert set for {symbol} {alertDirection} {quote.Currency}{price}"
             );
         }
     }
