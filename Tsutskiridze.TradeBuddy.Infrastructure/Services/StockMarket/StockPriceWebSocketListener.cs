@@ -1,4 +1,4 @@
-﻿using MarketData; // Assuming this is your Protobuf generated class
+﻿using MarketData;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,8 +12,8 @@ using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Events;
-using Tsutskiridze.TradeBuddy.Core.Enums; // Assuming this exists
-using Tsutskiridze.TradeBuddy.Core.Helpers; // Assuming this exists
+using Tsutskiridze.TradeBuddy.Core.Enums;
+using Tsutskiridze.TradeBuddy.Core.Helpers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Context;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockPrice
@@ -31,7 +31,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockPrice
         private readonly ITelegramBotClient _bot;
         private readonly SemaphoreSlim _sendLock = new(1, 1);
 
-        // Thread‑safe cache of symbols currently watched.  Reads are frequent, writes are rare.
         private ImmutableHashSet<string> _watched = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase);
         private ClientWebSocket? _ws;
 
@@ -79,45 +78,53 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockPrice
             _log.LogInformation("WS listener stopped.");
         }
 
-        public ValueTask Handle(StockWatchStatusChanged notification, CancellationToken ct)
+        public async ValueTask Handle(
+            StockWatchStatusChanged notification,
+            CancellationToken ct)
         {
+            if (_ws?.State != WebSocketState.Open)
+                return;
+
+            var shouldSubscribe = notification.IsWatched && !_watched.Contains(notification.Symbol);
+            var shouldUnsubscribe = !notification.IsWatched && _watched.Contains(notification.Symbol);
+
+            var subscribe = shouldSubscribe ? [notification.Symbol] : Array.Empty<string>();
+            var unsubscribe = shouldUnsubscribe ? [notification.Symbol] : Array.Empty<string>();
+
             ImmutableInterlocked.Update(ref _watched, current =>
-                notification.IsWatched ? current.Add(notification.Symbol)
-                                        : current.Remove(notification.Symbol));
+                notification.IsWatched
+                    ? current.Add(notification.Symbol)
+                    : current.Remove(notification.Symbol)
+            );
 
-            Console.WriteLine("entered Handle");
+            if (subscribe.Length == 0 && unsubscribe.Length == 0)
+                return;
 
-            if (_ws?.State == WebSocketState.Open)
+            try
             {
-                _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        await _sendLock.WaitAsync();
-                        try
-                        {
-                            // Use Array.Empty<string>() for empty subscriptions
-                            var sub = notification.IsWatched && !_watched.Contains(notification.Symbol)
-                                ? [notification.Symbol]
-                                : Array.Empty<string>();
-                            var unsub = !notification.IsWatched
-                                ? [notification.Symbol]
-                                : Array.Empty<string>();
-                            await SendSubscriptionAsync(sub, unsub, CancellationToken.None);
-                        }
-                        finally
-                        {
-                            _sendLock.Release();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _log.LogError(ex, "Error occurred while handling StockWatchStatusChanged notification for symbol {Symbol}.", notification.Symbol);
-                    }
-                });
-            }
+                await _sendLock.WaitAsync(ct);
 
-            return ValueTask.CompletedTask;
+                if (ct.IsCancellationRequested)
+                    return;
+
+                await SendSubscriptionAsync(subscribe, unsubscribe, ct);
+            }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
+            {
+                _log.LogInformation("Handle cancelled for symbol {Symbol}", notification.Symbol);
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(
+                    ex,
+                    "Error sending subscribe/unsubscribe for {Symbol}",
+                    notification.Symbol
+                );
+            }
+            finally
+            {
+                _sendLock.Release();
+            }
         }
 
         private async Task<ImmutableHashSet<string>> LoadWatchedSymbolsAsync(CancellationToken ct)
