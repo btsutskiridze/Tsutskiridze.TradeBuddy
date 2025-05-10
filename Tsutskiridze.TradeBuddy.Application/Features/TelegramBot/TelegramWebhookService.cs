@@ -47,28 +47,38 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
 
             _logger.LogInformation("Received message '{MessageText}' from chat {ChatId}", message.Text, message.Chat.Id);
 
-            string command = GetCommand(message.Text);
-
+            var (command, cleanText) = ParseMessage(message.Text);
             var handler = _handlerRegistry.GetHandler(command);
+            message.Text = cleanText;
 
             await handler.HandleMessage(message);
 
             _logger.LogInformation("Message handled by {Handler}", handler.GetType().Name);
         }
 
-
-        private static string GetCommand(string messageText)
+        private static (string command, string cleanText) ParseMessage(string messageText)
         {
-            var parts = messageText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-            if (parts.Length == 0)
+            if (string.IsNullOrWhiteSpace(messageText))
             {
-                return string.Empty;
+                return (string.Empty, string.Empty);
             }
 
-            string command = parts[0].TrimStart('/').ToLowerInvariant();
-            return command;
-        }
+            var parts = messageText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0)
+            {
+                return (string.Empty, messageText);
+            }
 
+            var firstWord = parts[0].TrimStart('/').ToLowerInvariant();
+            var commandParts = firstWord.Split('@');
+            var command = commandParts[0];
+            var botUsername = commandParts.Length > 1 ? commandParts[1] : string.Empty;
+
+            var cleanText = string.IsNullOrEmpty(botUsername)
+                ? messageText
+                : messageText.Replace($"@{botUsername}", string.Empty, StringComparison.OrdinalIgnoreCase);
+
+            return (command, cleanText);
+        }
     }
 }
