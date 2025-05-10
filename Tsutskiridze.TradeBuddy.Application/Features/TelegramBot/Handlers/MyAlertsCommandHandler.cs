@@ -55,10 +55,11 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 
             await _bot.SendMessage(
                 chatId: message.Chat.Id,
-                text: $"Your alerts:\n" +
-                      $"{string.Join("\n", alertList)}",
+                text: $"🔔 *Your Active Alerts* 🔔\n"
+                      + string.Join("\n", alertList.Select((a, i) => $"{i + 1}. *{a}*")),
                 parseMode: ParseMode.Markdown
             );
+
         }
     }
 }
