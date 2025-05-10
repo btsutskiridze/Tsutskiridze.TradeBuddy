@@ -7,53 +7,53 @@ using Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.Helpers;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Extensions
+namespace Tsutskiridze.TradeBuddy.API.Extensions
 {
     public static class ApplicationServiceExtensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddNewsServices()
-                    .AddStockServices()
-                    .AddTelegramServices();
+            services
+                .AddCoreApplicationServices()
+                .AddFeatureServices()
+                .AddHelperServices();
 
+            return services;
+        }
+
+        private static IServiceCollection AddCoreApplicationServices(this IServiceCollection services)
+        {
             services.AddAutoMapper(typeof(AutoMapperProfile));
             services.AddMediator(cfg => cfg.ServiceLifetime = ServiceLifetime.Singleton);
 
-            services.AddSingleton<ICurrencySymbolProvider, CurrencySymbolProvider>();
-
-            // for single instance of SubscriptionManager
-            services.AddSingleton<PriceChangeAlertService>();
-
             return services;
         }
 
-        private static IServiceCollection AddNewsServices(this IServiceCollection services)
+        private static IServiceCollection AddFeatureServices(this IServiceCollection services)
         {
+            // News Services
             services.AddTransient<NewsService>();
 
-            return services;
-        }
-
-        private static IServiceCollection AddStockServices(this IServiceCollection services)
-        {
+            // Stock Services
             services.AddTransient<StockPromptService>();
             services.AddTransient<StockAnalysisService>();
+            services.AddSingleton<PriceChangeAlertService>();
 
-            return services;
-        }
-
-        private static IServiceCollection AddTelegramServices(this IServiceCollection services)
-        {
+            // Telegram Services
             services.AddTransient<ITelegramCommandHandler, QuoteCommandHandler>();
             services.AddTransient<ITelegramCommandHandler, AlertCommandHandler>();
             services.AddTransient<ITelegramCommandHandler, UnknownCommandHandler>();
-
             services.AddSingleton<ITelegramHandlerRegistry, TelegramHandlerRegistry>();
             services.AddTransient<TelegramWebhookService>();
 
             return services;
         }
 
+        private static IServiceCollection AddHelperServices(this IServiceCollection services)
+        {
+            services.AddSingleton<ICurrencySymbolProvider, CurrencySymbolProvider>();
+
+            return services;
+        }
     }
 }

@@ -58,6 +58,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
                     ? _watched.Add(evt.Symbol)
                     : _watched.Remove(evt.Symbol);
 
+                _log.LogInformation("All watched stocks: {Watched}", _watched);
+
                 var payload = new Dictionary<string, IEnumerable<string>>();
                 if (shouldSub) payload["subscribe"] = [evt.Symbol];
                 if (shouldUnsub) payload["unsubscribe"] = [evt.Symbol];

@@ -26,17 +26,17 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
             services
-                .AddDataProviderClients()
-                .AddScrapingClients()
-                .AddThirdPartyIntegrations()
+                .AddExternalApiClients()
+                .AddAIServices()
                 .AddStockMarketServices()
-                .AddHostedAndBackgroundServices();
+                .AddBackgroundServices();
 
             return services;
         }
 
-        private static IServiceCollection AddDataProviderClients(this IServiceCollection services)
+        private static IServiceCollection AddExternalApiClients(this IServiceCollection services)
         {
+            // Financial Data Providers
             services.AddHttpClient<IAlphaVantageClient, AlphaVantageClient>((sp, client) =>
             {
                 var options = sp.GetRequiredService<IOptions<AlphaVantageOptions>>().Value;
@@ -49,19 +49,15 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
                 client.BaseAddress = new Uri(options.BaseUrl);
             });
 
+            // News Providers
             services.AddHttpClient<IRedditNewsProvider, RedditClient>();
-
             services.AddHttpClient<IFinnhubNewsProvider, FinnhubClient>((sp, client) =>
             {
                 var options = sp.GetRequiredService<IOptions<FinnhubOptions>>().Value;
                 client.BaseAddress = new Uri(options.BaseUrl);
             });
 
-            return services;
-        }
-
-        private static IServiceCollection AddScrapingClients(this IServiceCollection services)
-        {
+            // Scraping Services
             services.AddHttpClient<IGoogleNewsProvider, GoogleScraper>();
             services.AddHttpClient<IYahooStockScraper, YahooStockScraper>(configureYahooClient);
             services.AddHttpClient<IYahooNewsProvider, YahooNewsScraper>(configureYahooClient);
@@ -70,7 +66,7 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
             return services;
         }
 
-        private static IServiceCollection AddThirdPartyIntegrations(this IServiceCollection services)
+        private static IServiceCollection AddAIServices(this IServiceCollection services)
         {
             services.AddSingleton<ITelegramBotClient>(sp =>
             {
@@ -90,22 +86,21 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
             return services;
         }
 
-        private static IServiceCollection AddHostedAndBackgroundServices(this IServiceCollection services)
-        {
-            services.AddHostedService<TelegramCommandsRegisterService>();
-
-            return services;
-        }
-
         private static IServiceCollection AddStockMarketServices(this IServiceCollection services)
         {
             services.AddSingleton<IMarketDataTransportClient, YahooMarketDataTransportClient>();
             services.AddSingleton<IPricingMessageProcessor, PricingMessageProcessor>();
 
-            // for single instance of SubscriptionManager
+            //Mediator Single instance
             services.AddSingleton<SubscriptionManager>();
             services.AddSingleton<ISubscriptionManager>(sp => sp.GetRequiredService<SubscriptionManager>());
 
+            return services;
+        }
+
+        private static IServiceCollection AddBackgroundServices(this IServiceCollection services)
+        {
+            services.AddHostedService<TelegramCommandsRegisterService>();
             services.AddHostedService<StockPriceWebSocketListener>();
 
             return services;
