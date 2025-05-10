@@ -56,8 +56,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAlerts
 
                 var symbol = evt.Symbol;
                 var price = evt.Price;
-                var cur = _currency.GetSymbol(alerts[0].Stock.Currency);
-                cur ??= alerts[0].Stock.Currency;
+                var cur = _currency.GetSymbol(alerts[0].Stock.Currency) ?? alerts[0].Stock.Currency;
+
 
                 foreach (var alert in alerts)
                 {
