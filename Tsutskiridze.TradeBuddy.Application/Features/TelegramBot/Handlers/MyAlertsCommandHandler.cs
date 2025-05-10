@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers;
 using Tsutskiridze.TradeBuddy.Core.Constants;
@@ -52,12 +54,30 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             var alertList = priceAlerts
                 .Select(x => $"*{x.Stock.Symbol}* {x.Direction} {_currency.GetSymbol(x.Stock.Currency)}{x.Price}")
                 .ToList();
+            // after building `alertList` and fetching priceAlerts…
+            var text = new StringBuilder()
+                .AppendLine("🔔 *Your Active Alerts* 🔔")
+                .AppendLine()
+                .AppendJoin("\n", alertList
+                    .Select((a, i) => $"{i + 1}. {a}"))
+                .ToString();
+
+            var buttons = priceAlerts
+                .Select(pa => new[] {
+                    InlineKeyboardButton.WithCallbackData(
+                        text: "❌ Remove",
+                        callbackData: $"remove_alert:{pa.ID}"
+                    )
+                })
+                .ToArray();
+
+            var markup = new InlineKeyboardMarkup(buttons);
 
             await _bot.SendMessage(
                 chatId: message.Chat.Id,
-                text: $"🔔 *Your Active Alerts* 🔔\n"
-                      + string.Join("\n", alertList.Select((a, i) => $"{i + 1}. {a}")),
-                parseMode: ParseMode.Markdown
+                text: text,
+                parseMode: ParseMode.Markdown,
+                replyMarkup: markup
             );
 
         }
