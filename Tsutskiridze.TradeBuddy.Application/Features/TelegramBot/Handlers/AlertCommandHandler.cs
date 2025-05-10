@@ -6,11 +6,11 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Events;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
+using Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 using Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram;
 using Tsutskiridze.TradeBuddy.Core.Enums;
-using Tsutskiridze.TradeBuddy.Core.Helpers;
 
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
@@ -25,17 +25,19 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         private readonly ITelegramBotClient _telegramClient;
         private readonly IServiceScopeFactory _scopes;
         private readonly IMediator _publisher;
+        private readonly ICurrencySymbolProvider _currency;
         public AlertCommandHandler(
           IYahooStockScraper scraper,
           ITelegramBotClient telegramClient,
           IServiceScopeFactory scopes,
-          IMediator publisher
-        )
+          IMediator publisher,
+          ICurrencySymbolProvider currency)
         {
             _scraper = scraper;
             _telegramClient = telegramClient;
             _scopes = scopes;
             _publisher = publisher;
+            _currency = currency;
         }
 
         public async Task HandleMessage(Message message)
@@ -121,7 +123,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             var alertDirection = direction == PriceAlertDirection.Above ? "above" : "below";
 
             await _telegramClient.SendMessage(message.Chat.Id,
-                $"✅ Price alert set for {symbol} {alertDirection} {CurrencyHelper.GetCurrencySymbol(quote.Currency)}{price}"
+                $"✅ Price alert set for {symbol} {alertDirection} {_currency.GetSymbol(quote.Currency)}{price}"
             );
         }
     }

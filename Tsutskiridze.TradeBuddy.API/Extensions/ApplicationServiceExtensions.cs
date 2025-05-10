@@ -1,8 +1,11 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
+using Tsutskiridze.TradeBuddy.Application.Features.StockAlerts;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers;
+using Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Mapping;
+using Tsutskiridze.TradeBuddy.Infrastructure.Helpers;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Extensions
 {
@@ -15,7 +18,12 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Extensions
                     .AddTelegramServices();
 
             services.AddAutoMapper(typeof(AutoMapperProfile));
-            services.AddMediator(cfg => cfg.ServiceLifetime = ServiceLifetime.Transient);
+            services.AddMediator(cfg => cfg.ServiceLifetime = ServiceLifetime.Singleton);
+
+            services.AddSingleton<ICurrencySymbolProvider, CurrencySymbolProvider>();
+
+            // for single instance of SubscriptionManager
+            services.AddSingleton<PriceChangeAlertService>();
 
             return services;
         }

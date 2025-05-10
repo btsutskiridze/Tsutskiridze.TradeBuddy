@@ -5,6 +5,7 @@ using Tsutskiridze.TradeBuddy.Application.Interfaces;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.AI;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.AI.OpenAI;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.News;
+using Tsutskiridze.TradeBuddy.Application.Interfaces.StockMarket;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema;
@@ -28,6 +29,7 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
                 .AddDataProviderClients()
                 .AddScrapingClients()
                 .AddThirdPartyIntegrations()
+                .AddStockMarketServices()
                 .AddHostedAndBackgroundServices();
 
             return services;
@@ -90,17 +92,22 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
 
         private static IServiceCollection AddHostedAndBackgroundServices(this IServiceCollection services)
         {
-            services.AddHostedServices();
-
-            services.AddSingleton<StockPriceWebSocketListener>();
-            services.AddSingleton<IHostedService>(sp => sp.GetRequiredService<StockPriceWebSocketListener>());
+            services.AddHostedService<TelegramCommandsRegisterService>();
 
             return services;
         }
 
-        private static IServiceCollection AddHostedServices(this IServiceCollection services)
+        private static IServiceCollection AddStockMarketServices(this IServiceCollection services)
         {
-            services.AddHostedService<TelegramCommandsRegisterService>();
+            services.AddSingleton<IMarketDataTransportClient, YahooMarketDataTransportClient>();
+            services.AddSingleton<IPricingMessageProcessor, PricingMessageProcessor>();
+
+            // for single instance of SubscriptionManager
+            services.AddSingleton<SubscriptionManager>();
+            services.AddSingleton<ISubscriptionManager>(sp => sp.GetRequiredService<SubscriptionManager>());
+
+            services.AddHostedService<StockPriceWebSocketListener>();
+
             return services;
         }
 
