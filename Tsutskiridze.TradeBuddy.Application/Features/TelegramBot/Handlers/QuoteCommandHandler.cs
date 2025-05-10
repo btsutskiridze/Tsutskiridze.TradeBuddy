@@ -12,7 +12,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
     public class QuoteCommandHandler : ITelegramCommandHandler
     {
         public string Command => TelegramCommands.Quote;
-        public string Description => "/quote <symbol>";
+        public string Description => "<symbol>";
 
         private readonly ILogger<QuoteCommandHandler> _logger;
         private readonly StockAnalysisService _stockService;
