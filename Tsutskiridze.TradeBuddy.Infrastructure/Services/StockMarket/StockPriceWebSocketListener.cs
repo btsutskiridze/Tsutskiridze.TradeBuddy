@@ -16,7 +16,7 @@ using Tsutskiridze.TradeBuddy.Core.Enums;
 using Tsutskiridze.TradeBuddy.Core.Helpers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Context;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockPrice
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
 {
     public sealed class StockPriceWebSocketListener : BackgroundService, INotificationHandler<StockWatchStatusChanged>
     {

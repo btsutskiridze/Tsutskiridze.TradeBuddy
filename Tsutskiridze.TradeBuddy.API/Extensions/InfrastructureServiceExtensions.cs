@@ -15,7 +15,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Google;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo.Utilities;
-using Tsutskiridze.TradeBuddy.Infrastructure.Services.StockPrice;
+using Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket;
 using Tsutskiridze.TradeBuddy.Infrastructure.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.API.Extensions
