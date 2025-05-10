@@ -4,7 +4,6 @@ using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers;
 using Tsutskiridze.TradeBuddy.Core.Constants;
@@ -62,22 +61,10 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                     .Select((a, i) => $"{i + 1}. {a}"))
                 .ToString();
 
-            var buttons = priceAlerts
-                .Select(pa => new[] {
-                    InlineKeyboardButton.WithCallbackData(
-                        text: "❌ Remove",
-                        callbackData: $"remove_alert:{pa.ID}"
-                    )
-                })
-                .ToArray();
-
-            var markup = new InlineKeyboardMarkup(buttons);
-
             await _bot.SendMessage(
                 chatId: message.Chat.Id,
-                text: text,
                 parseMode: ParseMode.Markdown,
-                replyMarkup: markup
+                text: text
             );
 
         }
