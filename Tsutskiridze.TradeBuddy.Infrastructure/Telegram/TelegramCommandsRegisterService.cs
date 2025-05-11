@@ -28,7 +28,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Telegram
         {
             var commands = _registry
                 .GetHandlers()
-                .Where(h => !string.IsNullOrWhiteSpace(h.Command) && typeof(UnknownCommandHandler).GetType() != h.GetType())
+                .Where(h => !string.IsNullOrWhiteSpace(h.Command) && typeof(UnknownCommandHandler) != h.GetType())
                 .Select(h => new BotCommand
                 {
                     Command = h.Command!,
