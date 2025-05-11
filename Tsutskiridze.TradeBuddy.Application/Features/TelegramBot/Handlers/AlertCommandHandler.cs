@@ -18,8 +18,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
     public class AlertCommandHandler : ITelegramCommandHandler
     {
         public string Command => TelegramCommands.Alert;
-
-        public string Description => "<symbol> <above|below> <price>";
+        public string Pattern => "<symbol> <above|below> <price>";
+        public string Description => $"Set a price alert for a stock. e.g: /{Command} NVDA above 300";
 
         private readonly IYahooStockScraper _scraper;
         private readonly ITelegramBotClient _telegramClient;

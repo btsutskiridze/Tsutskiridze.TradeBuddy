@@ -1,8 +1,10 @@
 ﻿using Mediator;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Tsutskiridze.TradeBuddy.Application.Events;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
@@ -16,8 +18,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
     public class RemoveAlertCommandHandler : ITelegramCommandHandler
     {
         public string Command => TelegramCommands.RemoveAlert;
-
-        public string Description => "<symbol> <above|below> <price>";
+        public string Pattern => "<symbol> <above|below> <price>";
+        public string Description => $"Remove a price alert for a stock. e.g: /{Command} NVDA above 300";
 
         private readonly IYahooStockScraper _scraper;
         private readonly ITelegramBotClient _telegramClient;
@@ -71,6 +73,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                              x.Stock.Symbol == symbol &&
                              x.Direction == direction &&
                              x.Price == price)
+                .Include(x => x.Stock)
                 .FirstOrDefault();
 
             if (alert == null)
@@ -81,10 +84,28 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             }
 
             db.Set<PriceAlert>().Remove(alert);
+
+            bool publishEvent = false;
+
+            var otherExists = await db.Set<PriceAlert>()
+                .AnyAsync(pa => pa.StockID == alert.StockID && pa.ID != alert.ID);
+
+            if (!otherExists)
+            {
+                alert.Stock.IsWatched = false;
+                publishEvent = true;
+            }
+
+            db.Set<PriceAlert>().Remove(alert);
             await db.SaveChangesAsync();
 
+            if (publishEvent)
+                await _publisher.Publish(new StockWatchStatusChanged(symbol, false));
+
+            var cur = _currency.GetSymbol(alert.Stock.Currency) ?? alert.Stock.Currency;
             await _telegramClient.SendMessage(message.Chat.Id, "" +
-                $"Alert for '{symbol}' with direction '{direction}' and price '{price}' has been removed.");
+                $"Alert for *{symbol}* with direction *{direction}* and price *{cur}{price}* has been removed.");
+
         }
     }
 }

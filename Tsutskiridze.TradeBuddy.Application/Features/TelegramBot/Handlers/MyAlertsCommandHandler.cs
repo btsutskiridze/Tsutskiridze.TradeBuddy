@@ -14,7 +14,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
     public class MyAlertsCommandHandler : ITelegramCommandHandler
     {
         public string Command => TelegramCommands.MyAlerts;
-        public string Description => "List all your alerts";
+        public string Pattern => string.Empty;
+        public string Description => $"List all your alerts e.g: /{Command}";
 
         private readonly ITelegramBotClient _bot;
         private readonly IServiceScopeFactory _scopes;
@@ -53,7 +54,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             var alertList = priceAlerts
                 .Select(x => $"*{x.Stock.Symbol}* {x.Direction} {_currency.GetSymbol(x.Stock.Currency)}{x.Price}")
                 .ToList();
-            // after building `alertList` and fetching priceAlerts…
+
             var text = new StringBuilder()
                 .AppendLine("🔔 *Your Active Alerts* 🔔")
                 .AppendLine()

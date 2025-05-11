@@ -1,5 +1,4 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers;
-using Tsutskiridze.TradeBuddy.Core.Constants;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
 {
@@ -14,7 +13,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
 
         public ITelegramCommandHandler GetHandler(string command)
         {
-            return _handlers.TryGetValue(command, out var handler) ? handler : _handlers[TelegramCommands.Unknown];
+            return _handlers.TryGetValue(command, out var handler) ? handler : _handlers["unknown_command"];
         }
 
         public IEnumerable<ITelegramCommandHandler> GetHandlers()

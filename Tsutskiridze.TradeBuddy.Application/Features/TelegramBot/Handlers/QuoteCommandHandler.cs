@@ -12,7 +12,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
     public class QuoteCommandHandler : ITelegramCommandHandler
     {
         public string Command => TelegramCommands.Quote;
-        public string Description => "<symbol>";
+        public string Pattern => "<symbol>";
+        public string Description => $"Get stock analysis for a symbol. e.g: /{Command} NVDA";
 
         private readonly ILogger<QuoteCommandHandler> _logger;
         private readonly StockAnalysisService _stockService;
@@ -24,8 +25,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         private static DateTime _lastExecution = DateTime.MinValue;
         private static readonly object _lock = new();
 
-        private const int MaxAnalysisCount = 100; // Daily limit for analyses
-        private const int DelayBetweenAnalyses = 5; // Delay in seconds between analyses
+        private const int MaxAnalysisCount = 100;
+        private const int DelayBetweenAnalyses = 5;
 
         public QuoteCommandHandler(ILogger<QuoteCommandHandler> logger, StockAnalysisService stockService, ITelegramBotClient botClient, IYahooStockScraper yahooStockScraper)
         {
@@ -98,7 +99,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 }
 
 
-                _logger.LogInformation("Received stock command for symbol {StockSymbol}", stockSymbol);
+                _logger.LogDebug("Received stock command for symbol {StockSymbol}", stockSymbol);
 
                 lock (_lock)
                 {

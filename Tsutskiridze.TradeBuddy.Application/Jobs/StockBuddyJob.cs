@@ -1,6 +1,8 @@
-﻿using System.Net.WebSockets;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Net.WebSockets;
 using Tsutskiridze.Bloom.Core.Infrastructure.Jobs;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
+using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
 
 namespace Tsutskiridze.TradeBuddy.Application.Jobs
@@ -27,16 +29,32 @@ namespace Tsutskiridze.TradeBuddy.Application.Jobs
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            //var getCommandHandlers = _provider.GetServices<ITelegramCommandHandler>();
+            var getCommandHandlers = _provider.GetServices<ITelegramCommandHandler>();
 
             //var alertcommandhandler = getCommandHandlers.FirstOrDefault(x => x.Command == "alert");
 
-            //if (alertcommandhandler == null)
-            //{
-            //    throw new Exception("AlertCommandHandler not found");
-            //}
+            //var removealertcommandhandler = getCommandHandlers.FirstOrDefault(x => x.Command == "removealert");
 
-            //await Task.Delay(3000, cancellationToken);
+            //await alertcommandhandler!.HandleMessage(new Telegram.Bot.Types.Message
+            //{
+            //    Chat = new Telegram.Bot.Types.Chat
+            //    {
+            //        Id = -4659763511
+            //    },
+            //    Text = "/alert AAPL above 150"
+            //});
+
+
+            //await Task.Delay(6000, cancellationToken);
+
+            //await removealertcommandhandler!.HandleMessage(new Telegram.Bot.Types.Message
+            //{
+            //    Chat = new Telegram.Bot.Types.Chat
+            //    {
+            //        Id = -4659763511
+            //    },
+            //    Text = "/removealert AAPL above 150"
+            //});
 
             //foreach (var handler in getCommandHandlers)
             //{

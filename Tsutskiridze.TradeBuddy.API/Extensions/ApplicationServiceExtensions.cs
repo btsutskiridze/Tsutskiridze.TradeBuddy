@@ -40,11 +40,13 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
             services.AddSingleton<PriceChangeAlertService>();
 
             // Telegram Services
+            services.AddTransient<ITelegramCommandHandler, HelpCommandHandler>();
             services.AddTransient<ITelegramCommandHandler, QuoteCommandHandler>();
             services.AddTransient<ITelegramCommandHandler, AlertCommandHandler>();
             services.AddTransient<ITelegramCommandHandler, MyAlertsCommandHandler>();
             services.AddTransient<ITelegramCommandHandler, RemoveAlertCommandHandler>();
             services.AddTransient<ITelegramCommandHandler, UnknownCommandHandler>();
+
             services.AddSingleton<ITelegramHandlerRegistry, TelegramHandlerRegistry>();
             services.AddTransient<TelegramWebhookService>();
 
