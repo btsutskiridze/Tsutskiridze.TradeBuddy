@@ -34,3 +34,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
         }
     }
 }
+
