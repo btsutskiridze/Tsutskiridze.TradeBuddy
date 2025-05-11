@@ -82,11 +82,12 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             {
                 await _botClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
 
-                string stockSymbol = message.Text!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+
+                string? stockSymbol = GetCommandParameter(message.Text);
 
                 if (string.IsNullOrWhiteSpace(stockSymbol))
                 {
-                    await _botClient.SendMessage(message.Chat.Id, "/stock <symbol>");
+                    await _botClient.SendMessage(message.Chat.Id, $"e.g: /{Command} NVDA");
                     return;
                 }
 
@@ -117,5 +118,17 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 await _botClient.SendMessage(message.Chat.Id, "Failed to analyze stock.");
             }
         }
+
+        private string? GetCommandParameter(string? command)
+        {
+            if (string.IsNullOrWhiteSpace(command))
+            {
+                return null;
+            }
+
+            var parts = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            return parts.Length > 1 ? parts[1].ToUpperInvariant() : null;
+        }
+
     }
 }

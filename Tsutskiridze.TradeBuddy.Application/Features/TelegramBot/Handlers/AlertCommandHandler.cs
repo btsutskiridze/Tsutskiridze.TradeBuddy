@@ -54,7 +54,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 !decimal.TryParse(parts[3], out var price))
             {
                 await _telegramClient.SendMessage(message.Chat.Id,
-                    "/alert <symbol> <above|below> <price>");
+                    $"e.g: /{Command} NVDA above(or below) 300");
                 return;
             }
 
