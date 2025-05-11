@@ -86,7 +86,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 
                 if (string.IsNullOrWhiteSpace(stockSymbol))
                 {
-                    await _botClient.SendMessage(message.Chat.Id, "Please provide a stock symbol e.g: /stock AAPL");
+                    await _botClient.SendMessage(message.Chat.Id, "/stock <symbol>");
                     return;
                 }
 

@@ -54,7 +54,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 !decimal.TryParse(parts[3], out var price))
             {
                 await _telegramClient.SendMessage(message.Chat.Id,
-                    "Invalid command format. Use: /alert <symbol> <above|below> <price>");
+                    "/alert <symbol> <above|below> <price>");
                 return;
             }
 
