@@ -15,27 +15,27 @@ namespace Tsutskiridze.TradeBuddy.Core.Entities
             public string price { get; set; }
 
             [Required]
-            [Description("50-day avg and yearly high")]
+            [Description("50-day avg and 52-week high prices")]
             public BenchmarkMetrics bench { get; set; }
 
             [Required]
-            [Description("Trading volume vs avg (50-60chars)")]
+            [Description("Volume vs 50-day avg (50-60 chars)")]
             public string volAnalysis { get; set; }
 
             [Required]
-            [Description("Sentiment analysis from news")]
+            [Description("Sentiment by news source")]
             public List<SentimentDetail> news { get; set; }
 
             [Required]
-            [Description("AI rec and confidence")]
+            [Description("AI recommendation and confidence")]
             public AiAnalysis ai { get; set; }
 
             [Required]
-            [Description("Analysis reasons (60-70chars each)")]
+            [Description("Key reasons (60-70 chars each)")]
             public List<string> reason { get; set; }
 
             [Required]
-            [Description("Overall news sentiment")]
+            [Description("Aggregate news sentiment")]
             public OveralNewsAnalysis newsOverall { get; set; }
 
             [JsonIgnore]
@@ -49,18 +49,18 @@ namespace Tsutskiridze.TradeBuddy.Core.Entities
             public string avg50 { get; set; }
 
             [Required]
-            [Description("Yearly high price, e.g. $4.43")]
+            [Description("52-week high price, e.g. \"$4.43\"")]
             public string yearHigh { get; set; }
         }
 
         public class SentimentDetail
         {
             [Required]
-            [Description("News source, e.g. Google")]
+            [Description("Source, e.g. \"Google\"")]
             public string src { get; set; }
 
             [Required]
-            [Description("Sentiment (Positive, Negative, Neutral)")]
+            [Description("Positive | Negative | Neutral")]
             public string sent { get; set; }
 
             [Required]
@@ -68,14 +68,14 @@ namespace Tsutskiridze.TradeBuddy.Core.Entities
             public string conf { get; set; }
 
             [Required]
-            [Description("Short sentiment explanation (50-60chars)")]
+            [Description("50-60-char explanation")]
             public string exp { get; set; }
         }
 
         public class AiAnalysis
         {
             [Required]
-            [Description("Rec (HOLD, BUY, SELL)")]
+            [Description("BUY | SELL | HOLD")]
             public string rec { get; set; }
 
             [Required]
@@ -83,7 +83,7 @@ namespace Tsutskiridze.TradeBuddy.Core.Entities
             public string conf { get; set; }
 
             [Required]
-            [Description("Rec explanation (50-60chars)")]
+            [Description("50-60-char explanation")]
             public string exp { get; set; }
         }
 
@@ -94,11 +94,11 @@ namespace Tsutskiridze.TradeBuddy.Core.Entities
             public string sent { get; set; }
 
             [Required]
-            [Description("Overall confidence")]
+            [Description("Overall confidence, e.g. \"70%\"")]
             public string conf { get; set; }
 
             [Required]
-            [Description("Overall explanation (60-70chars)")]
+            [Description("60-70-char explanation")]
             public string exp { get; set; }
         }
 
