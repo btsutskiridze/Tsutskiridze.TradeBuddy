@@ -5,16 +5,25 @@ using Tsutskiridze.TradeBuddy.Application.Interfaces.StockMarket;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
 {
-    public class YahooMarketDataTransportClient : IMarketDataTransportClient
+    public class YahooMarketDataTransportClient : IMarketDataTransportClient, IAsyncDisposable
     {
         private readonly ILogger<YahooMarketDataTransportClient> _log;
-        private readonly ClientWebSocket _ws = new();
+        private ClientWebSocket? _ws;
 
         public YahooMarketDataTransportClient(ILogger<YahooMarketDataTransportClient> log)
             => _log = log;
 
         public async Task ConnectAsync(CancellationToken ct)
         {
+            if (_ws?.State is WebSocketState.Open or WebSocketState.Connecting)
+                return; // already connected/connecting
+
+            _ws?.Dispose();
+            _ws = new ClientWebSocket
+            {
+                Options = { KeepAliveInterval = TimeSpan.FromSeconds(30) } // optional ping
+            };
+
             await _ws.ConnectAsync(new Uri("wss://streamer.finance.yahoo.com/?version=2"), ct);
             _log.LogInformation("Connected to Yahoo WS");
         }
@@ -49,9 +58,19 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
 
         public ValueTask DisposeAsync()
         {
-            if (_ws.State != WebSocketState.Open) return ValueTask.CompletedTask;
-
-            return new(_ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Bye", CancellationToken.None));
+            if (_ws is null) return ValueTask.CompletedTask;
+            try
+            {
+                if (_ws.State == WebSocketState.Open)
+                    return new(_ws.CloseAsync(
+                        WebSocketCloseStatus.NormalClosure, "Bye", CancellationToken.None));
+            }
+            finally
+            {
+                _ws.Dispose();
+                _ws = null;
+            }
+            return ValueTask.CompletedTask;
         }
     }
 }
