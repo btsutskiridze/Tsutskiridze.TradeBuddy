@@ -21,7 +21,12 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI
         {
             List<ChatMessage> messages =
             [
-                    new UserChatMessage(prompt),
+                new SystemChatMessage(
+                    "You are an expert stock‐market analyst with 20 years of experience. " +
+                    "Provide concise, data‐driven BUY, SELL or HOLD recommendations, " +
+                    "backed by price trends, volume analysis, earnings, and news sentiment."
+                ),
+                new UserChatMessage(prompt),
             ];
 
             ChatCompletionOptions options = new()
