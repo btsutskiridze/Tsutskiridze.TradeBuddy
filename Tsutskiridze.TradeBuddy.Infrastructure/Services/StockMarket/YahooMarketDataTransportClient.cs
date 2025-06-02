@@ -21,7 +21,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
             _ws?.Dispose();
             _ws = new ClientWebSocket
             {
-                Options = { KeepAliveInterval = TimeSpan.FromSeconds(30) } // optional ping
+                Options = { KeepAliveInterval = TimeSpan.FromSeconds(20) } // optional ping
             };
 
             await _ws.ConnectAsync(new Uri("wss://streamer.finance.yahoo.com/?version=2"), ct);
@@ -48,7 +48,13 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
                 do
                 {
                     res = await _ws.ReceiveAsync(seg, ct);
-                    if (res.MessageType == WebSocketMessageType.Close) yield break;
+                    if (res.MessageType == WebSocketMessageType.Close)
+                    {
+                        await _ws.CloseOutputAsync(
+                            WebSocketCloseStatus.NormalClosure, "Bye", ct);
+                        yield break;                     
+                    }
+
                     ms.Write(buffer, 0, res.Count);
                 } while (!res.EndOfMessage);
 
