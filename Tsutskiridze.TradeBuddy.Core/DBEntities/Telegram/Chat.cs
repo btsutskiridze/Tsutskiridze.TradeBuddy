@@ -9,8 +9,11 @@ namespace Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram
         [Key]
         public Guid ID { get; set; }
 
-        [Required]
-        public long TelegramChatID { get; set; }
+        public long? TelegramChatID { get; set; }
+
+        public string? PrivateName { get; set; }
+
+        public string? ActivationToken { get; set; }
 
         [InverseProperty(nameof(PriceAlert.Chat))]
         public List<PriceAlert> PriceAlerts { get; } = new();

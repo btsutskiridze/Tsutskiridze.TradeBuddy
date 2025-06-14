@@ -15,7 +15,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    telegram_chat_id = table.Column<long>(type: "bigint", nullable: false)
+                    telegram_chat_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {

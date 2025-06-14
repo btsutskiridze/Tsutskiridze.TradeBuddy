@@ -1,4 +1,5 @@
-﻿using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
+﻿using System.Reflection;
+using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAlerts;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
@@ -40,15 +41,23 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
             services.AddSingleton<PriceChangeAlertService>();
 
             // Telegram Services
-            services.AddTransient<ITelegramCommandHandler, HelpCommandHandler>();
-            services.AddTransient<ITelegramCommandHandler, QuoteCommandHandler>();
-            services.AddTransient<ITelegramCommandHandler, AlertCommandHandler>();
-            services.AddTransient<ITelegramCommandHandler, MyAlertsCommandHandler>();
-            services.AddTransient<ITelegramCommandHandler, RemoveAlertCommandHandler>();
-            services.AddTransient<ITelegramCommandHandler, UnknownCommandHandler>();
-
+            services.AddTelegramCommandHandlers();
             services.AddSingleton<ITelegramHandlerRegistry, TelegramHandlerRegistry>();
             services.AddTransient<TelegramWebhookService>();
+
+            return services;
+        }
+
+        private static IServiceCollection AddTelegramCommandHandlers(this IServiceCollection services)
+        {
+            var handlers = Assembly.GetAssembly(typeof(ITelegramCommandHandler))!
+                .GetTypes()
+                .Where(t => !t.IsInterface && !t.IsAbstract && typeof(ITelegramCommandHandler).IsAssignableFrom(t));
+
+            foreach (var handler in handlers)
+            {
+                services.AddTransient(typeof(ITelegramCommandHandler), handler);
+            }
 
             return services;
         }
