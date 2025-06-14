@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using Tsutskiridze.Bloom.Core.Infrastructure.Jobs;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
-using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
 
 namespace Tsutskiridze.TradeBuddy.Application.Jobs
@@ -29,7 +27,15 @@ namespace Tsutskiridze.TradeBuddy.Application.Jobs
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            var getCommandHandlers = _provider.GetServices<ITelegramCommandHandler>();
+            //var getCommandHandlers = _provider.GetServices<ITelegramCommandHandler>();
+
+            //var data = await _yahooSraper.GetStockQuote("AAPL");
+
+            //Console.WriteLine("=======================");
+            //Console.WriteLine(JsonConvert.SerializeObject(data.Name) ?? "No data for AAPL");
+            //Console.WriteLine("=======================");
+
+
 
             //var alertcommandhandler = getCommandHandlers.FirstOrDefault(x => x.Command == "alert");
 
