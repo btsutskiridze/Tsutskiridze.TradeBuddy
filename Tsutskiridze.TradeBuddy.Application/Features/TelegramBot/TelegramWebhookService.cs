@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
@@ -49,7 +50,10 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
                 return;
             }
 
-            if (await db.Set<Core.DBEntities.Telegram.Chat>().FindAsync(message.Chat.Id) is null)
+            var chat = await db.Set<Core.DBEntities.Telegram.Chat>()
+                .FirstOrDefaultAsync(x => x.TelegramChatID == message.Chat.Id);
+
+            if (chat == null)
             {
                 _logger.LogDebug("Activated Chat {ChatId} not found", message.Chat.Id);
                 await telegramClient.SendMessage(
