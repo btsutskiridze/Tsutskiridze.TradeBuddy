@@ -131,14 +131,20 @@ pipeline {
     }
     cleanup {
       sh '''
-        # Remove the build-tag image; ignore errors
-        docker image rm -f "${REGISTRY_HOST}/${IMAGE_NAME}:${IMAGE_TAG}" || true
-
-        if [ "${PUSH_LATEST}" = "true" ]; then
-          docker image rm -f "${REGISTRY_HOST}/${IMAGE_NAME}:latest" || true
-        fi
-
+        set +e
+  
+        # remove the just-built images
+        docker image rm -f "${FULL_IMAGE}" 2>/dev/null || true
+        if [ -n "${LATEST_IMAGE}" ]; then docker image rm -f "${LATEST_IMAGE}" 2>/dev/null || true; fi
+  
+        # aggressive pruning (space-focused)
+        docker container prune -f || true
+        docker image prune -af || true
         docker builder prune -af || true
+        docker network prune -f || true
+  
+        # OPTIONAL: also remove SDK image every run (max space, slowest builds)
+        # docker image rm -f mcr.microsoft.com/dotnet/sdk:8.0 || true
       '''
     }
   }
