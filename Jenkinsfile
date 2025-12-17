@@ -23,7 +23,22 @@ pipeline {
         checkout scm
       }
     }
-
+  
+    stage('Detect Solution') {
+      steps {
+        sh '''
+          set -e
+          echo "Workspace: $(pwd)"
+          find . -maxdepth 4 -name "*.sln" -print
+        '''
+        script {
+          env.SOLUTION = sh(script: "set -e; find . -maxdepth 4 -name '*.sln' | head -n 1", returnStdout: true).trim()
+          if (!env.SOLUTION) { error("No .sln found in repo (maxdepth 4)") }
+        }
+        sh 'echo "Using SOLUTION=${SOLUTION}"; test -f "${SOLUTION}"'
+      }
+    }
+    
     stage('Validate repo layout') {
       steps {
         sh '''
