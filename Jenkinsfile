@@ -1,5 +1,5 @@
 pipeline {
-  agent any
+  agent { label 'docker' }
 
   options {
     timestamps()
@@ -7,19 +7,11 @@ pipeline {
   }
 
   environment {
-    // Self-hosted registry (no scheme)
-    REGISTRY_HOST = 'registry.lunacore.space'
-
-    // Image path in your registry (adjust to your repo naming convention)
-    IMAGE_NAME = 'btsutskiridze/Tsutskiridze.TradeBuddy'
-
-    // Dockerfile location (adjust if needed)
-    DOCKERFILE_PATH = 'Dockerfile'
-
-    // Optional: solution path (adjust)
-    SOLUTION = 'Tsutskiridze.TradeBuddy.sln'
-
-    // Official SDK image for build/test
+    REGISTRY_HOST    = 'registry.lunacore.space'
+    IMAGE_NAME       = 'btsutskiridze/tsutskiridze-tradebuddy' // recommended: lowercase for registry paths
+    DOCKERFILE_PATH  = 'Dockerfile'
+    COMPOSE_FILE     = 'docker-compose.yml'
+    SOLUTION         = 'Tsutskiridze.TradeBuddy.sln'
     DOTNET_SDK_IMAGE = 'mcr.microsoft.com/dotnet/sdk:8.0'
   }
 
@@ -30,9 +22,24 @@ pipeline {
       }
     }
 
+    stage('Validate repo layout') {
+      steps {
+        sh '''
+          set -e
+          test -f "${SOLUTION}"        || (echo "Missing ${SOLUTION}"; exit 1)
+          test -f "${DOCKERFILE_PATH}" || (echo "Missing ${DOCKERFILE_PATH}"; exit 1)
+          test -f "${COMPOSE_FILE}"    || (echo "Missing ${COMPOSE_FILE}"; exit 1)
+
+          echo "Repo layout OK:"
+          ls -la
+        '''
+      }
+    }
+
     stage('Restore') {
       steps {
         sh '''
+          set -e
           docker run --rm \
             -v "$PWD":/src -w /src \
             ${DOTNET_SDK_IMAGE} \
@@ -44,6 +51,7 @@ pipeline {
     stage('Build') {
       steps {
         sh '''
+          set -e
           docker run --rm \
             -v "$PWD":/src -w /src \
             ${DOTNET_SDK_IMAGE} \
@@ -55,6 +63,7 @@ pipeline {
     stage('Test') {
       steps {
         sh '''
+          set -e
           docker run --rm \
             -v "$PWD":/src -w /src \
             ${DOTNET_SDK_IMAGE} \
@@ -70,16 +79,31 @@ pipeline {
       }
     }
 
-    stage('Docker Build') {
+    stage('Compute Image Tags') {
       steps {
         script {
           def shortCommit = sh(script: 'git rev-parse --short=8 HEAD', returnStdout: true).trim()
-          def safeBranch  = (env.BRANCH_NAME ?: 'local').replaceAll('[^a-zA-Z0-9_.-]', '-')
+          def safeBranch  = (env.BRANCH_NAME ?: 'local').replaceAll('[^a-zA-Z0-9_.-]', '-').toLowerCase()
           env.IMAGE_TAG   = "${safeBranch}-${env.BUILD_NUMBER}-${shortCommit}"
           env.FULL_IMAGE  = "${env.REGISTRY_HOST}/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
+
+          // Optional "latest" only for main/master
+          env.LATEST_IMAGE = (safeBranch == 'main' || safeBranch == 'master')
+            ? "${env.REGISTRY_HOST}/${env.IMAGE_NAME}:latest"
+            : ""
         }
 
         sh '''
+          echo "FULL_IMAGE=${FULL_IMAGE}"
+          if [ -n "${LATEST_IMAGE}" ]; then echo "LATEST_IMAGE=${LATEST_IMAGE}"; fi
+        '''
+      }
+    }
+
+    stage('Docker Build') {
+      steps {
+        sh '''
+          set -e
           docker build \
             -f "${DOCKERFILE_PATH}" \
             -t "${FULL_IMAGE}" \
@@ -96,26 +120,30 @@ pipeline {
           passwordVariable: 'REG_PASS'
         )]) {
           sh '''
+            set -e
             echo "$REG_PASS" | docker login "${REGISTRY_HOST}" -u "$REG_USER" --password-stdin
+
             docker push "${FULL_IMAGE}"
+
+            if [ -n "${LATEST_IMAGE}" ]; then
+              docker tag "${FULL_IMAGE}" "${LATEST_IMAGE}"
+              docker push "${LATEST_IMAGE}"
+            fi
           '''
         }
-
       }
     }
   }
 
   post {
     always {
-      sh '''
-        docker logout "${REGISTRY_HOST}" || true
-      '''
+      sh 'docker logout "${REGISTRY_HOST}" || true'
     }
     cleanup {
-      // Optional cleanup to keep disk under control on the agent
       sh '''
         docker image rm -f "${FULL_IMAGE}" || true
         if [ -n "${LATEST_IMAGE}" ]; then docker image rm -f "${LATEST_IMAGE}" || true; fi
+        docker builder prune -af || true
       '''
     }
   }
