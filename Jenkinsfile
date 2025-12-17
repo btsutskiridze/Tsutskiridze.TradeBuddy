@@ -8,9 +8,11 @@ pipeline {
 
   environment {
     REGISTRY_HOST    = 'registry.lunacore.space'
-    IMAGE_NAME       = 'btsutskiridze/tsutskiridze-tradebuddy' // recommended: lowercase for registry paths
-    DOCKERFILE_PATH  = 'Dockerfile'
+    IMAGE_NAME       = 'btsutskiridze/tsutskiridze-tradebuddy' // keep lowercase
+    IMAGE_TAG        = ''   // computed later
     COMPOSE_FILE     = 'docker-compose.yml'
+    COMPOSE_SERVICE  = 'tradebuddy'
+
     SOLUTION         = 'Tsutskiridze.TradeBuddy.sln'
     DOTNET_SDK_IMAGE = 'mcr.microsoft.com/dotnet/sdk:8.0'
   }
@@ -26,9 +28,8 @@ pipeline {
       steps {
         sh '''
           set -e
-          test -f "${SOLUTION}"        || (echo "Missing ${SOLUTION}"; exit 1)
-          test -f "${DOCKERFILE_PATH}" || (echo "Missing ${DOCKERFILE_PATH}"; exit 1)
-          test -f "${COMPOSE_FILE}"    || (echo "Missing ${COMPOSE_FILE}"; exit 1)
+          test -f "${SOLUTION}"     || (echo "Missing ${SOLUTION}"; exit 1)
+          test -f "${COMPOSE_FILE}" || (echo "Missing ${COMPOSE_FILE}"; exit 1)
 
           echo "Repo layout OK:"
           ls -la
@@ -85,34 +86,34 @@ pipeline {
           def shortCommit = sh(script: 'git rev-parse --short=8 HEAD', returnStdout: true).trim()
           def safeBranch  = (env.BRANCH_NAME ?: 'local').replaceAll('[^a-zA-Z0-9_.-]', '-').toLowerCase()
           env.IMAGE_TAG   = "${safeBranch}-${env.BUILD_NUMBER}-${shortCommit}"
-          env.FULL_IMAGE  = "${env.REGISTRY_HOST}/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
 
-          // Optional "latest" only for main/master
-          env.LATEST_IMAGE = (safeBranch == 'main' || safeBranch == 'master')
-            ? "${env.REGISTRY_HOST}/${env.IMAGE_NAME}:latest"
-            : ""
+          // Optional: latest only for main/master
+          env.PUSH_LATEST = (safeBranch == 'main' || safeBranch == 'master') ? 'true' : 'false'
         }
 
         sh '''
-          echo "FULL_IMAGE=${FULL_IMAGE}"
-          if [ -n "${LATEST_IMAGE}" ]; then echo "LATEST_IMAGE=${LATEST_IMAGE}"; fi
+          echo "REGISTRY_HOST=${REGISTRY_HOST}"
+          echo "IMAGE_NAME=${IMAGE_NAME}"
+          echo "IMAGE_TAG=${IMAGE_TAG}"
+          echo "PUSH_LATEST=${PUSH_LATEST}"
         '''
       }
     }
 
-    stage('Docker Build') {
+    stage('Compose Build') {
       steps {
         sh '''
           set -e
-          docker build \
-            -f "${DOCKERFILE_PATH}" \
-            -t "${FULL_IMAGE}" \
-            .
+          export REGISTRY_HOST="${REGISTRY_HOST}"
+          export IMAGE_NAME="${IMAGE_NAME}"
+          export IMAGE_TAG="${IMAGE_TAG}"
+
+          docker compose -f "${COMPOSE_FILE}" build "${COMPOSE_SERVICE}"
         '''
       }
     }
 
-    stage('Registry Login & Push') {
+    stage('Registry Login & Compose Push') {
       steps {
         withCredentials([usernamePassword(
           credentialsId: 'registry-creds',
@@ -121,11 +122,18 @@ pipeline {
         )]) {
           sh '''
             set -e
+            export REGISTRY_HOST="${REGISTRY_HOST}"
+            export IMAGE_NAME="${IMAGE_NAME}"
+            export IMAGE_TAG="${IMAGE_TAG}"
+
             echo "$REG_PASS" | docker login "${REGISTRY_HOST}" -u "$REG_USER" --password-stdin
 
-            docker push "${FULL_IMAGE}"
+            docker compose -f "${COMPOSE_FILE}" push "${COMPOSE_SERVICE}"
 
-            if [ -n "${LATEST_IMAGE}" ]; then
+            if [ "${PUSH_LATEST}" = "true" ]; then
+              # Re-tag and push latest (without rebuilding)
+              FULL_IMAGE="${REGISTRY_HOST}/${IMAGE_NAME}:${IMAGE_TAG}"
+              LATEST_IMAGE="${REGISTRY_HOST}/${IMAGE_NAME}:latest"
               docker tag "${FULL_IMAGE}" "${LATEST_IMAGE}"
               docker push "${LATEST_IMAGE}"
             fi
@@ -141,8 +149,13 @@ pipeline {
     }
     cleanup {
       sh '''
-        docker image rm -f "${FULL_IMAGE}" || true
-        if [ -n "${LATEST_IMAGE}" ]; then docker image rm -f "${LATEST_IMAGE}" || true; fi
+        # Remove the build-tag image; ignore errors
+        docker image rm -f "${REGISTRY_HOST}/${IMAGE_NAME}:${IMAGE_TAG}" || true
+
+        if [ "${PUSH_LATEST}" = "true" ]; then
+          docker image rm -f "${REGISTRY_HOST}/${IMAGE_NAME}:latest" || true
+        fi
+
         docker builder prune -af || true
       '''
     }
