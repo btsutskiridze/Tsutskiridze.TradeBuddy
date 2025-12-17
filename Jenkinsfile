@@ -146,6 +146,8 @@ pipeline {
         # OPTIONAL: also remove SDK image every run (max space, slowest builds)
         # docker image rm -f mcr.microsoft.com/dotnet/sdk:8.0 || true
       '''
+      
+      cleanWs(deleteDirs: true, disableDeferredWipeout: true)
     }
   }
 }
