@@ -68,19 +68,12 @@ pipeline {
           def shortCommit = sh(script: 'git rev-parse --short=8 HEAD', returnStdout: true).trim()
           def safeBranch  = (env.BRANCH_NAME ?: 'local').replaceAll('[^a-zA-Z0-9_.-]', '-').toLowerCase()
           env.IMAGE_TAG   = "${safeBranch}-${env.BUILD_NUMBER}-${shortCommit}"
-
-          // Optional: latest only for main/master
-          env.PUSH_LATEST = (safeBranch == 'main' || safeBranch == 'master') ? 'true' : 'false'
+          if (!env.IMAGE_TAG?.trim()) { error("IMAGE_TAG is empty") }
         }
-
-        sh '''
-          echo "REGISTRY_HOST=${REGISTRY_HOST}"
-          echo "IMAGE_NAME=${IMAGE_NAME}"
-          echo "IMAGE_TAG=${IMAGE_TAG}"
-          echo "PUSH_LATEST=${PUSH_LATEST}"
-        '''
+        sh 'echo "IMAGE_TAG=${IMAGE_TAG}"'
       }
     }
+
 
     stage('Compose Build') {
       steps {
