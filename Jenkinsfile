@@ -37,40 +37,21 @@ pipeline {
       }
     }
 
-    stage('Restore') {
+    stage('Dotnet: Restore + Build + Test') {
       steps {
         sh '''
           set -e
           docker run --rm \
-            -v "$PWD":/src -w /src \
-            ${DOTNET_SDK_IMAGE} \
-            dotnet restore "${SOLUTION}"
-        '''
-      }
-    }
-
-    stage('Build') {
-      steps {
-        sh '''
-          set -e
-          docker run --rm \
-            -v "$PWD":/src -w /src \
-            ${DOTNET_SDK_IMAGE} \
-            dotnet build "${SOLUTION}" -c Release --no-restore
-        '''
-      }
-    }
-
-    stage('Test') {
-      steps {
-        sh '''
-          set -e
-          docker run --rm \
-            -v "$PWD":/src -w /src \
-            ${DOTNET_SDK_IMAGE} \
-            dotnet test "${SOLUTION}" -c Release --no-build \
-              --logger "trx;LogFileName=test_results.trx" \
-              --results-directory "./TestResults"
+            -v "${WORKSPACE}":/src:rw -w /src \
+            mcr.microsoft.com/dotnet/sdk:8.0 \
+            bash -lc '
+              set -e
+              dotnet restore "${SOLUTION}"
+              dotnet build "${SOLUTION}" -c Release --no-restore
+              dotnet test  "${SOLUTION}" -c Release --no-build \
+                --logger "trx;LogFileName=test_results.trx" \
+                --results-directory "./TestResults"
+            '
         '''
       }
       post {
@@ -79,6 +60,7 @@ pipeline {
         }
       }
     }
+
 
     stage('Compute Image Tags') {
       steps {
