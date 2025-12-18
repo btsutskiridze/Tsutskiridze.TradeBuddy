@@ -34,6 +34,8 @@ pipeline {
 
     stage('Create .env.ci from Jenkins credential') {
       steps {
+        sh 'touch .env'
+        
         withCredentials([file(credentialsId: 'tradebuddy-env-ci', variable: 'ENVFILE')]) {
           sh '''
             set -e
