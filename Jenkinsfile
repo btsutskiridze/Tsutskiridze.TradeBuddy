@@ -65,26 +65,38 @@ pipeline {
     stage('Compute Image Tags') {
       steps {
         script {
-          def shortCommit = sh(script: 'git rev-parse --short=8 HEAD', returnStdout: true).trim()
-          def safeBranch  = (env.BRANCH_NAME ?: 'local').replaceAll('[^a-zA-Z0-9_.-]', '-').toLowerCase()
-
+          // Prefer Jenkins-provided commit hash when available
+          def commitFull = env.GIT_COMMIT?.trim()
+          if (!commitFull) {
+            commitFull = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+          }
+          def shortCommit = commitFull.take(8)
+    
+          def safeBranch = (env.BRANCH_NAME ?: 'local')
+            .replaceAll('[^a-zA-Z0-9_.-]', '-')
+            .toLowerCase()
+    
           env.IMAGE_TAG  = "${safeBranch}-${env.BUILD_NUMBER}-${shortCommit}"
-          if (!env.IMAGE_TAG?.trim()) { error("IMAGE_TAG is empty") }
-
           env.FULL_IMAGE = "${env.REGISTRY_HOST}/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
-
-          env.PUSH_LATEST = (safeBranch == 'main' || safeBranch == 'master') ? 'true' : 'false'
-          env.LATEST_IMAGE = (env.PUSH_LATEST == 'true')
-            ? "${env.REGISTRY_HOST}/${env.IMAGE_NAME}:latest"
-            : ''
-
-          echo "IMAGE_TAG=${env.IMAGE_TAG}"
-          echo "FULL_IMAGE=${env.FULL_IMAGE}"
-          echo "PUSH_LATEST=${env.PUSH_LATEST}"
-          if (env.LATEST_IMAGE) { echo "LATEST_IMAGE=${env.LATEST_IMAGE}" }
+    
+          env.PUSH_LATEST  = (safeBranch == 'main' || safeBranch == 'master') ? 'true' : 'false'
+          env.LATEST_IMAGE = (env.PUSH_LATEST == 'true') ? "${env.REGISTRY_HOST}/${env.IMAGE_NAME}:latest" : ""
+    
+          if (!env.IMAGE_TAG?.trim()) { error("IMAGE_TAG is empty") }
         }
+    
+        sh '''
+          set -e
+          echo "BRANCH_NAME=${BRANCH_NAME}"
+          echo "GIT_COMMIT=${GIT_COMMIT}"
+          echo "IMAGE_TAG=${IMAGE_TAG}"
+          echo "FULL_IMAGE=${FULL_IMAGE}"
+          git rev-parse --is-inside-work-tree
+          git status --porcelain || true
+        '''
       }
     }
+
 
     stage('Compose Build') {
       steps {
