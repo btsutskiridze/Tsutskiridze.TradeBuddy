@@ -1,6 +1,6 @@
 services:
   tradebuddy:
-    image: ${REGISTRY_HOST}/${IMAGE_NAME}:${IMAGE_TAG}
+    image: tradebuddy-ci:${BUILD_TAG:-local}
     build:
       context: .
       dockerfile: Dockerfile
