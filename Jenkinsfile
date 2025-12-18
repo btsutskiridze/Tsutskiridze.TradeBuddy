@@ -40,13 +40,14 @@ pipeline {
       }
     }
 
-  post {
-    always {
-      sh '''
-        docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v --remove-orphans || true
-        rm -f .env.ci || true
-      '''
-      deleteDir()
+    post {
+      always {
+        sh '''
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v --remove-orphans || true
+          rm -f .env.ci || true
+        '''
+        deleteDir()
+      }
     }
   }
 }
