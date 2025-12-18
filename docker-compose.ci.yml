@@ -1,0 +1,23 @@
+services:
+  tradebuddy:
+    # Use a local-only tag in CI (avoid needing REGISTRY_HOST/IMAGE_TAG)
+    image: tradebuddy-ci:${BUILD_TAG:-local}
+
+    ports:
+      - "${CI_HTTP_PORT:-18080}:80"
+
+    env_file:
+      - .env.ci
+      
+    volumes:
+      - playwright_cache:/app/ms-playwright
+      - tradebuddy_logs:/app/logs
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
+
+volumes:
+  tradebuddy_logs:
