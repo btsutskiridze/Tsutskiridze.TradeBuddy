@@ -1,23 +1,28 @@
 ﻿using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
+using System.Collections.Concurrent;
+using Tsutskiridze.TradeBuddy.Application.Interfaces.AI.OpenAI;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema
 {
-    public static class OpenaiJsSchemaGenerator
+    public class OpenaiJsSchemaGenerator : IOpenaiJsSchemaGenerator
     {
+        private readonly ConcurrentDictionary<Type, string> _cache = new();
+
         private static JSchemaGenerator _generator = new JSchemaGenerator
         {
             SchemaLocationHandling = SchemaLocationHandling.Inline,
             DefaultRequired = Newtonsoft.Json.Required.Always
         };
 
-        public static string FromType(Type type)
+        public string FromType(Type type)
         {
-            _generator.GenerationProviders.Add(new OpenaiJsSchemaGenerationProvider());
-
-            JSchema responseSchema = _generator.Generate(type);
-
-            return responseSchema.ToString();
+            return _cache.GetOrAdd(type, t =>
+            {
+                _generator.GenerationProviders.Add(new OpenaiJsSchemaGenerationProvider());
+                JSchema responseSchema = _generator.Generate(t);
+                return responseSchema.ToString();
+            });
         }
     }
 }

@@ -9,11 +9,13 @@ using Tsutskiridze.TradeBuddy.Core.Constants;
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 {
 
-    public class StockCommandHandler : ITelegramCommandHandler
+    public class QuoteCommandHandler : ITelegramCommandHandler
     {
-        public string Command => TelegramCommands.Stock;
+        public string Command => TelegramCommands.Quote;
+        public string Pattern => "<symbol>";
+        public string Description => $"Get stock analysis for a symbol. e.g: /{Command} NVDA";
 
-        private readonly ILogger<StockCommandHandler> _logger;
+        private readonly ILogger<QuoteCommandHandler> _logger;
         private readonly StockAnalysisService _stockService;
         private readonly ITelegramBotClient _botClient;
         private readonly IYahooStockScraper _yahooStockScraper;
@@ -23,10 +25,10 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         private static DateTime _lastExecution = DateTime.MinValue;
         private static readonly object _lock = new();
 
-        private const int MaxAnalysisCount = 40; // Daily limit for analyses
-        private const int DelayBetweenAnalyses = 30; // Delay in seconds between analyses
+        private const int MaxAnalysisCount = 100;
+        private const int DelayBetweenAnalyses = 5;
 
-        public StockCommandHandler(ILogger<StockCommandHandler> logger, StockAnalysisService stockService, ITelegramBotClient botClient, IYahooStockScraper yahooStockScraper)
+        public QuoteCommandHandler(ILogger<QuoteCommandHandler> logger, StockAnalysisService stockService, ITelegramBotClient botClient, IYahooStockScraper yahooStockScraper)
         {
             _logger = logger;
             _stockService = stockService;
@@ -62,7 +64,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             {
                 await _botClient.SendMessage(
                     message.Chat.Id,
-                    "You've reached the daily limit of 20 stock analyses. Please try again tomorrow.");
+                    $"You've reached the daily limit of {MaxAnalysisCount} stock analyses. Please try again tomorrow.");
                 return;
             }
 
@@ -81,7 +83,14 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             {
                 await _botClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
 
-                string stockSymbol = message.Text!.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+
+                string? stockSymbol = GetCommandParameter(message.Text);
+
+                if (string.IsNullOrWhiteSpace(stockSymbol))
+                {
+                    await _botClient.SendMessage(message.Chat.Id, $"e.g: /{Command} NVDA");
+                    return;
+                }
 
                 if (!await _yahooStockScraper.StockSymbolExits(stockSymbol))
                 {
@@ -90,7 +99,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 }
 
 
-                _logger.LogInformation("Received stock command for symbol {StockSymbol}", stockSymbol);
+                _logger.LogDebug("Received stock command for symbol {StockSymbol}", stockSymbol);
 
                 lock (_lock)
                 {
@@ -110,5 +119,17 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 await _botClient.SendMessage(message.Chat.Id, "Failed to analyze stock.");
             }
         }
+
+        private string? GetCommandParameter(string? command)
+        {
+            if (string.IsNullOrWhiteSpace(command))
+            {
+                return null;
+            }
+
+            var parts = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            return parts.Length > 1 ? parts[1].ToUpperInvariant() : null;
+        }
+
     }
 }

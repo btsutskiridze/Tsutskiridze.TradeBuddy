@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Tsutskiridze.TradeBuddy.Core.Constants;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 {
     public class UnknownCommandHandler : ITelegramCommandHandler
     {
-        public string Command => TelegramCommands.Unknown;
+        public string Command => "unknown_command";
+        public string Pattern => string.Empty;
+        public string Description => "Unknown command";
 
         private readonly ITelegramBotClient _botClient;
         private readonly ILogger<UnknownCommandHandler> _logger;
@@ -20,8 +21,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 
         public async Task HandleMessage(Message message)
         {
-            _logger.LogInformation("Received unknown command '{Command}' from chat {ChatId}", message.Text, message.Chat.Id);
-
+            _logger.LogDebug("Received unknown command '{Command}' from chat {ChatId}", message.Text, message.Chat.Id);
             await _botClient.SendMessage(
                 message.Chat.Id,
                 "Unknown command"

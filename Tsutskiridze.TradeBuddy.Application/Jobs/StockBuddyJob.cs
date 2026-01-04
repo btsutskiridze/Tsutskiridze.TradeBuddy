@@ -1,4 +1,5 @@
-﻿using Tsutskiridze.Bloom.Core.Infrastructure.Jobs;
+﻿using System.Net.WebSockets;
+using Tsutskiridze.Bloom.Core.Infrastructure.Jobs;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
 
@@ -13,25 +14,65 @@ namespace Tsutskiridze.TradeBuddy.Application.Jobs
 
         private readonly StockAnalysisService _stockAnalysis;
         private readonly IYahooStockScraper _yahooSraper;
-        public StockBuddyJob(StockAnalysisService stockAnalysis, IYahooStockScraper yahooSraper)
+        private readonly IServiceProvider _provider;
+        public StockBuddyJob(StockAnalysisService stockAnalysis, IYahooStockScraper yahooSraper, IServiceProvider serviceProvider)
         {
-            _yahooSraper = yahooSraper;
             _stockAnalysis = stockAnalysis;
+            _yahooSraper = yahooSraper;
+            _provider = serviceProvider;
         }
+        // The Yahoo Finance streamer endpoint
+        private const string WSS_URL = "wss://streamer.finance.yahoo.com/?version=2";
+        private ClientWebSocket _ws = new();
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            //await _stockAnalysis.ExecuteStockAnalysisMultiple(Stocks.Favorites, TimeSpan.FromMinutes(5));
-            //var quote = await _yahooSraper.GetStockQuote("AAPL");
-            //var overview = await _yahooSraper.GetStockOverview("AAPL");
-            //var anual = await _yahooSraper.GetStockLastAnnualReport("AAPL");
-            //var prevdays = await _yahooSraper.GetStockPrevDaysClosePrices("AAPL", 5);
+            //var getCommandHandlers = _provider.GetServices<ITelegramCommandHandler>();
 
-            //Console.WriteLine(JsonConvert.SerializeObject(quote, Formatting.Indented));
-            //Console.WriteLine(JsonConvert.SerializeObject(overview, Formatting.Indented));
-            //Console.WriteLine(JsonConvert.SerializeObject(anual, Formatting.Indented));
-            //Console.WriteLine(JsonConvert.SerializeObject(prevdays, Formatting.Indented));
+            //var data = await _yahooSraper.GetStockQuote("AAPL");
 
+            //Console.WriteLine("=======================");
+            //Console.WriteLine(JsonConvert.SerializeObject(data.Name) ?? "No data for AAPL");
+            //Console.WriteLine("=======================");
+
+
+
+            //var alertcommandhandler = getCommandHandlers.FirstOrDefault(x => x.Command == "alert");
+
+            //var removealertcommandhandler = getCommandHandlers.FirstOrDefault(x => x.Command == "removealert");
+
+            //await alertcommandhandler!.HandleMessage(new Telegram.Bot.Types.Message
+            //{
+            //    Chat = new Telegram.Bot.Types.Chat
+            //    {
+            //        Id = -4659763511
+            //    },
+            //    Text = "/alert AAPL above 150"
+            //});
+
+
+            //await Task.Delay(6000, cancellationToken);
+
+            //await removealertcommandhandler!.HandleMessage(new Telegram.Bot.Types.Message
+            //{
+            //    Chat = new Telegram.Bot.Types.Chat
+            //    {
+            //        Id = -4659763511
+            //    },
+            //    Text = "/removealert AAPL above 150"
+            //});
+
+            //foreach (var handler in getCommandHandlers)
+            //{
+            //    await handler.HandleMessage(new Telegram.Bot.Types.Message
+            //    {
+            //        Chat = new Telegram.Bot.Types.Chat
+            //        {
+            //            Id = -4659763511 // Replace with actual chat ID
+            //        },
+            //        Text = $"/{handler.Command}"
+            //    });
+            //}
         }
     }
 }

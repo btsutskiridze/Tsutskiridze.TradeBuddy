@@ -19,7 +19,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
         {
             var document = await GetHtmlDocumentAsync($"quote/{symbol}");
 
-            var nameNode = document.DocumentNode.SelectSingleNode("//h1[contains(@class, 'yf-xxbei9')]");
+            var nameNode = document.DocumentNode.SelectSingleNode("//h1[contains(@class, 'yf-4vbjci')]");
 
             return nameNode != null && !string.IsNullOrWhiteSpace(nameNode.InnerText.Trim());
         }
@@ -178,7 +178,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
 
             try
             {
-                var nameNode = document.DocumentNode.SelectSingleNode("//h1[contains(@class, 'yf-xxbei9')]");
+                var nameNode = document.DocumentNode.SelectSingleNode("//h1[contains(@class, 'yf-4vbjci')]");
                 stockQuote.Name = nameNode?.InnerText.Trim() ?? "";
 
                 var exchangeNode = document.DocumentNode.SelectSingleNode("//span[contains(@class, 'exchange')]");

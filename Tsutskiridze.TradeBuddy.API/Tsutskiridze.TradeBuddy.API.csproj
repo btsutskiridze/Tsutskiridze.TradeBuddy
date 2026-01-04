@@ -15,11 +15,20 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
+		<PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.*">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 		<PackageReference Include="Tsutskiridze.Bloom.Core" Version="1.0.10" />
+		<PackageReference Include="Mediator.SourceGenerator" Version="3.0.*-*">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>

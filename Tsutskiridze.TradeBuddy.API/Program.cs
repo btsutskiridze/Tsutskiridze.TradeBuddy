@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Tsutskiridze.Bloom.Core;
@@ -6,53 +7,19 @@ using Tsutskiridze.Bloom.Core.Common.Options;
 using Tsutskiridze.Bloom.Core.Configurations;
 using Tsutskiridze.TradeBuddy.API.Extensions;
 using Tsutskiridze.TradeBuddy.Application.Jobs;
-using Tsutskiridze.TradeBuddy.Infrastructure.Extensions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddBloom((opt) =>
-{
-    opt.AddMail = true;
-    opt.AddJobs = true;
-
-    opt.CorsOptions = new CorsConfOptions
-    {
-        ConfigurePolicy = (policy) =>
-        {
-            string[] origins = [.. (builder.Configuration["Cors:AllowedOrigins"]!.Split(','))];
-            policy.AddPolicy("AllowSpecificOrigins", delegate (CorsPolicyBuilder b)
-            {
-                b.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod()
-                    .AllowCredentials();
-            });
-        }
-    };
-
-    opt.JsonSerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        WriteIndented = false,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
-});
-
-builder.Services.AddAppOptions(builder.Configuration)
-    .AddDbConfiguration(builder.Configuration)
-    .AddInfrastructureServices()
-    .AddApplicationServices();
-
-builder.Services.AddControllers();
-
-builder.Services.ConfigureBloomServices((s) =>
-{
-    s.AddJob<StockBuddyJob>();
-});
+builder.Services.AddTradeBuddyServices(builder.Configuration);
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 app.UseBloom();
 
