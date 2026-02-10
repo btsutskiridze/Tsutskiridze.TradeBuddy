@@ -1,5 +1,6 @@
 services:
   tradebuddy:
+    image: tradebuddy-ci:${BUILD_TAG:-local}
     build:
       context: .
       dockerfile: Dockerfile
