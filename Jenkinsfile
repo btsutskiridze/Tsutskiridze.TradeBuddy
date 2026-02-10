@@ -60,15 +60,12 @@ pipeline {
               "-reporttypes:HtmlInline;Cobertura" || true
           '''
 
-          // Publish coverage HTML in Jenkins UI (requires HTML Publisher plugin) :contentReference[oaicite:5]{index=5}
-          publishHTML(target: [
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: 'CoverageReport',
-            reportFiles: 'index.html',
-            reportName: 'Code Coverage'
-          ])
+          recordCoverage(
+            tools: [[parser: 'COBERTURA', pattern: 'TestResults/**/coverage.cobertura.xml']],
+            id: 'cobertura',
+            name: 'Coverage',
+            enabledForFailure: true
+          )
 
           // Keep raw files too
           archiveArtifacts artifacts: 'TestResults/**,CoverageReport/**', fingerprint: true
