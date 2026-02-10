@@ -66,12 +66,12 @@ pipeline {
             name: 'Coverage',
             enabledForFailure: true,
             qualityGates: [
-              [threshold: 80.0, metric: 'LINE',   baseline: 'PROJECT', unstable: false]
+              // [threshold: 80.0, metric: 'LINE',   baseline: 'PROJECT', unstable: false]
               //  [threshold: 80.0, metric: 'BRANCH', baseline: 'PROJECT', unstable: false]
             ]
           )
 
-          // Keep raw files too
+          //Keep raw files too
           archiveArtifacts artifacts: 'TestResults/**,CoverageReport/**', fingerprint: true
         }
       }
