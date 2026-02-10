@@ -64,7 +64,11 @@ pipeline {
             tools: [[parser: 'COBERTURA', pattern: 'TestResults/**/coverage.cobertura.xml']],
             id: 'cobertura',
             name: 'Coverage',
-            enabledForFailure: true
+            enabledForFailure: true,
+            qualityGates: [
+              [threshold: 80.0, metric: 'LINE',   baseline: 'PROJECT', unstable: false]
+              //  [threshold: 80.0, metric: 'BRANCH', baseline: 'PROJECT', unstable: false]
+            ]
           )
 
           // Keep raw files too
