@@ -71,7 +71,7 @@ pipeline {
             ]
           )
 
-          // Keep raw files too
+          /* Keep raw files too */
           archiveArtifacts artifacts: 'TestResults/**,CoverageReport/**', fingerprint: true
         }
       }
