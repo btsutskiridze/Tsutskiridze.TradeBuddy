@@ -1,5 +1,12 @@
 pipeline {
-  agent { label 'dotnet' } // your docker-capable agent node label
+  agent {
+    docker {
+      image 'mcr.microsoft.com/dotnet/sdk:8.0'
+      label 'dotnet'
+      reuseNode true
+      // args '-u 1000:1000'   // optional: avoid root-owned files (set to your agent user id)
+    }
+  }
 
   environment {
     DOTNET_CLI_TELEMETRY_OPTOUT = '1'
@@ -13,31 +20,19 @@ pipeline {
 
     stage('Restore') {
       steps {
-        script {
-          docker.image('mcr.microsoft.com/dotnet/sdk:8.0').inside {
-            sh 'dotnet restore'
-          }
-        }
+        sh 'dotnet restore'
       }
     }
 
     stage('Build') {
       steps {
-        script {
-          docker.image('mcr.microsoft.com/dotnet/sdk:8.0').inside {
-            sh 'dotnet build -c Release --no-restore'
-          }
-        }
+        sh 'dotnet build -c Release --no-restore'
       }
     }
 
     stage('Test') {
       steps {
-        script {
-          docker.image('mcr.microsoft.com/dotnet/sdk:8.0').inside {
-            sh 'dotnet test -c Release --no-build --logger "trx;LogFileName=test_results.trx" --results-directory TestResults'
-          }
-        }
+        sh 'dotnet test -c Release --no-build --logger "trx;LogFileName=test_results.trx" --results-directory TestResults'
       }
       post {
         always {
