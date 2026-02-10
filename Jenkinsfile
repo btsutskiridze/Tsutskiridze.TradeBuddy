@@ -1,6 +1,6 @@
 pipeline {
   agent {
-    dotnet {
+    dotnet-agent-1 {
       image 'mcr.microsoft.com/dotnet/sdk:8.0'
       reuseNode true
     }
