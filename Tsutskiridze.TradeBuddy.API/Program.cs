@@ -1,12 +1,5 @@
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Tsutskiridze.Bloom.Core;
-using Tsutskiridze.Bloom.Core.Common.Options;
-using Tsutskiridze.Bloom.Core.Configurations;
 using Tsutskiridze.TradeBuddy.API.Extensions;
-using Tsutskiridze.TradeBuddy.Application.Jobs;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +14,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-app.UseBloom();
+app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthentication();
 

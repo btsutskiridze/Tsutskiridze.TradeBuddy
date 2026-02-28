@@ -7,7 +7,7 @@ using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Telegram
 {
-    public class TelegramCommandsRegisterService : IHostedService
+    public class TelegramCommandsRegisterService : BackgroundService
     {
         private readonly ITelegramBotClient _bot;
         private readonly ITelegramHandlerRegistry _registry;
@@ -24,7 +24,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Telegram
             _logger = logger;
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken ct)
         {
             var commands = _registry
                 .GetHandlers()
@@ -36,15 +36,12 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Telegram
                 })
                 .ToArray();
 
-            await _bot.DeleteMyCommands(cancellationToken: cancellationToken);
+            await _bot.DeleteMyCommands(cancellationToken: ct);
 
-            await _bot.SetMyCommands(commands, cancellationToken: cancellationToken);
+            await _bot.SetMyCommands(commands, cancellationToken: ct);
 
             _logger.LogInformation("Registered commands: {Commands}", string.Join(", ", commands.Select(c => c.Command)));
         }
-
-        public Task StopAsync(CancellationToken cancellationToken) =>
-            Task.CompletedTask;
     }
 
 }

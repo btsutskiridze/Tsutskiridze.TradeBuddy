@@ -2,14 +2,13 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Telegram.Bot.Types;
-using Tsutskiridze.Bloom.Core.Common.Base;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
 
 namespace Tsutskiridze.TradeBuddy.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TelegramController : ApiControllerBase
+    public class TelegramController : ControllerBase
     {
         private readonly TelegramWebhookService _telegramService;
         private readonly ILogger<TelegramController> _logger;

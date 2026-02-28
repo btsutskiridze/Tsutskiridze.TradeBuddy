@@ -1,16 +1,46 @@
 services:
-  tradebuddy:
-    image: tradebuddy-ci:${BUILD_TAG:-local}
-    build:
-      context: .
-      dockerfile: Dockerfile
+#  tradebuddy:
+#    image: tradebuddy-ci:${BUILD_TAG:-local}
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    env_file:
+#      - .env
+#    volumes:
+#      - playwright_cache:/app/ms-playwright
+#      - ./logs:/app/logs
+#    networks:
+#      - net
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+        
+  postgres:
+    image: postgres:17
+    container_name: local-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
     ports:
-      - "5000:80"
-    env_file:
-      - .env
+      - "5432:5432"
     volumes:
-      - playwright_cache:/app/ms-playwright
-      - ./logs:/app/logs
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - net
 
 volumes:
   playwright_cache:
+  postgres_data:
+    
+networks:
+  net:
+    driver: bridge
