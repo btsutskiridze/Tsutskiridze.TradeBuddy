@@ -1,7 +1,7 @@
 # --------------------------------------------
 # Stage 1: Build
 # --------------------------------------------
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Set PATH so that dotnet global tools (like Playwright CLI) are available
@@ -42,7 +42,7 @@ RUN dotnet publish "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.cspr
 # --------------------------------------------
 # Stage 2: Runtime
 # --------------------------------------------
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
 # Create a non-root user and group if it doesn't exist
@@ -52,7 +52,7 @@ RUN if ! getent group app > /dev/null; then groupadd -g 1001 app; fi && \
 # Install OS-level dependencies required by Chromium and Playwright at runtime
 RUN apt-get update && apt-get install -y \
     libnss3 libatk1.0-0 libatk-bridge2.0-0 libdrm2 libxcomposite1 \
-    libxdamage1 libxrandr2 libcups2 libgbm1 libasound2 \
+    libxdamage1 libxrandr2 libcups2 libgbm1 libasound2t64 \
     libpangocairo-1.0-0 libpango-1.0-0 libxshmfence1 \
     libxfixes3 libxkbcommon0 wget unzip && \
     rm -rf /var/lib/apt/lists/*
@@ -67,5 +67,6 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/app/ms-playwright
 USER app
 
 # Expose the desired port and set the application entrypoint
-EXPOSE 80
+EXPOSE 8080
+ENV ASPNETCORE_HTTP_PORTS=8080
 ENTRYPOINT ["dotnet", "Tsutskiridze.TradeBuddy.API.dll"]

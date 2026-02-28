@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
@@ -10,11 +9,14 @@ using Tsutskiridze.TradeBuddy.Core.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.Reddit
 {
+    
     public class RedditClient : IRedditNewsProvider
     {
         private readonly RedditOptions _options;
         private readonly HttpClient _httpClient;
         private readonly ILogger<RedditClient> _logger;
+        
+        private record AccessToken(string Token, DateTimeOffset ExpiresIn);   
 
         private static AccessToken? _accessToken;
 
@@ -90,9 +92,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.Reddit
 
         private async Task<string> GetAccessToken()
         {
-            if (_accessToken != null && _accessToken.Value.ExpiresOn > DateTimeOffset.Now.AddMinutes(5))
+            if (_accessToken != null && _accessToken.ExpiresIn > DateTimeOffset.Now.AddMinutes(5))
             {
-                return _accessToken.Value.Token;
+                return _accessToken.Token;
             }
 
             var requestBody = new StringContent(
@@ -123,8 +125,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.Reddit
 
                 _accessToken = new AccessToken(
                     accessToken,
-                    DateTimeOffset.Now.AddSeconds(expiresIn),
-                    DateTimeOffset.Now.AddSeconds(expiresIn / 2)
+                    DateTimeOffset.Now.AddSeconds(expiresIn)
                 );
 
                 return accessToken;

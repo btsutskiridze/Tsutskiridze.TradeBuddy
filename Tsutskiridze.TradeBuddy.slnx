@@ -1,0 +1,32 @@
+<Solution>
+    <Configurations>
+        <Platform Name="Any CPU" />
+        <Platform Name="x64" />
+        <Platform Name="x86" />
+    </Configurations>
+    <Folder Name="/.github/" />
+    <Folder Name="/.github/workflows/">
+        <File Path=".github/workflows/deploy.yml" />
+    </Folder>
+    <Folder Name="/solution-items/">
+        <File Path="docker-compose.yml" />
+        <File Path=".dockerignore" />
+        <File Path=".env" />
+        <File Path=".gitattributes" />
+        <File Path=".gitignore" />
+        <File Path="docker-compose.ci.yml" />
+        <File Path="Dockerfile" />
+        <File Path="Jenkinsfile" />
+        <File Path="README.md" />
+        <File Path="test.json" />
+    </Folder>
+    <Folder Name="/src/">
+        <Project Path="Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" />
+        <Project Path="Tsutskiridze.TradeBuddy.Application/Tsutskiridze.TradeBuddy.Application.csproj" />
+        <Project Path="Tsutskiridze.TradeBuddy.Core/Tsutskiridze.TradeBuddy.Core.csproj" />
+        <Project Path="Tsutskiridze.TradeBuddy.Infrastructure/Tsutskiridze.TradeBuddy.Infrastructure.csproj" />
+    </Folder>
+    <Folder Name="/tests/">
+        <Project Path="Tsutskiridze.TradeBuddy.Application.Tests/Tsutskiridze.TradeBuddy.Application.Tests.csproj" />
+    </Folder>
+</Solution>

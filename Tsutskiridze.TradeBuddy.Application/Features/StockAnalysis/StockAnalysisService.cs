@@ -5,7 +5,6 @@ using System.Diagnostics;
 using Telegram.Bot;
 using Tsutskiridze.TradeBuddy.Application.Dtos;
 using Tsutskiridze.TradeBuddy.Application.Interfaces.AI;
-using Tsutskiridze.TradeBuddy.Application.Jobs;
 using Tsutskiridze.TradeBuddy.Application.Options;
 using Tsutskiridze.TradeBuddy.Core.Entities;
 
@@ -17,7 +16,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
         private readonly StockPromptService _stockPromptService;
         private readonly IAIService _aiService;
         private readonly ITelegramBotClient _telegramBot;
-        private readonly ILogger<StockBuddyJob> _logger;
+        private readonly ILogger<StockAnalysisService> _logger;
         private readonly TelegramBotOptions _options;
 
         private static JsonSerializerSettings _jsonSettings = new()
@@ -29,7 +28,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
             StockPromptService stockPromptService,
             IAIService aiService,
             ITelegramBotClient telegramBot,
-            ILogger<StockBuddyJob> logger,
+            ILogger<StockAnalysisService> logger,
             IOptions<TelegramBotOptions> options
         )
         {

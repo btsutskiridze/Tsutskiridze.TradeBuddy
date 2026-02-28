@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tsutskiridze.Bloom.Core.Common.Base;
 using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 
@@ -8,7 +7,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class NewsController : ApiControllerBase
+    public class NewsController : ControllerBase
     {
 
         private readonly NewsService _news;
@@ -28,7 +27,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
 
             var posts = await _news.GetRedditNews(symbol, sort, limit);
 
-            return JsonResult(posts);
+            return Ok(posts);
         }
 
         [HttpGet("google/{symbol}")]
@@ -36,7 +35,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
         {
             var news = await _news.GetGoogleNews(symbol, limit);
 
-            return JsonResult(news);
+            return Ok(news);
         }
 
         [HttpGet("yahoo/{symbol}")]
@@ -44,7 +43,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
         {
             var news = await _news.GetYahooNews(symbol, limit);
 
-            return JsonResult(news);
+            return Ok(news);
         }
 
         [HttpGet("finnhub/{symbol}")]
@@ -60,7 +59,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
 
             var news = await _news.GetFinnhubNews(symbol, from, to, limit);
 
-            return JsonResult(news);
+            return Ok(news);
         }
     }
 }
