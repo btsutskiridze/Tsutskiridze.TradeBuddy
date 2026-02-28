@@ -10,6 +10,7 @@
     </Folder>
     <Folder Name="/solution-items/">
         <File Path="docker-compose.yml" />
+        <File Path=".cursor/plans/ddd_layer_reorganization_1fad4d37.plan.md" />
         <File Path=".dockerignore" />
         <File Path=".env" />
         <File Path=".gitattributes" />
@@ -21,6 +22,7 @@
         <File Path="test.json" />
     </Folder>
     <Folder Name="/src/">
+        <Project Path="SharedKernel/SharedKernel.csproj" />
         <Project Path="Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" />
         <Project Path="Tsutskiridze.TradeBuddy.Application/Tsutskiridze.TradeBuddy.Application.csproj" />
         <Project Path="Tsutskiridze.TradeBuddy.Core/Tsutskiridze.TradeBuddy.Core.csproj" />
