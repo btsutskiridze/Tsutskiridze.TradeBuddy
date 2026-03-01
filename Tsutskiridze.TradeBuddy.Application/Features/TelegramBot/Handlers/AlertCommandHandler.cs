@@ -78,8 +78,14 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             }
 
             var chat = await chatReadRepository.FirstOrDefaultAsync(x => x.TelegramChatId == message.Chat.Id);
-            var stock = await stockRepository.FirstOrDefaultAsync(x => x.Symbol == symbol)
-                        ?? new Stock(symbol, quote.Currency, quote.Name);
+            var stock = await stockRepository.FirstOrDefaultAsync(x => x.Symbol == symbol);
+
+            if (stock == null)
+            {
+                stock = new Stock(symbol, quote.Currency, quote.Name);
+                await stockRepository.AddAsync(stock);
+            }
+            
             stock.Watch();
             var alert = new PriceAlert(Guid.NewGuid(), chat!.Id, stock.Id, price, direction);
             await alertRepository.AddAsync(alert);
