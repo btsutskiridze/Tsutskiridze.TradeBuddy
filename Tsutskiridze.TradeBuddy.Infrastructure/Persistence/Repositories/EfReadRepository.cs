@@ -73,6 +73,29 @@ public class EfReadRepository<TEntity, TId> : IReadRepository<TEntity, TId>
         return await query.ToListAsync(ct);
     }
 
+    public async Task<List<TEntity>> ListByIdsAsync(
+        IReadOnlyCollection<TId> ids,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
+        bool asNoTracking = true,
+        CancellationToken ct = default)
+    {
+        if (ids.Count == 0)
+            return [];
+
+        IQueryable<TEntity> query = Set;
+
+        if (asNoTracking)
+            query = query.AsNoTracking();
+
+        query = query.Where(x => ids.Contains(x.Id));
+
+        if (queryShaper is not null)
+            query = queryShaper(query);
+
+        return await query.ToListAsync(ct);
+    }
+    
+
     public Task<bool> AnyAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken ct = default)

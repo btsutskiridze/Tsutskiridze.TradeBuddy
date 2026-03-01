@@ -23,6 +23,12 @@ public interface IReadRepository<TEntity, in TId>
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
         bool asNoTracking = true,
         CancellationToken ct = default);
+    
+    Task<List<TEntity>> ListByIdsAsync(
+        IReadOnlyCollection<TId> ids,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
+        bool asNoTracking = true,
+        CancellationToken ct = default);
 
     Task<bool> AnyAsync(
         Expression<Func<TEntity, bool>> predicate,
