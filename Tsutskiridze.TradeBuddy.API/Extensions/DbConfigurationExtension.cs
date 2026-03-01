@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SharedKernel;
-using Tsutskiridze.TradeBuddy.Core.Repositories;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
@@ -23,10 +22,9 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
                 .UseSnakeCaseNamingConvention()
             );
 
+            services.AddScoped(typeof(IReadRepository<,>), typeof(EfReadRepository<,>));
+            services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
             services.AddScoped<IUnitOfWork, EfUnitOfWork>();
-            services.AddScoped<IChatRepository, ChatRepository>();
-            services.AddScoped<IStockRepository, StockRepository>();
-            services.AddScoped<IPriceAlertReadRepository, PriceAlertReadRepository>();
 
             return services;
         }

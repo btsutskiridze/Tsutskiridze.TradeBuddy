@@ -1,33 +1,32 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SharedKernel;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
-public class EfRepository<T> : IRepository<T> where T : IAggregateRoot
+public class EfRepository<TEntity, TId> : EfReadRepository<TEntity, TId>, IRepository<TEntity, TId>
+    where TEntity : Entity<TId>, IAggregateRoot
+    where TId : notnull
 {
-    protected readonly AppDbContext _db;
-
-    public EfRepository(AppDbContext db)
+    public EfRepository(AppDbContext db) : base(db)
     {
-        _db = db;
     }
 
-    public async Task<TEntity?> GetById<TEntity, TId>(TId id, CancellationToken ct = default)
-        where TEntity : Entity<TId>, IAggregateRoot where TId : notnull
+    public async Task<TEntity> AddAsync(TEntity entity, CancellationToken ct = default)
     {
-        return await _db.Set<TEntity>().FirstOrDefaultAsync(x => x.Id.Equals(id), ct);
+        await Set.AddAsync(entity, ct);
+        return entity;
     }
 
-    public async Task Add<TEntity, TId>(TEntity entity, CancellationToken ct = default)
-        where TEntity : Entity<TId>, IAggregateRoot where TId : notnull
-    {
-        await _db.Set<TEntity>().AddAsync(entity, ct);
-    }
+    public Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct = default)
+        => Set.AddRangeAsync(entities, ct);
 
-    public async Task Remove<TEntity, TId>(TEntity entity, CancellationToken ct = default)
-        where TEntity : Entity<TId>, IAggregateRoot where TId : notnull
-    {
-        _db.Set<TEntity>().Remove(entity);
-        await Task.CompletedTask;
-    }
+    public void Remove(TEntity entity)
+        => Set.Remove(entity);
+
+    public void RemoveRange(IEnumerable<TEntity> entities)
+        => Set.RemoveRange(entities);
+
+    public void Update(TEntity entity)
+        => Set.Update(entity);
 }

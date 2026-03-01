@@ -1,8 +1,14 @@
 ﻿namespace SharedKernel;
 
-public interface IRepository<TAggregate> where TAggregate : IAggregateRoot
+public interface IRepository<TEntity, TId> : IReadRepository<TEntity, TId>
+    where TEntity : Entity<TId>, IAggregateRoot
+    where TId : notnull
 {
-    Task<TEntity?> GetById<TEntity, TId>(TId id, CancellationToken ct = default) where TEntity : Entity<TId>, IAggregateRoot where TId : notnull;
-    Task Add<TEntity, TId>(TEntity entity, CancellationToken ct = default) where TEntity : Entity<TId>, IAggregateRoot where TId : notnull;
-    Task Remove<TEntity, TId>(TEntity entity, CancellationToken ct = default) where TEntity : Entity<TId>, IAggregateRoot where TId : notnull;
+    Task<TEntity> AddAsync(TEntity entity, CancellationToken ct = default);
+    Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct = default);
+
+    void Remove(TEntity entity);
+    void RemoveRange(IEnumerable<TEntity> entities);
+
+    void Update(TEntity entity);
 }
