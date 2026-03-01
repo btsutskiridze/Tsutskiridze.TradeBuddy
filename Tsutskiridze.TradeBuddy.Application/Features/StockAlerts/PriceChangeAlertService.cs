@@ -1,4 +1,4 @@
-﻿using Mediator;
+using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SharedKernel;
@@ -50,7 +50,6 @@ public sealed class PriceChangeAlertService : INotificationHandler<PricingUpdate
 
             var stock = await stockRepository.FirstOrDefaultAsync(
                 x => x.Symbol == evt.Symbol,
-                asNoTracking: false,
                 ct: ct);
 
             if (stock is null)
@@ -60,7 +59,6 @@ public sealed class PriceChangeAlertService : INotificationHandler<PricingUpdate
 
             var activeAlertsForStock = await alertRepository.ListAsync(
                 x => x.StockId == stock.Id && x.IsActive,
-                asNoTracking: false,
                 ct: ct);
 
             if (activeAlertsForStock.Count == 0)
@@ -80,7 +78,6 @@ public sealed class PriceChangeAlertService : INotificationHandler<PricingUpdate
 
             var chats = await chatReadRepository.ListAsync(
                 x => chatIds.Contains(x.Id),
-                asNoTracking: true,
                 ct: ct);
 
             var chatsById = chats.ToDictionary(x => x.Id);

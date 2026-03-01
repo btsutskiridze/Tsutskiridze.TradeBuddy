@@ -27,7 +27,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         {
             using var scope = _scopes.CreateScope();
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            var chatReadRepository = scope.ServiceProvider.GetRequiredService<IReadRepository<Chat>>();
+            var chatReadRepository = scope.ServiceProvider.GetRequiredService<IRepository<Chat>>();
             
             var parts = message.Text!
                               .Split(' ', StringSplitOptions.RemoveEmptyEntries);

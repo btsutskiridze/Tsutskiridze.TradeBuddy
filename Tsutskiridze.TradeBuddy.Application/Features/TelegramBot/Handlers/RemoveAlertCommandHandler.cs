@@ -1,4 +1,4 @@
-﻿using Mediator;
+using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using SharedKernel;
 using Telegram.Bot;
@@ -71,7 +71,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             }
 
             var chat = await chatRepo.FirstOrDefaultAsync(x => x.TelegramChatId == message.Chat.Id);
-            var stock = await stockRepo.FirstOrDefaultAsync(x => x.Symbol == symbol, asNoTracking: false);
+            var stock = await stockRepo.FirstOrDefaultAsync(x => x.Symbol == symbol);
 
             if (stock == null)
             {
@@ -84,7 +84,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                     chat!.TelegramChatId == message.Chat.Id &&
                     stock.Symbol == symbol &&
                     x.Direction == direction &&
-                    x.Price == price, asNoTracking: false
+                    x.Price == price
             );
 
             if (alert == null)

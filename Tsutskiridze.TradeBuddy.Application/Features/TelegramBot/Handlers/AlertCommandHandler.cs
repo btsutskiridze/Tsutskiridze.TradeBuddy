@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using SharedKernel;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -78,7 +78,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             }
 
             var chat = await chatReadRepository.FirstOrDefaultAsync(x => x.TelegramChatId == message.Chat.Id);
-            var stock = await stockRepository.FirstOrDefaultAsync(x => x.Symbol == symbol, asNoTracking: false)
+            var stock = await stockRepository.FirstOrDefaultAsync(x => x.Symbol == symbol)
                         ?? new Stock(symbol, quote.Currency, quote.Name);
             stock.Watch();
             var alert = new PriceAlert(Guid.NewGuid(), chat!.Id, stock.Id, price, direction);
