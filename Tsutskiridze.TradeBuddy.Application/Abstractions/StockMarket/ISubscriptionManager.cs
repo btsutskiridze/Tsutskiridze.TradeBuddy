@@ -1,7 +1,7 @@
 ﻿using Mediator;
 using Tsutskiridze.TradeBuddy.Application.Events;
 
-namespace Tsutskiridze.TradeBuddy.Application.Interfaces.StockMarket
+namespace Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket
 {
     public interface ISubscriptionManager : INotificationHandler<StockWatchStatusChanged>
     {

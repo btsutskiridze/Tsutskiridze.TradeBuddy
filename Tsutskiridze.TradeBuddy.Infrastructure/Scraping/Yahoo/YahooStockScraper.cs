@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Yahoo;
 using Tsutskiridze.TradeBuddy.Core.Entities;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo.Utilities;
 

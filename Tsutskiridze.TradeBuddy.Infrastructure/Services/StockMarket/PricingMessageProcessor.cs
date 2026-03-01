@@ -2,8 +2,8 @@
 using Mediator;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
 using Tsutskiridze.TradeBuddy.Application.Events;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.StockMarket;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
 {

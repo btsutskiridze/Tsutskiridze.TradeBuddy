@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Core.Enums
+﻿namespace Tsutskiridze.TradeBuddy.Application.Enums
 {
     public enum NewsSourceType
     {

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Database;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 
 

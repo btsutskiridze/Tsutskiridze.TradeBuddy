@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.StockMarket;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
 {

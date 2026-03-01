@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAlerts;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.Helpers;
 

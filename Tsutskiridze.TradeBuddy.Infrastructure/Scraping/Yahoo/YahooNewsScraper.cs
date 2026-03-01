@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.Dtos.Yahoo;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo.Utilities;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
 {
@@ -10,12 +10,15 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("chats");
 
-            builder.HasKey(c => c.ID);
+            builder.HasKey(c => c.Id);
 
             builder.HasMany(c => c.PriceAlerts)
-                .WithOne(pa => pa.Chat)
-                .HasForeignKey(pa => pa.ChatID)
+                .WithOne()
+                .HasForeignKey(pa => pa.ChatId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.Metadata.FindNavigation(nameof(Chat.PriceAlerts))!
+                .SetPropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

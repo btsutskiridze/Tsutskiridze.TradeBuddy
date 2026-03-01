@@ -2,11 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SharedKernel;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Database;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Events;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers;
 using Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 

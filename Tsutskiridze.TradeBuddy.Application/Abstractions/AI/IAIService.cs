@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Interfaces.AI
+﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.AI
 {
     public interface IAIService
     {

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
-using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Context;
+using SharedKernel;
+using Tsutskiridze.TradeBuddy.Core.Repositories;
+using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
+using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
 namespace Tsutskiridze.TradeBuddy.API.Extensions
 {
@@ -21,7 +23,10 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
                 .UseSnakeCaseNamingConvention()
             );
 
-            services.AddScoped<IAppDbContext, AppDbContext>();
+            services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+            services.AddScoped<IChatRepository, ChatRepository>();
+            services.AddScoped<IStockRepository, StockRepository>();
+            services.AddScoped<IPriceAlertReadRepository, PriceAlertReadRepository>();
 
             return services;
         }

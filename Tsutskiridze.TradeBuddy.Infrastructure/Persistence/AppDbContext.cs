@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
-using Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Context
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence
 {
-    public class AppDbContext : DbContext, IAppDbContext
+    public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -14,13 +15,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Context
         public DbSet<Chat> Chats { get; set; }
         public DbSet<Stock> Stocks { get; set; }
         public DbSet<PriceAlert> PriceAlerts { get; set; }
-
-        // IAppDbContext
-        DbSet<T> IAppDbContext.Set<T>() => base.Set<T>();
-        Task<int> IAppDbContext.SaveChangesAsync(CancellationToken ct) => base.SaveChangesAsync(ct);
-        DatabaseFacade IAppDbContext.Database => base.Database;
-        ChangeTracker IAppDbContext.ChangeTracker => base.ChangeTracker;
-
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

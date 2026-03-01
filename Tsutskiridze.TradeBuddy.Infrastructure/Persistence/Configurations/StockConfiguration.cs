@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
 {
@@ -10,7 +10,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("stocks");
 
-            builder.HasKey(s => s.ID);
+            builder.HasKey(s => s.Id);
 
             builder.Property(s => s.Symbol)
                 .IsRequired()
@@ -23,11 +23,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
             builder.Property(s => s.Name)
                 .IsRequired()
                 .HasMaxLength(200);
-
-            builder.HasMany(s => s.PriceAlerts)
-                .WithOne(pa => pa.Stock)
-                .HasForeignKey(pa => pa.StockID)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

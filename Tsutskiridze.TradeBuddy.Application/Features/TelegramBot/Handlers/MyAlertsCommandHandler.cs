@@ -4,8 +4,8 @@ using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Database;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 using Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram;
 

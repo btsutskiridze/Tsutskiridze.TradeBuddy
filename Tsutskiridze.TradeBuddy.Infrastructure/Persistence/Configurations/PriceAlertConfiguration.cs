@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
 {
@@ -10,12 +11,12 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("price_alerts");
 
-            builder.HasKey(pa => pa.ID);
+            builder.HasKey(pa => pa.Id);
 
-            builder.Property(pa => pa.ChatID)
+            builder.Property(pa => pa.ChatId)
                 .IsRequired();
 
-            builder.Property(pa => pa.StockID)
+            builder.Property(pa => pa.StockId)
                 .IsRequired();
 
             builder.Property(pa => pa.Price)

@@ -1,6 +1,6 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Dtos.Yahoo;
 
-namespace Tsutskiridze.TradeBuddy.Application.Interfaces.News
+namespace Tsutskiridze.TradeBuddy.Application.Abstractions.News
 {
     public interface IYahooNewsProvider
     {

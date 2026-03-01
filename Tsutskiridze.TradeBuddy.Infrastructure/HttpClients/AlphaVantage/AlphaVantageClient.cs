@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Tsutskiridze.TradeBuddy.Application.Abstractions;
 using Tsutskiridze.TradeBuddy.Application.Dtos.AlphaVantage;
-using Tsutskiridze.TradeBuddy.Application.Interfaces;
 using Tsutskiridze.TradeBuddy.Core.Entities;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.AlphaVantage

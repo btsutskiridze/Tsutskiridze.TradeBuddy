@@ -1,6 +1,6 @@
-﻿using Tsutskiridze.TradeBuddy.Core.Enums;
+﻿using Tsutskiridze.TradeBuddy.Application.Enums;
 
-namespace Tsutskiridze.TradeBuddy.Application.Interfaces.News
+namespace Tsutskiridze.TradeBuddy.Application.Abstractions.News
 {
     public interface INewsProvider
     {

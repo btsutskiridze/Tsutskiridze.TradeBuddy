@@ -1,6 +1,6 @@
-﻿using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
-using Tsutskiridze.TradeBuddy.Application.Interfaces;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.Yahoo;
+﻿using Tsutskiridze.TradeBuddy.Application.Abstractions;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Yahoo;
+using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 using Tsutskiridze.TradeBuddy.Core.Entities;
 

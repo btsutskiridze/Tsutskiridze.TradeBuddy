@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Immutable;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
 using Tsutskiridze.TradeBuddy.Application.Events;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.StockMarket;
-using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Context;
+using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
 {

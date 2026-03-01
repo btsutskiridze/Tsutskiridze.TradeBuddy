@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Interfaces.AI.OpenAI
+﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.AI.OpenAI
 {
     public interface IOpenaiJsSchemaGenerator
     {

@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Interfaces.Helpers
+﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers
 {
     public interface ICurrencySymbolProvider
     {

@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Interfaces.StockMarket
+﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket
 {
     public interface IPricingMessageProcessor
     {

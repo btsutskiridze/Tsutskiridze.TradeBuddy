@@ -1,13 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Application.Interfaces.Database;
 using Tsutskiridze.TradeBuddy.Application.Options;
 using Tsutskiridze.TradeBuddy.Core.Constants;
+using Tsutskiridze.TradeBuddy.Core.Repositories;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
 {
@@ -42,7 +41,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
         private async Task HandleMessage(Message message)
         {
             using var scope = _serviceScope.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
+            var chatRepo = scope.ServiceProvider.GetRequiredService<IChatRepository>();
             var telegramClient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
 
             if (message.Text == null)
@@ -55,9 +54,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
 
             var (command, cleanText) = ParseMessage(message.Text);
 
-            var chat = await db.Set<Core.DBEntities.Telegram.Chat>()
-                .FirstOrDefaultAsync(x => x.TelegramChatID == message.Chat.Id);
-
+            var chat = await chatRepo.GetByTelegramChatId(message.Chat.Id);
+            
             if (chat == null && command != TelegramCommands.ActivateBot)
             {
                 _logger.LogDebug("Activated Chat {ChatId} not found", message.Chat.Id);
