@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 
@@ -10,22 +10,26 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
     protected readonly AppDbContext Db;
     protected readonly DbSet<TEntity> Set;
 
+    protected virtual bool UseNoTracking => true;
+
     public EfReadRepository(AppDbContext db)
     {
         Db = db;
         Set = db.Set<TEntity>();
     }
 
+    protected IQueryable<TEntity> Query()
+    {
+        IQueryable<TEntity> query = Set;
+        return UseNoTracking ? query.AsNoTracking() : query;
+    }
+
     public async Task<TEntity?> GetByIdAsync(
         Guid id,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
-        bool asNoTracking = true,
         CancellationToken ct = default)
     {
-        IQueryable<TEntity> query = Set;
-
-        if (asNoTracking)
-            query = query.AsNoTracking();
+        var query = Query();
 
         if (queryShaper is not null)
             query = queryShaper(query);
@@ -36,15 +40,9 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
     public async Task<TEntity?> FirstOrDefaultAsync(
         Expression<Func<TEntity, bool>> predicate,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
-        bool asNoTracking = true,
         CancellationToken ct = default)
     {
-        IQueryable<TEntity> query = Set;
-
-        if (asNoTracking)
-            query = query.AsNoTracking();
-
-        query = query.Where(predicate);
+        var query = Query().Where(predicate);
 
         if (queryShaper is not null)
             query = queryShaper(query);
@@ -55,13 +53,9 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
     public async Task<List<TEntity>> ListAsync(
         Expression<Func<TEntity, bool>>? predicate = null,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
-        bool asNoTracking = true,
         CancellationToken ct = default)
     {
-        IQueryable<TEntity> query = Set;
-
-        if (asNoTracking)
-            query = query.AsNoTracking();
+        var query = Query();
 
         if (predicate is not null)
             query = query.Where(predicate);
@@ -75,18 +69,12 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
     public async Task<List<TEntity>> ListByIdsAsync(
         IReadOnlyCollection<Guid> ids,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
-        bool asNoTracking = true,
         CancellationToken ct = default)
     {
         if (ids.Count == 0)
             return [];
 
-        IQueryable<TEntity> query = Set;
-
-        if (asNoTracking)
-            query = query.AsNoTracking();
-
-        query = query.Where(x => ids.Contains(x.Id));
+        var query = Query().Where(x => ids.Contains(x.Id));
 
         if (queryShaper is not null)
             query = queryShaper(query);

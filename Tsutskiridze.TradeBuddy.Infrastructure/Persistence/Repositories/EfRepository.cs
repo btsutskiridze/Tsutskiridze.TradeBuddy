@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SharedKernel;
 
@@ -7,6 +7,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 public class EfRepository<TEntity> : EfReadRepository<TEntity>, IRepository<TEntity>
     where TEntity : Entity<Guid>, IAggregateRoot
 {
+    protected override bool UseNoTracking => false;
+
     public EfRepository(AppDbContext db) : base(db)
     {
     }
