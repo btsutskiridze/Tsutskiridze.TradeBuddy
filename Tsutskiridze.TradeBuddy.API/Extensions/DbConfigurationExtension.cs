@@ -22,8 +22,8 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
                 .UseSnakeCaseNamingConvention()
             );
 
-            services.AddScoped(typeof(IReadRepository<,>), typeof(EfReadRepository<,>));
-            services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
+            services.AddScoped(typeof(IReadRepository<>), typeof(EfReadRepository<>));
+            services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
             return services;

@@ -1,8 +1,7 @@
 ﻿namespace SharedKernel;
 
-public interface IRepository<TEntity, TId> : IReadRepository<TEntity, TId>
-    where TEntity : Entity<TId>, IAggregateRoot
-    where TId : notnull
+public interface IRepository<TEntity> : IReadRepository<TEntity>
+    where TEntity : Entity<Guid>, IAggregateRoot
 {
     Task<TEntity> AddAsync(TEntity entity, CancellationToken ct = default);
     Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct = default);

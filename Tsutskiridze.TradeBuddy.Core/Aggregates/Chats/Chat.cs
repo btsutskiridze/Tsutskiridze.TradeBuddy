@@ -25,6 +25,11 @@ public class Chat : Entity<Guid>, IAggregateRoot
         TelegramChatId = telegramChatId;
     }
 
+    public bool IsActivated()
+    {
+        return TelegramChatId.HasValue;
+    }
+
     public void AddPriceAlert(PriceAlert priceAlert)
     {
         ArgumentNullException.ThrowIfNull(priceAlert);

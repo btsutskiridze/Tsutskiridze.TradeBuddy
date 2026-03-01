@@ -1,13 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Immutable;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
+using SharedKernel;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Database;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Core.Constants;
-using Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram;
+using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 {
@@ -35,24 +37,32 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         public async Task HandleMessage(Message message)
         {
             using var scope = _scopes.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
+            var chatRepo = scope.ServiceProvider.GetRequiredService<IReadRepository<Chat>>();
+            var stockRepo = scope.ServiceProvider.GetRequiredService<IReadRepository<Stock>>();
 
             await _bot.SendChatAction(message.Chat.Id, ChatAction.Typing);
 
-            var priceAlerts = db.Set<PriceAlert>()
-                .Where(x => x.Chat.TelegramChatID == message.Chat.Id)
-                .Include(x => x.Chat)
-                .Include(x => x.Stock)
-                .ToList();
+            var chat = await chatRepo.FirstOrDefaultAsync(
+                x => x.TelegramChatId == message.Chat.Id,
+                x => x.Include(y => y.PriceAlerts)
+            );
 
+            var priceAlerts = chat!.PriceAlerts;
             if (priceAlerts.Count == 0)
             {
                 await _bot.SendMessage(message.Chat.Id, "You have no alerts set.");
                 return;
             }
 
+            var stockIds = priceAlerts.Select(x => x.StockId).ToList();
+            var stocks = ((await stockRepo.ListByIdsAsync(stockIds))).ToImmutableDictionary(x => x.Id);
+            
             var alertList = priceAlerts
-                .Select(x => $"*{x.Stock.Symbol}* {x.Direction} {_currency.GetSymbol(x.Stock.Currency)}{x.Price}")
+                .Select(x =>
+                {
+                    var stock = stocks[x.StockId];
+                    return $"*{stock.Symbol}* {x.Direction} {_currency.GetSymbol(stock.Currency)}{x.Price}";
+                })
                 .ToList();
 
             var text = new StringBuilder()
@@ -67,7 +77,6 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 parseMode: ParseMode.Markdown,
                 text: text
             );
-
         }
     }
 }

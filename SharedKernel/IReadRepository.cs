@@ -2,12 +2,11 @@
 
 namespace SharedKernel;
 
-public interface IReadRepository<TEntity, in TId>
-    where TEntity : Entity<TId>, IAggregateRoot
-    where TId : notnull
+public interface IReadRepository<TEntity>
+    where TEntity : Entity<Guid>, IAggregateRoot
 {
     Task<TEntity?> GetByIdAsync(
-        TId id,
+        Guid id,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
         bool asNoTracking = true,
         CancellationToken ct = default);
@@ -25,7 +24,7 @@ public interface IReadRepository<TEntity, in TId>
         CancellationToken ct = default);
     
     Task<List<TEntity>> ListByIdsAsync(
-        IReadOnlyCollection<TId> ids,
+        IReadOnlyCollection<Guid> ids,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
         bool asNoTracking = true,
         CancellationToken ct = default);

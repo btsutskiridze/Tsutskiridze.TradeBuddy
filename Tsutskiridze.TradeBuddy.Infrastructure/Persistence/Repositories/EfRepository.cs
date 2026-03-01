@@ -4,14 +4,13 @@ using SharedKernel;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
-public class EfRepository<TEntity, TId> : EfReadRepository<TEntity, TId>, IRepository<TEntity, TId>
-    where TEntity : Entity<TId>, IAggregateRoot
-    where TId : notnull
+public class EfRepository<TEntity> : EfReadRepository<TEntity>, IRepository<TEntity>
+    where TEntity : Entity<Guid>, IAggregateRoot
 {
     public EfRepository(AppDbContext db) : base(db)
     {
     }
-
+    
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken ct = default)
     {
         await Set.AddAsync(entity, ct);

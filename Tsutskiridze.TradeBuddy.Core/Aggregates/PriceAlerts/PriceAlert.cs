@@ -1,12 +1,13 @@
-﻿using SharedKernel;
+using SharedKernel;
 using Tsutskiridze.TradeBuddy.Core.Enums;
+using Tsutskiridze.TradeBuddy.Core.Events;
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
 
 public class PriceAlert : Entity<Guid>, IAggregateRoot
 {
     public Guid ChatId { get; private init; }
-    public int StockId { get; private init; }
+    public Guid StockId { get; private init; }
     public decimal Price { get; private init; }
     public PriceAlertDirection Direction { get; private init; }
     public int AlertCount { get; private set; }
@@ -17,13 +18,13 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
     public PriceAlert(
         Guid id,
         Guid chatId,
-        int stockId,
+        Guid stockId,
         decimal price,
         PriceAlertDirection direction) : base(id)
     {
         if (Guid.Empty == id) throw new DomainException("Invalid id");
         if (Guid.Empty == chatId) throw new DomainException("Invalid chatId");
-        if (stockId == 0) throw new DomainException("Invalid stockId");
+        if (stockId == Guid.Empty) throw new DomainException("Invalid stockId");
         if (price < 0) throw new DomainException("Invalid price");
 
         ChatId = chatId;
@@ -60,5 +61,14 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
     public bool HasReachedMaxNotifications(int max)
     {
         return AlertCount >= max;
+    }
+
+    public void Deactivate()
+    {
+        if (!IsActive)
+            throw new DomainException("Alert is already inactive");
+
+        IsActive = false;
+        RaiseDomainEvent(new PriceAlertRemovedEvent(this));
     }
 }

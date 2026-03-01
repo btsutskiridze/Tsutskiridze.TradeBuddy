@@ -1,8 +1,10 @@
-﻿namespace SharedKernel;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SharedKernel;
 
 public abstract class Entity<TId> : IHasDomainEvents, IEquatable<Entity<TId>> where TId : notnull
 {
-    private readonly List<DomainEvent> _domainEvents = []; 
+    private readonly List<IDomainEvent> _domainEvents = []; 
         
     public TId Id { get; protected init; }
 
@@ -10,7 +12,7 @@ public abstract class Entity<TId> : IHasDomainEvents, IEquatable<Entity<TId>> wh
 
     protected Entity() {} //ef core
     
-    public IReadOnlyList<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
     protected void RaiseDomainEvent(DomainEvent @event) => _domainEvents.Add(@event);
     public void ClearDomainEvents() => _domainEvents.Clear();
 

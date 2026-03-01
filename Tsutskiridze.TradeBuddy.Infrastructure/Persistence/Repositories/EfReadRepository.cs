@@ -4,9 +4,8 @@ using SharedKernel;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
-public class EfReadRepository<TEntity, TId> : IReadRepository<TEntity, TId>
-    where TEntity : Entity<TId>, IAggregateRoot
-    where TId : notnull
+public class EfReadRepository<TEntity> : IReadRepository<TEntity>
+    where TEntity : Entity<Guid>, IAggregateRoot
 {
     protected readonly AppDbContext Db;
     protected readonly DbSet<TEntity> Set;
@@ -18,7 +17,7 @@ public class EfReadRepository<TEntity, TId> : IReadRepository<TEntity, TId>
     }
 
     public async Task<TEntity?> GetByIdAsync(
-        TId id,
+        Guid id,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
         bool asNoTracking = true,
         CancellationToken ct = default)
@@ -74,7 +73,7 @@ public class EfReadRepository<TEntity, TId> : IReadRepository<TEntity, TId>
     }
 
     public async Task<List<TEntity>> ListByIdsAsync(
-        IReadOnlyCollection<TId> ids,
+        IReadOnlyCollection<Guid> ids,
         Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
         bool asNoTracking = true,
         CancellationToken ct = default)

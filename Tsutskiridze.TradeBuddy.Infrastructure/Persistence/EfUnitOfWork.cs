@@ -22,7 +22,7 @@ public class EfUnitOfWork : IUnitOfWork
             .Where(e => e.DomainEvents.Any())
             .ToArray();
 
-        var events = new List<DomainEvent>();
+        var events = new List<IDomainEvent>();
         foreach (var entity in entitiesWithEvents)
         {
             events.AddRange(entity.DomainEvents);

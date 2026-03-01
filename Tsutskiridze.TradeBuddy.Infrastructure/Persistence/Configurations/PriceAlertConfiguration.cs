@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
 {
@@ -21,11 +21,12 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
 
             builder.Property(pa => pa.Price)
                 .IsRequired()
-                .HasColumnType("numeric");
+                .HasPrecision(18, 4);
 
             builder.Property(pa => pa.Direction)
                 .IsRequired()
-                .HasColumnType("numeric");
+                .HasConversion<string>()
+                .HasMaxLength(20);
 
             builder.Property(pa => pa.AlertCount)
                 .IsRequired()
@@ -33,6 +34,13 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
 
             builder.Property(pa => pa.CreatedAt)
                 .IsRequired();
+            
+            builder.HasOne<Stock>()
+                .WithMany()
+                .HasForeignKey(pa => pa.StockId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            builder.HasIndex(pa => pa.StockId);
         }
     }
 }

@@ -1,8 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
+using SharedKernel;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Database;
 using Tsutskiridze.TradeBuddy.Core.Constants;
+using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
 
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
@@ -25,8 +26,9 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         public async Task HandleMessage(Message message)
         {
             using var scope = _scopes.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
-
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            var chatReadRepository = scope.ServiceProvider.GetRequiredService<IReadRepository<Chat>>();
+            
             var parts = message.Text!
                               .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -38,7 +40,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 
             var activationToken = parts[1];
 
-            var chat = db.Set<Core.DBEntities.Telegram.Chat>().FirstOrDefault(c => c.ActivationToken == activationToken);
+            var chat = await chatReadRepository.FirstOrDefaultAsync(c => c.ActivationToken == activationToken);
 
             await _telegramClient.SendChatAction(message.Chat.Id, Telegram.Bot.Types.Enums.ChatAction.Typing);
 
@@ -48,15 +50,14 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 return;
             }
 
-            if (chat.TelegramChatID.HasValue)
+            if (chat.IsActivated())
             {
                 await _telegramClient.SendMessage(message.Chat.Id, "Activation already completed for this token.");
                 return;
             }
 
-            chat.TelegramChatID = message.Chat.Id;
-
-            await db.SaveChangesAsync();
+            chat.Activate(message.Chat.Id);
+            await unitOfWork.SaveChangesAsync();
 
             await _telegramClient.SendMessage(message.Chat.Id, "Bot activated successfully! You can now use the bot features.");
         }

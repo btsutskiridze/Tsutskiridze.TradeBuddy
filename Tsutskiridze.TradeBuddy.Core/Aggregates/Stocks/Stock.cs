@@ -3,7 +3,7 @@ using Tsutskiridze.TradeBuddy.Core.Events;
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 
-public class Stock : Entity<int>, IAggregateRoot
+public class Stock : Entity<Guid>, IAggregateRoot
 {
     public string Symbol { get; private init; }
     public string Currency { get; private init; }
