@@ -1,8 +1,8 @@
-﻿using Mediator;
+using Mediator;
 
 namespace SharedKernel;
 
 public abstract class DomainEvent : IDomainEvent
 {
-    public DateTime OccuredAt { get; protected set; } = DateTime.UtcNow;
+    public DateTime OccurredAt { get; protected set; } = DateTime.UtcNow;
 }
