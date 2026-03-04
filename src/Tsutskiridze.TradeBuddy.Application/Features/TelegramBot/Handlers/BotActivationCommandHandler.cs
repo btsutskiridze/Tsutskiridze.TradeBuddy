@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SharedKernel;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
 
@@ -40,7 +41,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 
             var activationToken = parts[1];
 
-            var chat = await chatReadRepository.FirstOrDefaultAsync(c => c.ActivationToken == activationToken);
+            var chat = await chatReadRepository.FirstOrDefaultAsync(new ChatByActivationTokenSpec(activationToken));
 
             await _telegramClient.SendChatAction(message.Chat.Id, Telegram.Bot.Types.Enums.ChatAction.Typing);
 

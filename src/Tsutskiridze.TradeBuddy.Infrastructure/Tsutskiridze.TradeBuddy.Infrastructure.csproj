@@ -21,10 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Options\" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Application\Tsutskiridze.TradeBuddy.Application.csproj" />
     </ItemGroup>
 

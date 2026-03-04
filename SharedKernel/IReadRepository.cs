@@ -7,29 +7,33 @@ public interface IReadRepository<TEntity>
 {
     Task<TEntity?> GetByIdAsync(
         Guid id,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
         CancellationToken ct = default);
 
     Task<TEntity?> FirstOrDefaultAsync(
-        Expression<Func<TEntity, bool>> predicate,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
+        CancellationToken ct = default);
+    
+    Task<TEntity?> FirstOrDefaultAsync(
+        ISpecification<TEntity> spec,
         CancellationToken ct = default);
 
     Task<List<TEntity>> ListAsync(
-        Expression<Func<TEntity, bool>>? predicate = null,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
         CancellationToken ct = default);
     
-    Task<List<TEntity>> ListByIdsAsync(
-        IReadOnlyCollection<Guid> ids,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
+    Task<List<TEntity>> ListAsync(
+        ISpecification<TEntity> spec, 
         CancellationToken ct = default);
 
     Task<bool> AnyAsync(
-        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken ct = default);
+    
+    Task<bool> AnyAsync(
+        ISpecification<TEntity> spec, 
         CancellationToken ct = default);
 
     Task<int> CountAsync(
-        Expression<Func<TEntity, bool>>? predicate = null,
+        CancellationToken ct = default);
+    
+    Task<int> CountAsync(
+        ISpecification<TEntity> spec, 
         CancellationToken ct = default);
 }

@@ -7,8 +7,11 @@ using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Yahoo;
 using Tsutskiridze.TradeBuddy.Application.Events;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
@@ -70,8 +73,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 return;
             }
 
-            var chat = await chatRepo.FirstOrDefaultAsync(x => x.TelegramChatId == message.Chat.Id);
-            var stock = await stockRepo.FirstOrDefaultAsync(x => x.Symbol == symbol);
+            var chat = await chatRepo.FirstOrDefaultAsync(new ChatByTelegramId(message.Chat.Id));
+            var stock = await stockRepo.FirstOrDefaultAsync(new StockBySymbolSpec(symbol));
 
             if (stock == null)
             {
@@ -80,11 +83,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 return;
             }
 
-            var alert = await alertRepo.FirstOrDefaultAsync(x =>
-                    chat!.TelegramChatId == message.Chat.Id &&
-                    stock.Symbol == symbol &&
-                    x.Direction == direction &&
-                    x.Price == price
+            var alert = await alertRepo.FirstOrDefaultAsync(
+                new AlertByStockAndChatSpec(chat!.Id, stock.Id, direction, price)
             );
 
             if (alert == null)
@@ -94,7 +94,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 return;
             }
 
-            var otherExists = await alertRepo.AnyAsync(x => x.StockId == alert.StockId && x.Id != alert.Id);
+            var otherExists = await alertRepo.AnyAsync(new OtherAlertsByStockIdSpec(alert.StockId, alert.Id));
             if (!otherExists)
             {
                 stock.UnWatch();

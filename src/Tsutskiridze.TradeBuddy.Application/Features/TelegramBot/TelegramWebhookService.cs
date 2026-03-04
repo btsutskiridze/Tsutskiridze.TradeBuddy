@@ -6,6 +6,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Options;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
 
@@ -51,14 +52,15 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
                 return;
             }
 
-            _logger.LogInformation("Received message '{MessageText}' from chat {ChatId}", message.Text, message.Chat.Id);
+            _logger.LogInformation("Received message '{MessageText}' from chat {ChatId}", message.Text,
+                message.Chat.Id);
 
             var (command, cleanText) = ParseMessage(message.Text);
 
             var chat = await chatRepo.FirstOrDefaultAsync(
-                x => x.TelegramChatId == message.Chat.Id
+                new ChatByTelegramId(message.Chat.Id)
             );
-            
+
             if (chat == null && command != TelegramCommands.ActivateBot)
             {
                 _logger.LogDebug("Activated Chat {ChatId} not found", message.Chat.Id);

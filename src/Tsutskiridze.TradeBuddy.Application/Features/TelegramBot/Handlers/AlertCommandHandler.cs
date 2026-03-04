@@ -5,8 +5,10 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Yahoo;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
@@ -77,8 +79,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 return;
             }
 
-            var chat = await chatReadRepository.FirstOrDefaultAsync(x => x.TelegramChatId == message.Chat.Id);
-            var stock = await stockRepository.FirstOrDefaultAsync(x => x.Symbol == symbol);
+            var chat = await chatReadRepository.FirstOrDefaultAsync(new ChatByTelegramId(message.Chat.Id));
+            var stock = await stockRepository.FirstOrDefaultAsync(new StockBySymbolSpec(symbol));
 
             if (stock == null)
             {

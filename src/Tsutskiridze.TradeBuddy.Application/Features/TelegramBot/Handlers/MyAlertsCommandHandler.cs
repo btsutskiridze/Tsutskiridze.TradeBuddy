@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using SharedKernel;
@@ -7,7 +6,9 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
 
@@ -43,8 +44,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             await _bot.SendChatAction(message.Chat.Id, ChatAction.Typing);
 
             var chat = await chatRepo.FirstOrDefaultAsync(
-                x => x.TelegramChatId == message.Chat.Id,
-                x => x.Include(y => y.PriceAlerts)
+                new ChatByTelegramIdIncludePriceAlertsSpec(message.Chat.Id)
             );
 
             var priceAlerts = chat!.PriceAlerts;
@@ -55,7 +55,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             }
 
             var stockIds = priceAlerts.Select(x => x.StockId).ToList();
-            var stocks = ((await stockRepo.ListByIdsAsync(stockIds))).ToImmutableDictionary(x => x.Id);
+            var stocks = (await stockRepo.ListAsync(new StocksByIdsSpec(stockIds)))
+                .ToImmutableDictionary(x => x.Id);
             
             var alertList = priceAlerts
                 .Select(x =>

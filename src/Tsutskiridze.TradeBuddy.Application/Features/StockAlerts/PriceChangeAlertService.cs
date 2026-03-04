@@ -7,9 +7,13 @@ using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Events;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Enums;
+
 namespace Tsutskiridze.TradeBuddy.Application.Features.StockAlerts;
 
 public sealed class PriceChangeAlertService : INotificationHandler<PricingUpdated>
@@ -43,29 +47,29 @@ public sealed class PriceChangeAlertService : INotificationHandler<PricingUpdate
         {
             using var scope = _scopes.CreateScope();
 
-            var stockRepository = scope.ServiceProvider.GetRequiredService<IRepository<Stock>>();
-            var alertRepository = scope.ServiceProvider.GetRequiredService<IRepository<PriceAlert>>();
-            var chatReadRepository = scope.ServiceProvider.GetRequiredService<IReadRepository<Chat>>();
-            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+            var chatReadRepo = scope.ServiceProvider.GetRequiredService<IReadRepository<Chat>>();
+            var stockRepo = scope.ServiceProvider.GetRequiredService<IRepository<Stock>>();
+            var alertRepo = scope.ServiceProvider.GetRequiredService<IRepository<PriceAlert>>();
 
-            var stock = await stockRepository.FirstOrDefaultAsync(
-                x => x.Symbol == evt.Symbol,
-                ct: ct);
+            var stock = await stockRepo.FirstOrDefaultAsync(
+                new StockBySymbolSpec(evt.Symbol),
+                ct: ct
+            );
 
             if (stock is null)
                 return;
 
-            var nowUtc = DateTime.UtcNow;
+            var activeAlerts = await alertRepo.ListAsync(
+                new ActiveAlertsByStockIdSpec(stock.Id),
+                ct
+            );
 
-            var activeAlertsForStock = await alertRepository.ListAsync(
-                x => x.StockId == stock.Id && x.IsActive,
-                ct: ct);
-
-            if (activeAlertsForStock.Count == 0)
+            if (activeAlerts.Count == 0)
                 return;
 
-            var triggeredAlerts = activeAlertsForStock
-                .Where(x => x.IsTriggered(evt.Price) && !x.IsRateLimited(nowUtc, RateLimitWindow))
+            var triggeredAlerts = activeAlerts
+                .Where(x => x.IsTriggered(evt.Price) && !x.IsRateLimited(DateTime.UtcNow, RateLimitWindow))
                 .ToList();
 
             if (triggeredAlerts.Count == 0)
@@ -76,52 +80,44 @@ public sealed class PriceChangeAlertService : INotificationHandler<PricingUpdate
                 .Distinct()
                 .ToList();
 
-            var chats = await chatReadRepository.ListAsync(
-                x => chatIds.Contains(x.Id),
-                ct: ct);
-
-            var chatsById = chats.ToDictionary(x => x.Id);
+            var chatsDict = (await chatReadRepo.ListAsync(
+                new ActivatedChatsByIdsSpec(chatIds),
+                ct: ct)).ToDictionary(x => x.Id);
 
             var currencySymbol = _currency.GetSymbol(stock.Currency) ?? stock.Currency;
 
             var outgoingMessages = new List<OutgoingTelegramMessage>();
 
-            foreach (var alert in triggeredAlerts.TakeWhile(alert => !ct.IsCancellationRequested))
+            foreach (var alert in triggeredAlerts.TakeWhile(_ => !ct.IsCancellationRequested))
             {
-                if (!chatsById.TryGetValue(alert.ChatId, out var chat))
-                    continue;
-
-                if (chat.TelegramChatId is null)
+                if (!chatsDict.TryGetValue(alert.ChatId, out var chat))
                     continue;
 
                 var dirEmoji = alert.Direction == PriceAlertDirection.Above ? "🚀" : "📉";
                 var dirText = alert.Direction == PriceAlertDirection.Above ? "Above" : "Below";
 
                 outgoingMessages.Add(new OutgoingTelegramMessage(
-                    chat.TelegramChatId.Value,
+                    chat.TelegramChatId!.Value,
                     $"🔔 *{evt.Symbol}*: {currencySymbol}{evt.Price:N2} 🔔\n{dirEmoji} {dirText} {currencySymbol}{alert.Price:N2}"
                 ));
 
                 alert.RecordNotification();
-
-                if (alert.HasReachedMaxNotifications(MaxNotifications))
-                {
-                    alert.Deactivate();
-
-                    outgoingMessages.Add(new OutgoingTelegramMessage(
-                        chat.TelegramChatId.Value,
-                        $"🚫 *{evt.Symbol}* Alert removed after {MaxNotifications} notifications."
-                    ));
-                }
+                if (!alert.HasReachedMaxNotifications(MaxNotifications)) continue;
+                
+                alert.Deactivate();
+                outgoingMessages.Add(new OutgoingTelegramMessage(
+                    chat.TelegramChatId.Value,
+                    $"🚫 *{evt.Symbol}* Alert removed after {MaxNotifications} notifications."
+                ));
             }
 
             // After in-memory mutations, decide stock watch state from the tracked alert list.
-            if (stock.IsWatched && activeAlertsForStock.All(x => !x.IsActive))
+            if (stock.IsWatched && !activeAlerts.Any(x => x.IsActive))
             {
                 stock.UnWatch();
             }
 
-            await unitOfWork.SaveChangesAsync(ct);
+            await uow.SaveChangesAsync(ct);
 
             var tasks = outgoingMessages.Select(x => SendTelegramMessage(x, ct));
             await Task.WhenAll(tasks);

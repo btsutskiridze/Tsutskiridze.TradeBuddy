@@ -18,87 +18,60 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
         Set = db.Set<TEntity>();
     }
 
-    protected IQueryable<TEntity> Query()
+    protected IQueryable<TEntity> Query(ISpecification<TEntity>? spec = null)
     {
         IQueryable<TEntity> query = Set;
+
+        if (spec is not null)
+        {
+            query = spec.GetQuery(query);
+        }
+        
         return UseNoTracking ? query.AsNoTracking() : query;
     }
 
-    public async Task<TEntity?> GetByIdAsync(
-        Guid id,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
-        CancellationToken ct = default)
+    public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
-        var query = Query();
-
-        if (queryShaper is not null)
-            query = queryShaper(query);
-
-        return await query.FirstOrDefaultAsync(x => x.Id.Equals(id), ct);
+        return await Set.FindAsync([id], cancellationToken: ct);
     }
     
-    public async Task<TEntity?> FirstOrDefaultAsync(
-        Expression<Func<TEntity, bool>> predicate,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
-        CancellationToken ct = default)
+    public async Task<TEntity?> FirstOrDefaultAsync(CancellationToken ct = default)
     {
-        var query = Query().Where(predicate);
-
-        if (queryShaper is not null)
-            query = queryShaper(query);
-
-        return await query.FirstOrDefaultAsync(ct);
+        return await Query().FirstOrDefaultAsync(ct);
     }
 
-    public async Task<List<TEntity>> ListAsync(
-        Expression<Func<TEntity, bool>>? predicate = null,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
-        CancellationToken ct = default)
+    public async Task<TEntity?> FirstOrDefaultAsync(ISpecification<TEntity> spec, CancellationToken ct = default)
     {
-        var query = Query();
-
-        if (predicate is not null)
-            query = query.Where(predicate);
-
-        if (queryShaper is not null)
-            query = queryShaper(query);
-
-        return await query.ToListAsync(ct);
-    }
-
-    public async Task<List<TEntity>> ListByIdsAsync(
-        IReadOnlyCollection<Guid> ids,
-        Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryShaper = null,
-        CancellationToken ct = default)
-    {
-        if (ids.Count == 0)
-            return [];
-
-        var query = Query().Where(x => ids.Contains(x.Id));
-
-        if (queryShaper is not null)
-            query = queryShaper(query);
-
-        return await query.ToListAsync(ct);
+        return await Query(spec).FirstOrDefaultAsync(ct);
     }
     
-
-    public Task<bool> AnyAsync(
-        Expression<Func<TEntity, bool>> predicate,
-        CancellationToken ct = default)
+    public async Task<List<TEntity>> ListAsync(CancellationToken ct = default)
     {
-        return Set.AnyAsync(predicate, ct);
+        return await Query().ToListAsync(ct);
     }
 
-    public Task<int> CountAsync(
-        Expression<Func<TEntity, bool>>? predicate = null,
-        CancellationToken ct = default)
+    public async Task<List<TEntity>> ListAsync(ISpecification<TEntity> spec, CancellationToken ct = default)
     {
-        IQueryable<TEntity> query = Set;
+        return await Query(spec).ToListAsync(ct);
+    }
 
-        if (predicate is not null)
-            query = query.Where(predicate);
+    public async Task<bool> AnyAsync(CancellationToken ct = default)
+    {
+        return await Query().AnyAsync(ct);
+    }
+    
+    public async Task<bool> AnyAsync(ISpecification<TEntity> spec, CancellationToken ct = default)
+    {
+        return await Query(spec).AnyAsync(ct);
+    }
 
-        return query.CountAsync(ct);
+    public async Task<int> CountAsync(CancellationToken ct = default)
+    {
+        return await Query().CountAsync(ct);
+    }
+    
+    public async Task<int> CountAsync(ISpecification<TEntity> spec, CancellationToken ct = default)
+    {
+        return await Query(spec).CountAsync(ct);
     }
 }
