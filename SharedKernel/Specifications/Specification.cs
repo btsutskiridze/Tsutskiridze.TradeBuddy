@@ -2,11 +2,24 @@
 
 namespace SharedKernel.Specifications;
 
+public abstract class Specification<TEntity, TResult> : Specification<TEntity>, ISpecification<TEntity, TResult>
+    where TEntity : Entity<Guid>, IAggregateRoot
+{
+    protected new virtual ISpecificationBuilder<TEntity, TResult> Query { get; }
+
+    protected Specification()
+    {
+        Query = new SpecificationBuilder<TEntity, TResult>(this);
+    }
+
+    public Expression<Func<TEntity, TResult>>? Selector { get; internal set; }
+}
+
 public abstract class Specification<TEntity> : ISpecification<TEntity> where TEntity : Entity<Guid>, IAggregateRoot
 {
-    private readonly List<Expression<Func<TEntity, bool>>> _criterias;
-    private readonly List<Expression<Func<TEntity, object>>> _includes;
-    protected ISpecificationBuilder<TEntity> Query { get; }
+    private readonly List<Expression<Func<TEntity, bool>>> _criterias = [];
+    private readonly List<Expression<Func<TEntity, object>>> _includes = [];
+    protected virtual ISpecificationBuilder<TEntity> Query { get; }
 
     protected Specification()
     {
