@@ -13,13 +13,13 @@ public class SpecificationBuilder<TEntity> : ISpecificationBuilder<TEntity> wher
 
     public SpecificationBuilder<TEntity> Where(Expression<Func<TEntity, bool>> criteria)
     {
-        ((List<Expression<Func<TEntity, bool>>>)Specification.Criterias).Add(criteria);
+        Specification.AddCriteria(criteria);
         return this;
     }
 
     public SpecificationBuilder<TEntity> Include(Expression<Func<TEntity, object>> include)
     {
-        ((List<Expression<Func<TEntity, object>>>)Specification.Includes).Add(include);
+        Specification.AddInclude(include);
         return this;
     }
 

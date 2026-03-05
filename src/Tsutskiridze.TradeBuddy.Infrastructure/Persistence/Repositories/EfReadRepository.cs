@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
+using SharedKernel.Specifications;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
@@ -22,12 +23,13 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
     {
         IQueryable<TEntity> query = Set;
 
-        if (spec is not null)
-        {
-            query = spec.GetQuery(query);
-        }
+        if (UseNoTracking)
+            query.AsNoTracking();
+
+        if(spec is not null)
+            query = SpecificationEvaluator<TEntity>.ShapeQuery(spec, query);
         
-        return UseNoTracking ? query.AsNoTracking() : query;
+        return query;
     }
 
     public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken ct = default)
