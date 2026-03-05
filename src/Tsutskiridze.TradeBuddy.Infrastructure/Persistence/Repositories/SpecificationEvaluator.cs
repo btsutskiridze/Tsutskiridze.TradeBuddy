@@ -8,6 +8,24 @@ public static class SpecificationEvaluator<TEntity> where TEntity : Entity<Guid>
 {
     public static IQueryable<TEntity> ShapeQuery(ISpecification<TEntity> specification, IQueryable<TEntity> query)
     {
+        query = ShapeBaseQuery(specification, query);
+
+        return query;
+    }
+
+    public static IQueryable<TResult> ShapeQuery<TResult>(ISpecification<TEntity, TResult> specification,
+        IQueryable<TEntity> query)
+    {
+        query = ShapeBaseQuery(specification, query);
+
+        if (specification.Selector is null)
+            throw new InvalidOperationException("Projection specification requires Selector.");
+
+        return query.Select(specification.Selector);
+    }
+
+    private static IQueryable<TEntity> ShapeBaseQuery(ISpecification<TEntity> specification, IQueryable<TEntity> query)
+    {
         query = specification.Criterias.Aggregate(query, (current, criteria) => current.Where(criteria));
 
         if (specification.OrderBy is not null)

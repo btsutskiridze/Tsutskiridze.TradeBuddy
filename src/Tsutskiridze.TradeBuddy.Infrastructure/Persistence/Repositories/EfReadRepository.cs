@@ -26,9 +26,21 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
         if (UseNoTracking)
             query.AsNoTracking();
 
-        if(spec is not null)
+        if (spec is not null)
             query = SpecificationEvaluator<TEntity>.ShapeQuery(spec, query);
-        
+
+        return query;
+    }
+
+    protected IQueryable<TResult> Query<TResult>(ISpecification<TEntity, TResult> spec)
+    {
+        IQueryable<TEntity> startQuery = Set;
+
+        if (UseNoTracking)
+            startQuery.AsNoTracking();
+
+        var query = SpecificationEvaluator<TEntity>.ShapeQuery(spec, startQuery);
+
         return query;
     }
 
@@ -36,7 +48,7 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
     {
         return await Set.FindAsync([id], cancellationToken: ct);
     }
-    
+
     public async Task<TEntity?> FirstOrDefaultAsync(CancellationToken ct = default)
     {
         return await Query().FirstOrDefaultAsync(ct);
@@ -46,7 +58,12 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
     {
         return await Query(spec).FirstOrDefaultAsync(ct);
     }
-    
+
+    public async Task<TResult?> FirstOrDefaultAsync<TResult>(ISpecification<TEntity, TResult> spec, CancellationToken ct = default)
+    {
+        return await Query(spec).FirstOrDefaultAsync(ct);
+    }
+
     public async Task<List<TEntity>> ListAsync(CancellationToken ct = default)
     {
         return await Query().ToListAsync(ct);
@@ -57,12 +74,22 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
         return await Query(spec).ToListAsync(ct);
     }
 
+    public async Task<List<TResult>> ListAsync<TResult>(ISpecification<TEntity, TResult> spec, CancellationToken ct = default)
+    {
+        return await Query(spec).ToListAsync(ct);
+    }
+
     public async Task<bool> AnyAsync(CancellationToken ct = default)
     {
         return await Query().AnyAsync(ct);
     }
-    
+
     public async Task<bool> AnyAsync(ISpecification<TEntity> spec, CancellationToken ct = default)
+    {
+        return await Query(spec).AnyAsync(ct);
+    }
+
+    public async Task<bool> AnyAsync<TResult>(ISpecification<TEntity, TResult> spec, CancellationToken ct = default)
     {
         return await Query(spec).AnyAsync(ct);
     }
@@ -71,8 +98,13 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
     {
         return await Query().CountAsync(ct);
     }
-    
+
     public async Task<int> CountAsync(ISpecification<TEntity> spec, CancellationToken ct = default)
+    {
+        return await Query(spec).CountAsync(ct);
+    }
+
+    public async Task<int> CountAsync<TResult>(ISpecification<TEntity, TResult> spec, CancellationToken ct = default)
     {
         return await Query(spec).CountAsync(ct);
     }
