@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System.Net.WebSockets;
 using System.Text;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.StockMarket;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
 {

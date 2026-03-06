@@ -1,11 +1,11 @@
 using Newtonsoft.Json;
 using OpenAI.Chat;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.AI.OpenAI;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.AI;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.AI.OpenAI;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI
 {
-    public class OpenAIService : IAIService
+    public class OpenAIService : IAiService
     {
         private readonly ChatClient _client;
 

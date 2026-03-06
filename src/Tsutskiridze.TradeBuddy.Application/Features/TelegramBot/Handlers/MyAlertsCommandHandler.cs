@@ -1,11 +1,11 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using SharedKernel;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.Helpers;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;

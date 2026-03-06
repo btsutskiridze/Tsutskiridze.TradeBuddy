@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.Json;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.AI;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.Gemini
 {
-    public class GeminiService : IAIService
+    public class GeminiService : IAiService
     {
         private readonly GeminiOptions _options;
         private readonly HttpClient _client;

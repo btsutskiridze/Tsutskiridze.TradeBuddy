@@ -4,8 +4,8 @@ using SharedKernel;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Yahoo;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Providers.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Events;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
@@ -25,13 +25,13 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         public string Pattern => "<symbol> <above|below> <price>";
         public string Description => $"Remove a price alert for a stock. e.g: /{Command} NVDA above 300";
 
-        private readonly IYahooStockScraper _scraper;
+        private readonly IYahooMarketDataProvider _scraper;
         private readonly ITelegramBotClient _telegramClient;
         private readonly IServiceScopeFactory _scopes;
         private readonly ICurrencySymbolProvider _currency;
 
         public RemoveAlertCommandHandler(
-            IYahooStockScraper scraper,
+            IYahooMarketDataProvider scraper,
             ITelegramBotClient telegramClient,
             IServiceScopeFactory scopes,
             ICurrencySymbolProvider currency)

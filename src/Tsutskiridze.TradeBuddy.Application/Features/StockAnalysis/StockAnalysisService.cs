@@ -3,8 +3,8 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using Telegram.Bot;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
 using Tsutskiridze.TradeBuddy.Application.Contracts.StockAnalysis;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.AI;
 using Tsutskiridze.TradeBuddy.Application.Options;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
@@ -13,7 +13,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
     public class StockAnalysisService
     {
         private readonly StockPromptService _stockPromptService;
-        private readonly IAIService _aiService;
+        private readonly IAiService _aiService;
         private readonly ITelegramBotClient _telegramBot;
         private readonly ILogger<StockAnalysisService> _logger;
         private readonly TelegramBotOptions _options;
@@ -25,7 +25,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
 
         public StockAnalysisService(
             StockPromptService stockPromptService,
-            IAIService aiService,
+            IAiService aiService,
             ITelegramBotClient telegramBot,
             ILogger<StockAnalysisService> logger,
             IOptions<TelegramBotOptions> options

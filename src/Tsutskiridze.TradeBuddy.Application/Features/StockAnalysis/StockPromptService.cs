@@ -1,6 +1,5 @@
-using Tsutskiridze.TradeBuddy.Application.Abstractions;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Yahoo;
 using Tsutskiridze.TradeBuddy.Application.Contracts.StockAnalysis;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Providers.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 
@@ -8,13 +7,11 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
 {
     public class StockPromptService
     {
-        private readonly IFinancialModelingPrepClient _fmp;
         private readonly NewsService _news;
-        private readonly IYahooStockScraper _yahooSraper;
+        private readonly IYahooMarketDataProvider _yahooSraper;
 
-        public StockPromptService(IFinancialModelingPrepClient fmp, NewsService news, IYahooStockScraper yahooSraper)
+        public StockPromptService(NewsService news, IYahooMarketDataProvider yahooSraper)
         {
-            _fmp = fmp;
             _news = news;
             _yahooSraper = yahooSraper;
         }

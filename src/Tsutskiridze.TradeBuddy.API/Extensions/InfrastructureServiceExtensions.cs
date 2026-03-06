@@ -1,21 +1,20 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using OpenAI.Chat;
 using Telegram.Bot;
-using Tsutskiridze.TradeBuddy.Application.Abstractions;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.AI.OpenAI;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Yahoo;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Providers.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Providers.News;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.AI;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.AI.OpenAI;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.StockMarket;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema;
-using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.AlphaVantage;
-using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.FinancialModelingPreg;
-using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.Finnhub;
-using Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.Reddit;
-using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Google;
-using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo;
-using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo.Utilities;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.GoogleNews;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Utilities;
 using Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket;
 using Tsutskiridze.TradeBuddy.Infrastructure.Telegram;
 
@@ -37,13 +36,13 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
         private static IServiceCollection AddExternalApiClients(this IServiceCollection services)
         {
             // Financial Data Providers
-            services.AddHttpClient<IAlphaVantageClient, AlphaVantageClient>((sp, client) =>
+            services.AddHttpClient<IAlphaVantageMarketDataProvider, AlphaVantageClient>((sp, client) =>
             {
                 var options = sp.GetRequiredService<IOptions<AlphaVantageOptions>>().Value;
                 client.BaseAddress = new Uri(options.BaseUrl);
             });
 
-            services.AddHttpClient<IFinancialModelingPrepClient, FinancialModelingPrepClient>((sp, client) =>
+            services.AddHttpClient<IFinancialModelingPrepQuoteProvider, FinancialModelingPrepClient>((sp, client) =>
             {
                 var options = sp.GetRequiredService<IOptions<FinancialModelingPrepOptions>>().Value;
                 client.BaseAddress = new Uri(options.BaseUrl);
@@ -59,7 +58,7 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
 
             // Scraping Services
             services.AddHttpClient<IGoogleNewsProvider, GoogleScraper>();
-            services.AddHttpClient<IYahooStockScraper, YahooStockScraper>(configureYahooClient);
+            services.AddHttpClient<IYahooMarketDataProvider, YahooStockScraper>(configureYahooClient);
             services.AddHttpClient<IYahooNewsProvider, YahooNewsScraper>(configureYahooClient);
             services.AddTransient<IYahooCookieBypassService, YahooCookieBypassService>();
 
@@ -81,7 +80,7 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
             });
 
             services.AddSingleton<IOpenaiJsSchemaGenerator, OpenaiJsSchemaGenerator>();
-            services.AddTransient<IAIService, OpenAIService>();
+            services.AddTransient<IAiService, OpenAIService>();
 
             return services;
         }

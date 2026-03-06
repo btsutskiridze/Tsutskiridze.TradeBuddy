@@ -1,8 +1,8 @@
-﻿using MarketData;
+using MarketData;
 using Mediator;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.StockMarket;
 using Tsutskiridze.TradeBuddy.Application.Events;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket

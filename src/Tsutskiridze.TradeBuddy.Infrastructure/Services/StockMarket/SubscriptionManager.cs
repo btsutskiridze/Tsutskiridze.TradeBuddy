@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Immutable;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Services.StockMarket;
 using Tsutskiridze.TradeBuddy.Application.Events;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 

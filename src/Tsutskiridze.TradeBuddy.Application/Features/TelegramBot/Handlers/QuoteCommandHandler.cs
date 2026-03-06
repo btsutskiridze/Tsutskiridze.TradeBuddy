@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Yahoo;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Providers.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 
@@ -18,7 +18,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         private readonly ILogger<QuoteCommandHandler> _logger;
         private readonly StockAnalysisService _stockService;
         private readonly ITelegramBotClient _botClient;
-        private readonly IYahooStockScraper _yahooStockScraper;
+        private readonly IYahooMarketDataProvider _yahooStockScraper;
 
         private static int _analysisCount = 0;
         private static DateTime _lastReset = DateTime.UtcNow.Date;
@@ -28,7 +28,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         private const int MaxAnalysisCount = 100;
         private const int DelayBetweenAnalyses = 5;
 
-        public QuoteCommandHandler(ILogger<QuoteCommandHandler> logger, StockAnalysisService stockService, ITelegramBotClient botClient, IYahooStockScraper yahooStockScraper)
+        public QuoteCommandHandler(ILogger<QuoteCommandHandler> logger, StockAnalysisService stockService, ITelegramBotClient botClient, IYahooMarketDataProvider yahooStockScraper)
         {
             _logger = logger;
             _stockService = stockService;
