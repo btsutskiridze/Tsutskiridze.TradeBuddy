@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Tsutskiridze.TradeBuddy.Core.Entities
+namespace Tsutskiridze.TradeBuddy.Application.Dtos
 {
     public class StockAnalysisModels
     {

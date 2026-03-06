@@ -62,6 +62,14 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
     {
         return AlertCount >= max;
     }
+    
+    public void Activate()
+    {
+        if (IsActive)
+            throw new DomainException("Alert is already active");
+
+        IsActive = true;
+    }
 
     public void Deactivate()
     {

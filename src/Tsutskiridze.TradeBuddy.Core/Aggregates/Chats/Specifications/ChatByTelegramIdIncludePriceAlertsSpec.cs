@@ -3,7 +3,7 @@ using SharedKernel.Specifications;
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 
-public class ChatByTelegramIdIncludePriceAlertsSpec : Specification<Chat>
+public sealed class ChatByTelegramIdIncludePriceAlertsSpec : Specification<Chat>
 {
     public ChatByTelegramIdIncludePriceAlertsSpec(long telegramId)
     {

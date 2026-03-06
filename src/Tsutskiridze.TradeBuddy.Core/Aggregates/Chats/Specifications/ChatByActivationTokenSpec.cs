@@ -3,7 +3,7 @@ using SharedKernel.Specifications;
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 
-public class ChatByActivationTokenSpec : Specification<Chat>
+public sealed class ChatByActivationTokenSpec : Specification<Chat>
 {
     public ChatByActivationTokenSpec(string activationToken)
     {

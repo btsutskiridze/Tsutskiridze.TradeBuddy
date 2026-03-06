@@ -58,7 +58,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
             var (command, cleanText) = ParseMessage(message.Text);
 
             var chat = await chatRepo.FirstOrDefaultAsync(
-                new ChatByTelegramId(message.Chat.Id)
+                new ChatByTelegramIdSpec(message.Chat.Id)
             );
 
             if (chat == null && command != TelegramCommands.ActivateBot)

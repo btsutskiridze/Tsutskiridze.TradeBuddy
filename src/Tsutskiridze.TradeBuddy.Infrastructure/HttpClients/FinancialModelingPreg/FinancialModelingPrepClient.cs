@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Tsutskiridze.TradeBuddy.Application.Abstractions;
+using Tsutskiridze.TradeBuddy.Application.Dtos;
 using Tsutskiridze.TradeBuddy.Application.Dtos.Fmp;
-using Tsutskiridze.TradeBuddy.Core.Entities;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.FinancialModelingPreg
 {

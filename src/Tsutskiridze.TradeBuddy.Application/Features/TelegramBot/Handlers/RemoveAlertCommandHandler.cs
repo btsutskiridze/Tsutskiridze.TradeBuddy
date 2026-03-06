@@ -73,7 +73,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 return;
             }
 
-            var chat = await chatRepo.FirstOrDefaultAsync(new ChatByTelegramId(message.Chat.Id));
+            var chat = await chatRepo.FirstOrDefaultAsync(new ChatByTelegramIdSpec(message.Chat.Id));
             var stock = await stockRepo.FirstOrDefaultAsync(new StockBySymbolSpec(symbol));
 
             if (stock == null)

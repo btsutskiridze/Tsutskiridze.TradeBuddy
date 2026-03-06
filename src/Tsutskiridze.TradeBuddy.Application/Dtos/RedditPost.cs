@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos.Reddit
+﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos
 {
     public class RedditPost
     {

@@ -1,9 +1,5 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.Dtos;
-using Tsutskiridze.TradeBuddy.Application.Dtos.Finnhub;
-using Tsutskiridze.TradeBuddy.Application.Dtos.Google;
-using Tsutskiridze.TradeBuddy.Application.Dtos.Reddit;
-using Tsutskiridze.TradeBuddy.Application.Dtos.Yahoo;
 using Tsutskiridze.TradeBuddy.Application.Enums;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 

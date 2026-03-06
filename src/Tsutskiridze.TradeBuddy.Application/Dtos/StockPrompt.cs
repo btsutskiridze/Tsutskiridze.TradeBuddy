@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Core.Entities
+﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos
 {
     public class StockPrompt
     {

@@ -11,6 +11,7 @@ using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 using Tsutskiridze.TradeBuddy.Core.Enums;
+using Tsutskiridze.TradeBuddy.Core.Services.Abstractions;
 using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
 
 
@@ -43,9 +44,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         {
             using var scope = _scopes.CreateScope();
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            var stockRepository = scope.ServiceProvider.GetRequiredService<IRepository<Stock>>();
-            var alertRepository = scope.ServiceProvider.GetRequiredService<IRepository<PriceAlert>>();
-            var chatReadRepository = scope.ServiceProvider.GetRequiredService<IReadRepository<Chat>>();
+            var alertDomainService = scope.ServiceProvider.GetRequiredService<IAlertDomainService>();
 
             var parts = message.Text!
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -79,18 +78,14 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 return;
             }
 
-            var chat = await chatReadRepository.FirstOrDefaultAsync(new ChatByTelegramId(message.Chat.Id));
-            var stock = await stockRepository.FirstOrDefaultAsync(new StockBySymbolSpec(symbol));
+            await alertDomainService.CreateAlertAsync(
+                message.Chat.Id,
+                symbol,
+                quote.Currency,
+                quote.Name,
+                price,
+                direction);
 
-            if (stock == null)
-            {
-                stock = new Stock(symbol, quote.Currency, quote.Name);
-                await stockRepository.AddAsync(stock);
-            }
-            
-            stock.Watch();
-            var alert = new PriceAlert(Guid.NewGuid(), chat!.Id, stock.Id, price, direction);
-            await alertRepository.AddAsync(alert);
             await unitOfWork.SaveChangesAsync();
 
             await _telegramClient.SendMessage(message.Chat.Id,

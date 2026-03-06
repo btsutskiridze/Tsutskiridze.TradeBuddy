@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using Tsutskiridze.TradeBuddy.Application.Dtos;
 using Tsutskiridze.TradeBuddy.Application.Dtos.AlphaVantage;
 using Tsutskiridze.TradeBuddy.Application.Dtos.Fmp;
-using Tsutskiridze.TradeBuddy.Core.Entities;
 
 namespace Tsutskiridze.TradeBuddy.Application.Mapping
 {

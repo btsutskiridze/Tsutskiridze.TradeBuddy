@@ -1,4 +1,4 @@
-﻿using Tsutskiridze.TradeBuddy.Application.Dtos.Reddit;
+﻿using Tsutskiridze.TradeBuddy.Application.Dtos;
 using Tsutskiridze.TradeBuddy.Application.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions.News

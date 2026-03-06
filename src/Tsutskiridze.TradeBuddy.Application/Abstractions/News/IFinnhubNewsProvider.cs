@@ -1,4 +1,4 @@
-﻿using Tsutskiridze.TradeBuddy.Application.Dtos.Finnhub;
+﻿using Tsutskiridze.TradeBuddy.Application.Dtos;
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions.News
 {

@@ -1,8 +1,8 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Yahoo;
+using Tsutskiridze.TradeBuddy.Application.Dtos;
 using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Core.Constants;
-using Tsutskiridze.TradeBuddy.Core.Entities;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
 {

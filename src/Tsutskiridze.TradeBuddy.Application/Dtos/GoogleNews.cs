@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos.Google
+﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos
 {
     public class GoogleNews
     {

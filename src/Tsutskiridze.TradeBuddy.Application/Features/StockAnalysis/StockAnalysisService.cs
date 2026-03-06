@@ -6,7 +6,6 @@ using Telegram.Bot;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
 using Tsutskiridze.TradeBuddy.Application.Dtos;
 using Tsutskiridze.TradeBuddy.Application.Options;
-using Tsutskiridze.TradeBuddy.Core.Entities;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
 {

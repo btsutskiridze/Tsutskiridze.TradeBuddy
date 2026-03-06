@@ -1,4 +1,4 @@
-﻿using Tsutskiridze.TradeBuddy.Application.Dtos.Yahoo;
+﻿using Tsutskiridze.TradeBuddy.Application.Dtos;
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions.News
 {

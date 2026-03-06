@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
-using Tsutskiridze.TradeBuddy.Application.Dtos.Google;
+using Tsutskiridze.TradeBuddy.Application.Dtos;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Google
 {

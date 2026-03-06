@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos.Yahoo
+﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos
 {
     public class YahooNews
     {

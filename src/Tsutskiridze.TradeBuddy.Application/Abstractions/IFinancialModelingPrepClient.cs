@@ -1,4 +1,4 @@
-﻿using Tsutskiridze.TradeBuddy.Core.Entities;
+﻿using Tsutskiridze.TradeBuddy.Application.Dtos;
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions
 {

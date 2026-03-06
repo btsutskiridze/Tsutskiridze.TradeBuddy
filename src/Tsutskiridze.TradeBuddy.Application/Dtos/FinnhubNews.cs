@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos.Finnhub
+﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos
 {
     public class FinnhubNews
     {
