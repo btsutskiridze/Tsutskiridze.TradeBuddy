@@ -1,6 +1,6 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos
+namespace Tsutskiridze.TradeBuddy.Application.Contracts.News
 {
-    public class YahooNews
+    public class YahooNewsItemDto
     {
         public string Title { get; set; }
         public string Url { get; set; }

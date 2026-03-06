@@ -1,7 +1,6 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos
+namespace Tsutskiridze.TradeBuddy.Application.Contracts.MarketData
 {
-
-    public class StockDayPrice
+    public class StockDayPriceDto
     {
         public string Date { get; set; }
         public string Open { get; set; }

@@ -1,15 +1,18 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
-namespace Tsutskiridze.TradeBuddy.Application.Dtos
+namespace Tsutskiridze.TradeBuddy.Application.Contracts.MarketData
 {
-    public class StockQuote
+    public class StockQuoteDto
     {
         [JsonIgnore]
         public string Symbol { get; set; }
+
         [JsonIgnore]
         public string Name { get; set; }
+
         [JsonIgnore]
         public string Currency { get; set; }
+
         public string Price { get; set; }
         public string ChangesPercentage { get; set; }
         public string Change { get; set; }

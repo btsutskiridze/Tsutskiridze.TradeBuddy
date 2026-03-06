@@ -1,9 +1,9 @@
-﻿using Tsutskiridze.TradeBuddy.Application.Dtos;
+using Tsutskiridze.TradeBuddy.Application.Contracts.News;
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions.News
 {
     public interface IYahooNewsProvider
     {
-        Task<List<YahooNews>?> GetNewsAsync(string symbol, int? limit = null);
+        Task<List<YahooNewsItemDto>?> GetNewsAsync(string symbol, int? limit = null);
     }
 }

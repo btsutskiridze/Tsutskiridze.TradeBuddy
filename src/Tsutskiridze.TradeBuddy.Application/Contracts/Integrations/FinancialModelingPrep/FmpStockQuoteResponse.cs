@@ -1,6 +1,6 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos.Fmp
+namespace Tsutskiridze.TradeBuddy.Application.Contracts.Integrations.FinancialModelingPrep
 {
-    public class StockQuoteDto
+    public class FmpStockQuoteResponse
     {
         public string Symbol { get; set; }
         public string Name { get; set; }

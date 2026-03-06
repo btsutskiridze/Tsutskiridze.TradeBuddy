@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Yahoo;
-using Tsutskiridze.TradeBuddy.Application.Dtos;
+using Tsutskiridze.TradeBuddy.Application.Contracts.MarketData;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo.Utilities;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
@@ -24,17 +24,17 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
             return nameNode != null && !string.IsNullOrWhiteSpace(nameNode.InnerText.Trim());
         }
 
-        public async Task<List<StockDayPrice>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
+        public async Task<List<StockDayPriceDto>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
         {
             var document = await GetHtmlDocumentAsync($"quote/{symbol}/history");
 
             var tableNode = document.DocumentNode.SelectSingleNode("//table[contains(@class, 'table')]");
             if (tableNode == null)
             {
-                return new List<StockDayPrice>();
+                return new List<StockDayPriceDto>();
             }
 
-            var stockDayPrices = new List<StockDayPrice>();
+            var stockDayPrices = new List<StockDayPriceDto>();
 
             var rows = tableNode.SelectNodes(".//tbody/tr");
             if (rows != null)
@@ -51,7 +51,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
                             continue;
                         }
 
-                        var stockPrice = new StockDayPrice
+                        var stockPrice = new StockDayPriceDto
                         {
                             Date = DateTime.Parse(cells[0].InnerText.Trim()).ToString("yyyy-MM-dd"),
                             Open = cells[1].InnerText.Trim(),
@@ -78,11 +78,11 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
             return stockDayPrices;
         }
 
-        public async Task<StockOverview?> GetStockOverview(string symbol)
+        public async Task<StockOverviewDto?> GetStockOverview(string symbol)
         {
             var document = await GetHtmlDocumentAsync($"quote/{symbol}/key-statistics");
 
-            var overview = new StockOverview();
+            var overview = new StockOverviewDto();
 
             try
             {
@@ -125,11 +125,11 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
             return overview;
         }
 
-        public async Task<AnnualReport?> GetStockLastAnnualReport(string symbol)
+        public async Task<AnnualReportDto?> GetStockLastAnnualReport(string symbol)
         {
             var document = await GetHtmlDocumentAsync($"quote/{symbol}/financials");
 
-            var report = new AnnualReport();
+            var report = new AnnualReportDto();
 
             try
             {
@@ -170,11 +170,11 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
             return report;
         }
 
-        public async Task<StockQuote?> GetStockQuote(string symbol)
+        public async Task<StockQuoteDto?> GetStockQuote(string symbol)
         {
             var document = await GetHtmlDocumentAsync($"quote/{symbol}");
 
-            var stockQuote = new StockQuote { Symbol = symbol };
+            var stockQuote = new StockQuoteDto { Symbol = symbol };
 
             try
             {

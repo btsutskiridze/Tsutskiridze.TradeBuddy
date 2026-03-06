@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
-using Tsutskiridze.TradeBuddy.Application.Dtos;
+using Tsutskiridze.TradeBuddy.Application.Contracts.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo.Utilities;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
@@ -15,7 +15,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
         {
         }
 
-        public async Task<List<YahooNews>?> GetNewsAsync(string symbol, int? limit = null)
+        public async Task<List<YahooNewsItemDto>?> GetNewsAsync(string symbol, int? limit = null)
         {
             var document = await GetHtmlDocumentAsync($"quote/{symbol}/news");
 
@@ -26,7 +26,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
             }
 
             _logger.LogInformation("Scraping Yahoo news for {Symbol}", symbol);
-            var newsList = new List<YahooNews>();
+            var newsList = new List<YahooNewsItemDto>();
 
             foreach (var node in newsNodes)
             {
@@ -44,7 +44,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Scraping.Yahoo
                     string summary = summaryNode?.InnerText.Trim() ?? "N/A";
                     string publishTime = timeNode?.InnerText.Trim().Split("• ").Last() ?? "N/A";
 
-                    newsList.Add(new YahooNews
+                    newsList.Add(new YahooNewsItemDto
                     {
                         Title = title,
                         Url = newsUrl,

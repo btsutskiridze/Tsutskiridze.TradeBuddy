@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using Telegram.Bot;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
-using Tsutskiridze.TradeBuddy.Application.Dtos;
+using Tsutskiridze.TradeBuddy.Application.Contracts.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Options;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
@@ -38,7 +38,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
             _options = options.Value;
         }
 
-        public async Task<List<ExecuteStockAnalysisResponse>> ExecuteStockAnalysisMultiple(List<string> stocks)
+        public async Task<List<StockAnalysisExecutionResultDto>> ExecuteStockAnalysisMultiple(List<string> stocks)
         {
             _logger.LogInformation("Starting stock analysis for {Stocks}", string.Join(", ", stocks));
             var tasks = stocks.Select(ExecuteStockAnalysis).ToList();
@@ -49,10 +49,10 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
             return [.. results];
         }
 
-        public async Task<List<ExecuteStockAnalysisResponse>> ExecuteStockAnalysisMultiple(List<string> stocks, TimeSpan delay)
+        public async Task<List<StockAnalysisExecutionResultDto>> ExecuteStockAnalysisMultiple(List<string> stocks, TimeSpan delay)
         {
             _logger.LogInformation("Starting stock analysis for {Stocks}", string.Join(", ", stocks));
-            var results = new List<ExecuteStockAnalysisResponse>();
+            var results = new List<StockAnalysisExecutionResultDto>();
 
             var lastStock = stocks.Last();
 
@@ -72,7 +72,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
             return results;
         }
 
-        public async Task<ExecuteStockAnalysisResponse> ExecuteStockAnalysis(string stock)
+        public async Task<StockAnalysisExecutionResultDto> ExecuteStockAnalysis(string stock)
         {
             var watch = Stopwatch.StartNew();
 
@@ -84,7 +84,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
                 _logger.LogInformation("Sending stock analysis to Telegram");
                 await SendTelegramMessage(analysis);
 
-                return new ExecuteStockAnalysisResponse
+                return new StockAnalysisExecutionResultDto
                 {
                     Stock = stock,
                     Analysis = analysis,
@@ -95,7 +95,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
             {
                 _logger.LogError(ex, "Error processing stock analysis for {Stock}", stock);
 
-                return new ExecuteStockAnalysisResponse
+                return new StockAnalysisExecutionResultDto
                 {
                     Stock = stock,
                     Analysis = null,
@@ -108,7 +108,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
             }
         }
 
-        public async Task<StockAnalysisModels.StockAnalysis> GenerateAiStockAnalysis(string stock)
+        public async Task<StockAnalysisResultDto> GenerateAiStockAnalysis(string stock)
         {
             var watch = Stopwatch.StartNew();
 
@@ -119,7 +119,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
                 var stockPromptJson = JsonConvert.SerializeObject(stockPrompt, _jsonSettings);
 
                 _logger.LogInformation("Sending stock prompt to AI service");
-                var analysis = await _aiService.Ask<StockAnalysisModels.StockAnalysis>(stockPromptJson);
+                var analysis = await _aiService.Ask<StockAnalysisResultDto>(stockPromptJson);
 
                 analysis.ExecutionTime = watch.Elapsed.TotalSeconds;
                 _logger.LogInformation("StockAnalysis completed in {ElapsedSeconds}s", analysis.ExecutionTime);
@@ -136,13 +136,13 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
             }
         }
 
-        private async Task SendTelegramMessage(StockAnalysisModels.StockAnalysis analysis)
+        private async Task SendTelegramMessage(StockAnalysisResultDto analysis)
         {
             var message = CreateStockTelegramMessage(analysis);
             await _telegramBot.SendMessage(_options.GroupChatID, message);
         }
 
-        public async Task SendStockAnalysisToTelegram(long chatID, StockAnalysisModels.StockAnalysis analysis)
+        public async Task SendStockAnalysisToTelegram(long chatID, StockAnalysisResultDto analysis)
         {
             try
             {
@@ -157,7 +157,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
             }
         }
 
-        public static string CreateStockTelegramMessage(StockAnalysisModels.StockAnalysis analysis)
+        public static string CreateStockTelegramMessage(StockAnalysisResultDto analysis)
         {
             // Build the message using string interpolation
             var message = $"🚨 Stock Alert: {analysis.Symbol} 🚨\n" +

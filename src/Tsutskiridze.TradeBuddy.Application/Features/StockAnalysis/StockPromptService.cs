@@ -1,6 +1,6 @@
-﻿using Tsutskiridze.TradeBuddy.Application.Abstractions;
+using Tsutskiridze.TradeBuddy.Application.Abstractions;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Yahoo;
-using Tsutskiridze.TradeBuddy.Application.Dtos;
+using Tsutskiridze.TradeBuddy.Application.Contracts.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Core.Constants;
 
@@ -19,7 +19,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
             _yahooSraper = yahooSraper;
         }
 
-        public async Task<StockPrompt?> GetStockPrompt(string symbol)
+        public async Task<StockAnalysisPromptDto?> GetStockPrompt(string symbol)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
 
                 await Task.WhenAll(quote, stockOverview, prevDayPrices, annualReport, allNews);
 
-                var stock = new StockDetails
+                var stock = new StockAnalysisContextDto
                 {
                     Name = quote.Result.Name,
                     Symbol = symbol,
@@ -48,7 +48,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
                     News = allNews.Result
                 };
 
-                var prompt = new StockPrompt
+                var prompt = new StockAnalysisPromptDto
                 {
                     AnalysisRequest = StockPromptParams.AnalysisRequest,
                     InvestmentHorizon = StockPromptParams.InvestmentHorizon,

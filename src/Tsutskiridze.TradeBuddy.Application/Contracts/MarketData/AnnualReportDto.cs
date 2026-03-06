@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos.AlphaVantage
+namespace Tsutskiridze.TradeBuddy.Application.Contracts.MarketData
 {
     public class AnnualReportDto
     {

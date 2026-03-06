@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using Tsutskiridze.TradeBuddy.Application.Dtos;
-using Tsutskiridze.TradeBuddy.Application.Dtos.AlphaVantage;
-using Tsutskiridze.TradeBuddy.Application.Dtos.Fmp;
+using AutoMapper;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Integrations.AlphaVantage;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Integrations.FinancialModelingPrep;
+using Tsutskiridze.TradeBuddy.Application.Contracts.MarketData;
 
 namespace Tsutskiridze.TradeBuddy.Application.Mapping
 {
@@ -9,9 +9,10 @@ namespace Tsutskiridze.TradeBuddy.Application.Mapping
     {
         public AutoMapperProfile()
         {
-            CreateMap<AnnualReportDto, AnnualReport>();
+            CreateMap<AlphaVantageAnnualReportResponse, AnnualReportDto>();
+            CreateMap<AlphaVantageStockOverviewResponse, StockOverviewDto>();
 
-            CreateMap<StockQuoteDto, StockQuote>()
+            CreateMap<FmpStockQuoteResponse, StockQuoteDto>()
                 .ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src =>
                     DateTimeOffset
                         .FromUnixTimeSeconds(long.Parse(src.Timestamp))

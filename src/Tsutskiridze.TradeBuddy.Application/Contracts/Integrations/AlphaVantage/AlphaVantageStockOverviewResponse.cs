@@ -1,6 +1,6 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos
+namespace Tsutskiridze.TradeBuddy.Application.Contracts.Integrations.AlphaVantage
 {
-    public class StockOverview
+    public class AlphaVantageStockOverviewResponse
     {
         public string ReturnOnEquityTTM { get; set; }
         public string PriceToSalesRatioTTM { get; set; }

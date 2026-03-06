@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
-namespace Tsutskiridze.TradeBuddy.Application.Dtos.AlphaVantage
+namespace Tsutskiridze.TradeBuddy.Application.Contracts.Integrations.AlphaVantage
 {
-    public class StockDayPriceDto
+    public class AlphaVantageStockDayPriceResponse
     {
         [JsonProperty("1. open")]
         public string Open { get; set; }

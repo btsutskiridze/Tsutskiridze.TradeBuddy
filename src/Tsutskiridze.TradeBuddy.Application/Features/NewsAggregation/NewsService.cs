@@ -1,5 +1,5 @@
-﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
-using Tsutskiridze.TradeBuddy.Application.Dtos;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
+using Tsutskiridze.TradeBuddy.Application.Contracts.News;
 using Tsutskiridze.TradeBuddy.Application.Enums;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 
@@ -23,7 +23,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation
             _googleScraper = googleScraper;
         }
 
-        public async Task<AllNews?> GetAllNews(string symbol, int? limit = null)
+        public async Task<StockNewsDto?> GetAllNews(string symbol, int? limit = null)
         {
             var googleTask = GetGoogleNews(symbol, limit);
             var redditTask = GetRedditNews(symbol, RedditSortType.New, limit);
@@ -38,7 +38,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation
                 throw new Exception("Failed to get news");
             }
 
-            return new AllNews
+            return new StockNewsDto
             {
                 Google = googleTask.Result,
                 Reddit = redditTask.Result,
@@ -47,22 +47,22 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation
             };
         }
 
-        public async Task<List<GoogleNews>?> GetGoogleNews(string symbol, int? limit = null)
+        public async Task<List<GoogleNewsItemDto>?> GetGoogleNews(string symbol, int? limit = null)
         {
             return await _googleScraper.GetNewsAsync(symbol, limit);
         }
 
-        public async Task<List<RedditPost>?> GetRedditNews(string symbol, RedditSortType sort, int? limit = null)
+        public async Task<List<RedditPostDto>?> GetRedditNews(string symbol, RedditSortType sort, int? limit = null)
         {
             return await _reddit.GetRedditPosts(symbol, sort, limit);
         }
 
-        public async Task<List<YahooNews>?> GetYahooNews(string symbol, int? limit = null)
+        public async Task<List<YahooNewsItemDto>?> GetYahooNews(string symbol, int? limit = null)
         {
             return await _yahooSraper.GetNewsAsync(symbol, limit);
         }
 
-        public async Task<List<FinnhubNews>?> GetFinnhubNews(string symbol, DateTime from, DateTime to, int? limit = null)
+        public async Task<List<FinnhubNewsItemDto>?> GetFinnhubNews(string symbol, DateTime from, DateTime to, int? limit = null)
         {
             return await _finnhub.GetCompanyNewsAsync(symbol, from, to, limit);
         }

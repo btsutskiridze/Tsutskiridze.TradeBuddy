@@ -1,9 +1,9 @@
-﻿using Tsutskiridze.TradeBuddy.Application.Dtos;
+using Tsutskiridze.TradeBuddy.Application.Contracts.MarketData;
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions
 {
     public interface IFinancialModelingPrepClient
     {
-        Task<StockQuote?> GetStockQuote(string symbol);
+        Task<StockQuoteDto?> GetStockQuote(string symbol);
     }
 }

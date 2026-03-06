@@ -1,11 +1,11 @@
-﻿using Tsutskiridze.TradeBuddy.Application.Dtos;
+using Tsutskiridze.TradeBuddy.Application.Contracts.MarketData;
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions
 {
     public interface IAlphaVantageClient
     {
-        Task<AnnualReport?> GetStockLastAnnualReport(string symbol);
-        Task<StockOverview?> GetStockOverview(string symbol);
-        Task<List<StockDayPrice>> GetStockPrevDaysClosePrices(string symbol, int? days = null);
+        Task<AnnualReportDto?> GetStockLastAnnualReport(string symbol);
+        Task<StockOverviewDto?> GetStockOverview(string symbol);
+        Task<List<StockDayPriceDto>> GetStockPrevDaysClosePrices(string symbol, int? days = null);
     }
 }

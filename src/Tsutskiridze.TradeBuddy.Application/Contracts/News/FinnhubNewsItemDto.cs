@@ -1,6 +1,6 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos
+namespace Tsutskiridze.TradeBuddy.Application.Contracts.News
 {
-    public class FinnhubNews
+    public class FinnhubNewsItemDto
     {
         public string Category { get; set; }
         public string Title { get; set; }

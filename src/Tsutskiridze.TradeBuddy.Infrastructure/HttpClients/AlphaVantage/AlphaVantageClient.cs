@@ -1,9 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Tsutskiridze.TradeBuddy.Application.Abstractions;
-using Tsutskiridze.TradeBuddy.Application.Dtos;
-using Tsutskiridze.TradeBuddy.Application.Dtos.AlphaVantage;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Integrations.AlphaVantage;
+using Tsutskiridze.TradeBuddy.Application.Contracts.MarketData;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.AlphaVantage
 {
@@ -20,18 +20,18 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.AlphaVantage
             _options = options.Value;
         }
 
-        public async Task<AnnualReport?> GetStockLastAnnualReport(string symbol)
+        public async Task<AnnualReportDto?> GetStockLastAnnualReport(string symbol)
         {
             var response = await _client.GetAsync($"query?function=INCOME_STATEMENT&symbol={symbol}&apikey={_options.ApiKey}");
             response.EnsureSuccessStatusCode();
 
-            var data = JsonConvert.DeserializeObject<AnnualReportsResponse>(
+            var data = JsonConvert.DeserializeObject<AlphaVantageAnnualReportsResponse>(
                 await response.Content.ReadAsStringAsync()
             );
 
             var report = data?.AnnualReports?.FirstOrDefault();
 
-            var annualReport = _mapper.Map<AnnualReport>(report);
+            var annualReport = _mapper.Map<AnnualReportDto>(report);
 
             if (annualReport == null)
             {
@@ -41,14 +41,16 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.AlphaVantage
             return annualReport;
         }
 
-        public async Task<StockOverview?> GetStockOverview(string symbol)
+        public async Task<StockOverviewDto?> GetStockOverview(string symbol)
         {
             var response = await _client.GetAsync($"query?function=OVERVIEW&symbol={symbol}&apikey={_options.ApiKey}");
             response.EnsureSuccessStatusCode();
 
-            var stockOverview = JsonConvert.DeserializeObject<StockOverview>(
+            var stockOverviewResponse = JsonConvert.DeserializeObject<AlphaVantageStockOverviewResponse>(
                 await response.Content.ReadAsStringAsync()
             );
+
+            var stockOverview = _mapper.Map<StockOverviewDto>(stockOverviewResponse);
 
             if (stockOverview == null)
             {
@@ -58,12 +60,12 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.AlphaVantage
             return stockOverview;
         }
 
-        public async Task<List<StockDayPrice>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
+        public async Task<List<StockDayPriceDto>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
         {
             var response = await _client.GetAsync($"query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={_options.ApiKey}");
             response.EnsureSuccessStatusCode();
 
-            var data = JsonConvert.DeserializeObject<DayPriceResponse>(
+            var data = JsonConvert.DeserializeObject<AlphaVantageDailyPricesResponse>(
                 await response.Content.ReadAsStringAsync()
             );
 
@@ -74,7 +76,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.AlphaVantage
 
             var prices = data.Prices
                 .Take(days ?? data.Prices.Count)
-                .Select(x => new StockDayPrice
+                .Select(x => new StockDayPriceDto
                 {
                     Date = DateTime.Parse(x.Key).ToString("yyyy-MM-dd"),
                     Open = x.Value.Open,

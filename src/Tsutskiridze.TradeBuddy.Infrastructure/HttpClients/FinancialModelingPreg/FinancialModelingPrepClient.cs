@@ -1,9 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Tsutskiridze.TradeBuddy.Application.Abstractions;
-using Tsutskiridze.TradeBuddy.Application.Dtos;
-using Tsutskiridze.TradeBuddy.Application.Dtos.Fmp;
+using Tsutskiridze.TradeBuddy.Application.Contracts.Integrations.FinancialModelingPrep;
+using Tsutskiridze.TradeBuddy.Application.Contracts.MarketData;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.FinancialModelingPreg
 {
@@ -20,16 +20,16 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.HttpClients.FinancialModelingPr
             _options = options.Value;
         }
 
-        public async Task<StockQuote?> GetStockQuote(string symbol)
+        public async Task<StockQuoteDto?> GetStockQuote(string symbol)
         {
             var response = await _client.GetAsync($"api/v3/quote/{symbol}?apikey={_options.ApiKey}");
             response.EnsureSuccessStatusCode();
 
-            var stockCurrentInfos = JsonConvert.DeserializeObject<List<StockQuoteDto>?>(
+            var stockCurrentInfos = JsonConvert.DeserializeObject<List<FmpStockQuoteResponse>?>(
                 await response.Content.ReadAsStringAsync()
             );
 
-            var stockQuote = _mapper.Map<StockQuote>(stockCurrentInfos?.FirstOrDefault());
+            var stockQuote = _mapper.Map<StockQuoteDto>(stockCurrentInfos?.FirstOrDefault());
 
             if (stockQuote == null)
             {

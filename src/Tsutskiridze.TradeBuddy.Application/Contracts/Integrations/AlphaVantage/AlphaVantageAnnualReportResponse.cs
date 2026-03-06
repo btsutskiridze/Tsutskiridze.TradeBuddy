@@ -1,6 +1,6 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Dtos
+namespace Tsutskiridze.TradeBuddy.Application.Contracts.Integrations.AlphaVantage
 {
-    public class AnnualReport
+    public class AlphaVantageAnnualReportResponse
     {
         public string FiscalDateEnding { get; set; }
         public string ReportedCurrency { get; set; }
