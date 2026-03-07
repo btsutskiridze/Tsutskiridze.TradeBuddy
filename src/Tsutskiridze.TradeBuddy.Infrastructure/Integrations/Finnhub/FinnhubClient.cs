@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.DTOs.News;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Providers.News;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub
 {

@@ -1,5 +1,4 @@
-﻿using SharedKernel;
-using SharedKernel.Specifications;
+﻿using SharedKernel.Specifications;
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Specifications;
 

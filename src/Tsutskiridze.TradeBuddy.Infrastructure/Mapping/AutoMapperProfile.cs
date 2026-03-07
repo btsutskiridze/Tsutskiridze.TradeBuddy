@@ -1,9 +1,9 @@
 using AutoMapper;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Integrations.AlphaVantage;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Integrations.FinancialModelingPrep;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage.Models;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep.Models;
 
-namespace Tsutskiridze.TradeBuddy.Application.Mapping
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Mapping
 {
     public class AutoMapperProfile : Profile
     {

@@ -1,15 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Telegram.Bot;
-using Telegram.Bot.Types;
-using Telegram.Bot.Requests.Abstractions;
-using Tsutskiridze.TradeBuddy.Application.Events;
-using Tsutskiridze.TradeBuddy.Application.Features.StockAlerts;
-using Tsutskiridze.TradeBuddy.Core.Enums;
-using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
+
 
 // namespace Tsutskiridze.TradeBuddy.Application.Tests.Features.StockAlerts
 // {

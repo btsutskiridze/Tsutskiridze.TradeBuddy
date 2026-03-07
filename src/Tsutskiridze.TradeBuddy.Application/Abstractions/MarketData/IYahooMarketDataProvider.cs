@@ -1,6 +1,6 @@
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
 
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.Providers.MarketData
+namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData
 {
     public interface IYahooMarketDataProvider
     {

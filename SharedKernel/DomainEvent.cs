@@ -1,5 +1,3 @@
-using Mediator;
-
 namespace SharedKernel;
 
 public abstract class DomainEvent : IDomainEvent

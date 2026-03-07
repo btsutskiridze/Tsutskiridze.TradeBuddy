@@ -3,10 +3,9 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.DTOs.News;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Providers.News;
 using Tsutskiridze.TradeBuddy.Application.Enums;
-using Tsutskiridze.TradeBuddy.Core.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
 {

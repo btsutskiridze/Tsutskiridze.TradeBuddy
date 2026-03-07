@@ -1,7 +1,6 @@
+using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.DTOs.News;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Providers.News;
 using Tsutskiridze.TradeBuddy.Application.Enums;
-using Tsutskiridze.TradeBuddy.Core.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation
 {

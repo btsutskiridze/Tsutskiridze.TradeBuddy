@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.Integrations.AlphaVantage
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage.Models
 {
     public class AlphaVantageStockDayPriceResponse
     {

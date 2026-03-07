@@ -1,4 +1,4 @@
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.Integrations.FinancialModelingPrep
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep.Models
 {
     public class FmpStockQuoteResponse
     {

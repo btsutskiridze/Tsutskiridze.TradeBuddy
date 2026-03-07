@@ -1,9 +1,9 @@
 using AutoMapper;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Integrations.FinancialModelingPrep;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Providers.MarketData;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep
 {

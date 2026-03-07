@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tsutskiridze.TradeBuddy.Application.Enums;
 using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
-using Tsutskiridze.TradeBuddy.Core.Enums;
 
 
 namespace Tsutskiridze.TradeBuddy.API.Controllers

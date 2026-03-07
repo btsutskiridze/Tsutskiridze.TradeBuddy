@@ -1,4 +1,4 @@
-using Tsutskiridze.TradeBuddy.Application.DTOs.Providers.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Core.Constants;

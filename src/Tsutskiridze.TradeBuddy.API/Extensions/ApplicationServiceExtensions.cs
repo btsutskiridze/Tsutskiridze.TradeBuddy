@@ -5,7 +5,6 @@ using Tsutskiridze.TradeBuddy.Application.Features.StockAlerts;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers;
-using Tsutskiridze.TradeBuddy.Application.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.Helpers;
 
 namespace Tsutskiridze.TradeBuddy.API.Extensions
@@ -24,7 +23,6 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
 
         private static IServiceCollection AddCoreApplicationServices(this IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(AutoMapperProfile));
             services.AddMediator(cfg => cfg.ServiceLifetime = ServiceLifetime.Singleton);
 
             return services;

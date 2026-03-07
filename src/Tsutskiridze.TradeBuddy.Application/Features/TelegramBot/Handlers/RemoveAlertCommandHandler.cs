@@ -1,12 +1,10 @@
-using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using SharedKernel;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Providers.MarketData;
-using Tsutskiridze.TradeBuddy.Application.Events;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Specifications;

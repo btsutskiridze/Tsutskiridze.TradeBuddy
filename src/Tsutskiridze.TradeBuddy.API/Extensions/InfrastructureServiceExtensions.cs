@@ -3,9 +3,9 @@ using OpenAI.Chat;
 using Telegram.Bot;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI.OpenAI;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Providers.MarketData;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Providers.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage;
@@ -15,6 +15,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.GoogleNews;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Utilities;
+using Tsutskiridze.TradeBuddy.Infrastructure.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket;
 using Tsutskiridze.TradeBuddy.Infrastructure.Telegram;
 
@@ -24,6 +25,8 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(AutoMapperProfile));
+
             services
                 .AddExternalApiClients()
                 .AddAIServices()
