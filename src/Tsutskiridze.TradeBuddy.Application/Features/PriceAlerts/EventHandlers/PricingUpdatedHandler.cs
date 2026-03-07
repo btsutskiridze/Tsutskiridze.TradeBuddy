@@ -14,23 +14,23 @@ using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.StockAlerts;
+namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.EventHandlers;
 
-public sealed class PriceChangeAlertService : INotificationHandler<PricingUpdated>
+public sealed class PricingUpdatedHandler : INotificationHandler<PricingUpdatedEvent>
 {
     private readonly IServiceScopeFactory _scopes;
     private readonly ITelegramBotClient _bot;
     private readonly ICurrencySymbolProvider _currency;
-    private readonly ILogger<PriceChangeAlertService> _log;
+    private readonly ILogger<PricingUpdatedHandler> _log;
     private readonly SemaphoreSlim _lock = new(1, 1);
 
     private static readonly TimeSpan RateLimitWindow = TimeSpan.FromSeconds(10);
     private const int MaxNotifications = 5;
 
-    public PriceChangeAlertService(
+    public PricingUpdatedHandler(
         IServiceScopeFactory scopes,
         ITelegramBotClient bot,
-        ILogger<PriceChangeAlertService> log,
+        ILogger<PricingUpdatedHandler> log,
         ICurrencySymbolProvider currency)
     {
         _scopes = scopes;
@@ -39,7 +39,7 @@ public sealed class PriceChangeAlertService : INotificationHandler<PricingUpdate
         _currency = currency;
     }
 
-    public async ValueTask Handle(PricingUpdated evt, CancellationToken ct)
+    public async ValueTask Handle(PricingUpdatedEvent evt, CancellationToken ct)
     {
         await _lock.WaitAsync(ct);
 
@@ -124,7 +124,7 @@ public sealed class PriceChangeAlertService : INotificationHandler<PricingUpdate
         }
         catch (Exception ex)
         {
-            _log.LogError(ex, "Error in {Handler} for {Symbol}", nameof(PriceChangeAlertService), evt.Symbol);
+            _log.LogError(ex, "Error in {Handler} for {Symbol}", nameof(PricingUpdatedHandler), evt.Symbol);
         }
         finally
         {

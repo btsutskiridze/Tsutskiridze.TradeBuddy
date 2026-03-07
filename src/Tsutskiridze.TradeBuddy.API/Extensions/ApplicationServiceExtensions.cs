@@ -1,6 +1,6 @@
 using System.Reflection;
 using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
-using Tsutskiridze.TradeBuddy.Application.Features.StockAlerts;
+using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.EventHandlers;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers;
@@ -33,7 +33,7 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
             // Stock Services
             services.AddTransient<StockPromptService>();
             services.AddTransient<StockAnalysisService>();
-            services.AddSingleton<PriceChangeAlertService>();
+            services.AddSingleton<PricingUpdatedHandler>();
 
             // Telegram Services
             services.AddTelegramCommandHandlers();

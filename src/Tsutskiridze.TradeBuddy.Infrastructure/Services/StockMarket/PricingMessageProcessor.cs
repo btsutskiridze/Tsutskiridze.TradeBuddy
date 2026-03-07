@@ -32,7 +32,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
                 _log.LogDebug("Parsed update {Symbol} @ {Price}", update.Id, update.Price);
 
                 await _mediator.Publish(
-                  new PricingUpdated(update.Id, (decimal)update.Price), ct);
+                  new PricingUpdatedEvent(update.Id, (decimal)update.Price), ct);
             }
             catch (Exception ex)
             {
