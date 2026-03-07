@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Core.Constants
+﻿namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
 {
     public static class StockPromptParams
     {

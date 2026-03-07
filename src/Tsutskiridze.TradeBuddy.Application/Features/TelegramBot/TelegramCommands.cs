@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Core.Constants
+﻿namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
 {
     public class TelegramCommands
     {

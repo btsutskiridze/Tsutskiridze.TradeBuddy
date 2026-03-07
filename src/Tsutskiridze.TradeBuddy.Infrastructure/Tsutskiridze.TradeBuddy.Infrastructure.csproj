@@ -26,4 +26,8 @@
         <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Application\Tsutskiridze.TradeBuddy.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Services\StockMarket\Contracts\" />
+    </ItemGroup>
+
 </Project>
