@@ -1,11 +1,9 @@
 using System.Reflection;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAlerts;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers;
-using Tsutskiridze.TradeBuddy.Infrastructure.Helpers;
 
 namespace Tsutskiridze.TradeBuddy.API.Extensions
 {
@@ -15,8 +13,7 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
         {
             services
                 .AddCoreApplicationServices()
-                .AddFeatureServices()
-                .AddHelperServices();
+                .AddFeatureServices();
 
             return services;
         }
@@ -56,13 +53,6 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
             {
                 services.AddTransient(typeof(ITelegramCommandHandler), handler);
             }
-
-            return services;
-        }
-
-        private static IServiceCollection AddHelperServices(this IServiceCollection services)
-        {
-            services.AddSingleton<ICurrencySymbolProvider, CurrencySymbolProvider>();
 
             return services;
         }

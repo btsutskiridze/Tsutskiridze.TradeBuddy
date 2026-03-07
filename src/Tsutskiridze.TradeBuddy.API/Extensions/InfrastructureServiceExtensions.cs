@@ -3,11 +3,13 @@ using OpenAI.Chat;
 using Telegram.Bot;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI.OpenAI;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema;
+using Tsutskiridze.TradeBuddy.Infrastructure.Helpers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub;
@@ -104,6 +106,14 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
         {
             services.AddHostedService<TelegramCommandsRegisterService>();
             services.AddHostedService<StockPriceWebSocketListener>();
+
+            return services;
+        }
+        
+        
+        private static IServiceCollection AddHelperServices(this IServiceCollection services)
+        {
+            services.AddSingleton<ICurrencySymbolProvider, CurrencySymbolProvider>();
 
             return services;
         }

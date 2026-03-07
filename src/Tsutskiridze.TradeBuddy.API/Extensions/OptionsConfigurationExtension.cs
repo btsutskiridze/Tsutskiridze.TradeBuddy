@@ -6,7 +6,6 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo;
-using Tsutskiridze.TradeBuddy.Infrastructure.Mails;
 using Tsutskiridze.TradeBuddy.Infrastructure.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.API.Extensions
@@ -15,7 +14,6 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
     {
         public static IServiceCollection AddAppOptions(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
             services.Configure<AlphaVantageOptions>(configuration.GetSection(AlphaVantageOptions.SectionName));
             services.Configure<FinancialModelingPrepOptions>(configuration.GetSection(FinancialModelingPrepOptions.SectionName));
             services.Configure<RedditOptions>(configuration.GetSection(RedditOptions.SectionName));
