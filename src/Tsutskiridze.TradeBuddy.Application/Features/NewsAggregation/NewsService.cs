@@ -1,5 +1,5 @@
-using Tsutskiridze.TradeBuddy.Application.Contracts.News;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Providers.News;
+using Tsutskiridze.TradeBuddy.Application.DTOs.News;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Providers.News;
 using Tsutskiridze.TradeBuddy.Application.Enums;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 

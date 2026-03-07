@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.Json;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Services.AI;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.Gemini
 {

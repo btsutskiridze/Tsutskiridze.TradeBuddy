@@ -3,8 +3,8 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using Telegram.Bot;
-using Tsutskiridze.TradeBuddy.Application.Contracts.StockAnalysis;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Services.AI;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
+using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Options;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis

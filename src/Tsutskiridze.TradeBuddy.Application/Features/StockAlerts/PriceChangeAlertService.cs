@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using SharedKernel;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Services.Helpers;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Events;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;

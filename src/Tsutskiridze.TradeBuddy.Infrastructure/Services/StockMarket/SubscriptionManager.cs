@@ -1,10 +1,10 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Immutable;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Services.StockMarket;
-using Tsutskiridze.TradeBuddy.Application.Events;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
+using Tsutskiridze.TradeBuddy.Core.Events;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
@@ -44,7 +44,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket
             await _transport.SendAsync(JsonConvert.SerializeObject(new { subscribe = _watched }), ct);
         }
 
-        public async ValueTask Handle(StockWatchStatusChanged evt, CancellationToken ct)
+        public async ValueTask Handle(StockWatchStatusChangedEvent evt, CancellationToken ct)
         {
             var shouldSub = evt.IsWatched && !_watched.Contains(evt.Symbol);
             var shouldUnsub = !evt.IsWatched && _watched.Contains(evt.Symbol);

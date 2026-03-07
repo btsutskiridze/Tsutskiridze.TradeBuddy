@@ -1,7 +1,7 @@
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
 using System.Collections.Concurrent;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Services.AI.OpenAI;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.AI.OpenAI;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema
 {

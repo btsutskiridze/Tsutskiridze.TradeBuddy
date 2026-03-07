@@ -1,7 +1,7 @@
 using AutoMapper;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Integrations.AlphaVantage;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Integrations.FinancialModelingPrep;
-using Tsutskiridze.TradeBuddy.Application.Contracts.MarketData;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Integrations.AlphaVantage;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Integrations.FinancialModelingPrep;
+using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
 
 namespace Tsutskiridze.TradeBuddy.Application.Mapping
 {

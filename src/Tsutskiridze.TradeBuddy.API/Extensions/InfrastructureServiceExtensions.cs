@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Options;
 using OpenAI.Chat;
 using Telegram.Bot;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Providers.MarketData;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Providers.News;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Services.AI;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Services.AI.OpenAI;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Services.StockMarket;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.AI.OpenAI;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Providers.MarketData;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Providers.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage;

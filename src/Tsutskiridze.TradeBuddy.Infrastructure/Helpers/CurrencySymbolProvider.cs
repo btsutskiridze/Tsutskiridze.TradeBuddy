@@ -1,5 +1,5 @@
 using System.Globalization;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Services.Helpers;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Helpers
 {

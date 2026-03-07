@@ -1,5 +1,5 @@
 using System.Reflection;
-using Tsutskiridze.TradeBuddy.Application.Contracts.Services.Helpers;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAlerts;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
