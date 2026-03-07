@@ -35,12 +35,13 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
             builder.Property(pa => pa.CreatedAt)
                 .IsRequired();
             
+            builder.HasIndex(pa => pa.ChatId);
+            builder.HasIndex(pa => pa.StockId);
+            
             builder.HasOne<Stock>()
                 .WithMany()
                 .HasForeignKey(pa => pa.StockId)
                 .OnDelete(DeleteBehavior.Restrict);
-            
-            builder.HasIndex(pa => pa.StockId);
         }
     }
 }

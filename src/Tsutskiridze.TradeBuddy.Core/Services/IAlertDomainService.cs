@@ -1,6 +1,6 @@
 ﻿using Tsutskiridze.TradeBuddy.Core.Enums;
 
-namespace Tsutskiridze.TradeBuddy.Core.Services.Abstractions;
+namespace Tsutskiridze.TradeBuddy.Core.Services;
 
 public interface IAlertDomainService
 {
@@ -10,6 +10,6 @@ public interface IAlertDomainService
         string currency,
         string stockName,
         decimal price,
-        PriceAlertDirection direction,
+        PriceDirection direction,
         CancellationToken ct = default);
 }

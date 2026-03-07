@@ -52,7 +52,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
             if (parts.Length != 4 ||
-                !Enum.TryParse<PriceAlertDirection>(
+                !Enum.TryParse<PriceDirection>(
                     parts[2], true, out var direction) ||
                 !decimal.TryParse(parts[3], out var price))
             {

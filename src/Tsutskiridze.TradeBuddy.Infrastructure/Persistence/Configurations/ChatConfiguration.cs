@@ -11,14 +11,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
             builder.ToTable("chats");
 
             builder.HasKey(c => c.Id);
-
-            builder.HasMany(c => c.PriceAlerts)
-                .WithOne()
-                .HasForeignKey(pa => pa.ChatId)
-                .OnDelete(DeleteBehavior.Cascade);
-            
-            builder.Metadata.FindNavigation(nameof(Chat.PriceAlerts))!
-                .SetPropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

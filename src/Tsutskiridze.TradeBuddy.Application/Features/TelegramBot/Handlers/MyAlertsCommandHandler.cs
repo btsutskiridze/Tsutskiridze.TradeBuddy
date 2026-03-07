@@ -7,6 +7,8 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Constants;
@@ -40,14 +42,13 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             using var scope = _scopes.CreateScope();
             var chatRepo = scope.ServiceProvider.GetRequiredService<IReadRepository<Chat>>();
             var stockRepo = scope.ServiceProvider.GetRequiredService<IReadRepository<Stock>>();
+            var alertsRepo = scope.ServiceProvider.GetRequiredService<IReadRepository<PriceAlert>>();
 
             await _bot.SendChatAction(message.Chat.Id, ChatAction.Typing);
 
-            var chat = await chatRepo.FirstOrDefaultAsync(
-                new ChatByTelegramIdIncludePriceAlertsSpec(message.Chat.Id)
-            );
-
-            var priceAlerts = chat!.PriceAlerts;
+            var chatId = await chatRepo.FirstOrDefaultAsync(new ActiveChatIdByTelegramId(message.Chat.Id)); 
+            var priceAlerts = await alertsRepo.ListAsync(new ActiveAlertsByChatIdSpec(chatId!.Value));
+            
             if (priceAlerts.Count == 0)
             {
                 await _bot.SendMessage(message.Chat.Id, "You have no alerts set.");

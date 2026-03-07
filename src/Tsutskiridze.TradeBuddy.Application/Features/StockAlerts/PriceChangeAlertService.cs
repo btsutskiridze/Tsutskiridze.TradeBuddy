@@ -93,8 +93,8 @@ public sealed class PriceChangeAlertService : INotificationHandler<PricingUpdate
                 if (!chatsDict.TryGetValue(alert.ChatId, out var chat))
                     continue;
 
-                var dirEmoji = alert.Direction == PriceAlertDirection.Above ? "🚀" : "📉";
-                var dirText = alert.Direction == PriceAlertDirection.Above ? "Above" : "Below";
+                var dirEmoji = alert.Direction == PriceDirection.Above ? "🚀" : "📉";
+                var dirText = alert.Direction == PriceDirection.Above ? "Above" : "Below";
 
                 outgoingMessages.Add(new OutgoingTelegramMessage(
                     chat.TelegramChatId!.Value,

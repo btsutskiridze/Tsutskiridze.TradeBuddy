@@ -8,7 +8,7 @@ public sealed class AlertByStockAndChatSpec : Specification<PriceAlert>
     public AlertByStockAndChatSpec(
         Guid chatId,
         Guid stockId,
-        PriceAlertDirection direction,
+        PriceDirection direction,
         decimal price)
     {
         Query.Where(x =>

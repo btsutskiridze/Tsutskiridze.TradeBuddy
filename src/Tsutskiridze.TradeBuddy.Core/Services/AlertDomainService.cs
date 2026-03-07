@@ -6,7 +6,6 @@ using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Enums;
-using Tsutskiridze.TradeBuddy.Core.Services.Abstractions;
 
 namespace Tsutskiridze.TradeBuddy.Core.Services;
 
@@ -32,7 +31,7 @@ public sealed class AlertDomainService : IAlertDomainService
         string currency,
         string stockName,
         decimal price,
-        PriceAlertDirection direction,
+        PriceDirection direction,
         CancellationToken ct)
     {
         var chatId = await _chats.FirstOrDefaultAsync(new ActiveChatIdByTelegramId(telegramChatId), ct)

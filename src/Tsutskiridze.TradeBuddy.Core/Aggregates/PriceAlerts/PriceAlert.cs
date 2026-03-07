@@ -8,8 +8,10 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
 {
     public Guid ChatId { get; private init; }
     public Guid StockId { get; private init; }
+
     public decimal Price { get; private init; }
-    public PriceAlertDirection Direction { get; private init; }
+    public PriceDirection Direction { get; private init; }
+
     public int AlertCount { get; private set; }
     public DateTime CreatedAt { get; private init; }
     public DateTime? UpdatedAt { get; private set; }
@@ -20,7 +22,7 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
         Guid chatId,
         Guid stockId,
         decimal price,
-        PriceAlertDirection direction) : base(id)
+        PriceDirection direction) : base(id)
     {
         if (Guid.Empty == id) throw new DomainException("Invalid id");
         if (Guid.Empty == chatId) throw new DomainException("Invalid chatId");
@@ -33,6 +35,8 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
         Direction = direction;
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
+
+        RaiseDomainEvent(new PriceAlertCreatedEvent(this));
     }
 
     private PriceAlert()
@@ -41,19 +45,19 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
 
     public bool IsTriggered(decimal currentPrice)
     {
-        return Direction == PriceAlertDirection.Above 
-            ? currentPrice >= Price 
+        return Direction == PriceDirection.Above
+            ? currentPrice >= Price
             : currentPrice <= Price;
     }
 
     public bool IsRateLimited(DateTime nowUtc, TimeSpan window)
         => UpdatedAt.HasValue && UpdatedAt.Value >= nowUtc.Subtract(window);
-    
+
     public void RecordNotification()
     {
         if (!IsActive)
             throw new DomainException("Alert is Inactive");
-        
+
         AlertCount++;
         UpdatedAt = DateTime.UtcNow;
     }
@@ -62,7 +66,7 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
     {
         return AlertCount >= max;
     }
-    
+
     public void Activate()
     {
         if (IsActive)

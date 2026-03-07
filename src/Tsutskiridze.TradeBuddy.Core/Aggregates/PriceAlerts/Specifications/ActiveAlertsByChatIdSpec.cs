@@ -2,9 +2,9 @@
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Specifications;
 
-public sealed class AlertsByChatIdSpec : Specification<PriceAlert>
+public sealed class ActiveAlertsByChatIdSpec : Specification<PriceAlert>
 {
-    public AlertsByChatIdSpec(Guid chatId)
+    public ActiveAlertsByChatIdSpec(Guid chatId)
     {
         Query.Where(x => x.IsActive && x.ChatId == chatId);
     }
