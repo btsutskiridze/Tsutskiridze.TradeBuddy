@@ -2,7 +2,6 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Core.Constants;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
 {

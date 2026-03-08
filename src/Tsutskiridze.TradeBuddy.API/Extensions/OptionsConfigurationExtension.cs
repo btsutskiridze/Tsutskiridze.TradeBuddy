@@ -1,12 +1,12 @@
 using Tsutskiridze.TradeBuddy.Application.Options;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.Gemini;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo;
-using Tsutskiridze.TradeBuddy.Infrastructure.Telegram;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVantage;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialModelingPrep;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.Yahoo;
+using Tsutskiridze.TradeBuddy.Infrastructure.News.Finnhub;
+using Tsutskiridze.TradeBuddy.Infrastructure.News.Reddit;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.API.Extensions
 {

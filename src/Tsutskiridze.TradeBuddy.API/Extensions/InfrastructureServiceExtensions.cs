@@ -3,23 +3,25 @@ using OpenAI.Chat;
 using Telegram.Bot;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI.OpenAI;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Helpers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Streaming;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.StockMarket;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema;
-using Tsutskiridze.TradeBuddy.Infrastructure.Helpers;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.GoogleNews;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Utilities;
 using Tsutskiridze.TradeBuddy.Infrastructure.Mapping;
-using Tsutskiridze.TradeBuddy.Infrastructure.Services.StockMarket;
-using Tsutskiridze.TradeBuddy.Infrastructure.Telegram;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVantage;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialModelingPrep;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.Yahoo;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo;
+using Tsutskiridze.TradeBuddy.Infrastructure.News.Finnhub;
+using Tsutskiridze.TradeBuddy.Infrastructure.News.GoogleNews;
+using Tsutskiridze.TradeBuddy.Infrastructure.News.Reddit;
+using Tsutskiridze.TradeBuddy.Infrastructure.News.Yahoo;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Infrastructure.Utilities;
+using Tsutskiridze.TradeBuddy.Infrastructure.Utilities.Yahoo;
 
 namespace Tsutskiridze.TradeBuddy.API.Extensions
 {

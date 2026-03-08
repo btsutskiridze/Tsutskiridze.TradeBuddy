@@ -7,7 +7,6 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Options;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
-using Tsutskiridze.TradeBuddy.Core.Constants;
 using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot

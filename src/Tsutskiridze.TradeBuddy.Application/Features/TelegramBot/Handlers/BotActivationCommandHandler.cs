@@ -3,7 +3,6 @@ using SharedKernel;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
-using Tsutskiridze.TradeBuddy.Core.Constants;
 using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
 
 
