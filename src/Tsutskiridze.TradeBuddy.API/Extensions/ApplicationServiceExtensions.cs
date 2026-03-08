@@ -1,4 +1,5 @@
 using System.Reflection;
+using SharedKernel.Validations.Mediator;
 using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.EventHandlers;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
@@ -20,8 +21,13 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
 
         private static IServiceCollection AddCoreApplicationServices(this IServiceCollection services)
         {
-            services.AddMediator(cfg => cfg.ServiceLifetime = ServiceLifetime.Singleton);
-
+            services
+                .AddMediator(opt =>
+                {
+                    opt.ServiceLifetime = ServiceLifetime.Scoped;
+                    opt.PipelineBehaviors = [typeof(ValidatorBehavior<,>)];
+                })
+                .AddMediatorValidators(typeof(Application.AssemblyReference).Assembly);
             return services;
         }
 
