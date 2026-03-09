@@ -1,6 +1,4 @@
 ﻿using SharedKernel;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
-using Tsutskiridze.TradeBuddy.Core.Events;
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 

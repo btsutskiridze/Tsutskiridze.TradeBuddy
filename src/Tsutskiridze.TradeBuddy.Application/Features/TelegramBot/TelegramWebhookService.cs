@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using SharedKernel;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Application.Options;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Chat = Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat;
 

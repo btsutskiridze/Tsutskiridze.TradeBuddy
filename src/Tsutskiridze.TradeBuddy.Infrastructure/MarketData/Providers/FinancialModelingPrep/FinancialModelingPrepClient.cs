@@ -1,9 +1,8 @@
-using AutoMapper;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Infrastructure.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialModelingPrep.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialModelingPrep
@@ -12,12 +11,10 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialM
     {
         private readonly FinancialModelingPrepOptions _options;
         private readonly HttpClient _client;
-        private readonly IMapper _mapper;
 
-        public FinancialModelingPrepClient(HttpClient client, IMapper mapper, IOptions<FinancialModelingPrepOptions> options)
+        public FinancialModelingPrepClient(HttpClient client, IOptions<FinancialModelingPrepOptions> options)
         {
             _client = client;
-            _mapper = mapper;
             _options = options.Value;
         }
 
@@ -30,14 +27,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialM
                 await response.Content.ReadAsStringAsync()
             );
 
-            var stockQuote = _mapper.Map<StockQuoteDto>(stockCurrentInfos?.FirstOrDefault());
+            var stockQuote = stockCurrentInfos?.FirstOrDefault()?.ToDto();
 
-            if (stockQuote == null)
-            {
-                throw new Exception("Failed to get stock quote");
-            }
-
-            return stockQuote;
+            return stockQuote ?? throw new Exception("Failed to get stock quote");
         }
     }
 }

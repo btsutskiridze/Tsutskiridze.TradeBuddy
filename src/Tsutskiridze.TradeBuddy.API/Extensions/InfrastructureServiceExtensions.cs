@@ -10,7 +10,6 @@ using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema;
-using Tsutskiridze.TradeBuddy.Infrastructure.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVantage;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialModelingPrep;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.Yahoo;
@@ -29,8 +28,6 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(AutoMapperProfile));
-
             services
                 .AddExternalApiClients()
                 .AddAIServices()

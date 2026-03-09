@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
 using Tsutskiridze.TradeBuddy.Infrastructure.Utilities.Yahoo;

@@ -1,7 +1,7 @@
 ﻿using Mediator;
-using Telegram.Bot.Types;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 
@@ -20,7 +20,7 @@ public class TelegramUpdateRouter : ITelegramUpdateRouter
             return;
 
         var text = updateDto.Text.Trim();
-        
+
         if (!text.StartsWith('/'))
             return;
 
@@ -29,6 +29,9 @@ public class TelegramUpdateRouter : ITelegramUpdateRouter
 
         switch (command)
         {
+            case "/activate":
+                await _mediator.Send(new ActivateBotCommand(parts[0]), ct);
+                break;
             // case "/start":
             //     await _mediator.Send(new StartCommand(
             //         update.Message.Chat.Id), ct);

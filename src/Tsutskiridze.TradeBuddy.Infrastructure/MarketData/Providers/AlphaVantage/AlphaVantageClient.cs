@@ -1,9 +1,8 @@
-using AutoMapper;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Infrastructure.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVantage.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVantage
@@ -12,12 +11,10 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVanta
     {
         private readonly AlphaVantageOptions _options;
         private readonly HttpClient _client;
-        private readonly IMapper _mapper;
 
-        public AlphaVantageClient(HttpClient client, IMapper mapper, IOptions<AlphaVantageOptions> options)
+        public AlphaVantageClient(HttpClient client, IOptions<AlphaVantageOptions> options)
         {
             _client = client;
-            _mapper = mapper;
             _options = options.Value;
         }
 
@@ -32,14 +29,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVanta
 
             var report = data?.AnnualReports?.FirstOrDefault();
 
-            var annualReport = _mapper.Map<AnnualReportDto>(report);
+            var annualReport = report.ToDto();
 
-            if (annualReport == null)
-            {
-                throw new Exception("Failed to get stock annual report");
-            }
-
-            return annualReport;
+            return annualReport ?? throw new Exception("Failed to get stock annual report");
         }
 
         public async Task<StockOverviewDto?> GetStockOverview(string symbol)
@@ -51,14 +43,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVanta
                 await response.Content.ReadAsStringAsync()
             );
 
-            var stockOverview = _mapper.Map<StockOverviewDto>(stockOverviewResponse);
+            var stockOverview = stockOverviewResponse.ToDto();
 
-            if (stockOverview == null)
-            {
-                throw new Exception("Failed to get stock overview");
-            }
-
-            return stockOverview;
+            return stockOverview ?? throw new Exception("Failed to get stock overview");
         }
 
         public async Task<List<StockDayPriceDto>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
