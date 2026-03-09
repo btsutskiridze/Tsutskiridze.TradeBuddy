@@ -13,7 +13,6 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
 {
     public class TelegramWebhookService
     {
-        private readonly TelegramBotOptions _options;
         private readonly ILogger<TelegramWebhookService> _logger;
         private readonly ITelegramHandlerRegistry _handlerRegistry;
         private readonly IServiceScopeFactory _serviceScope;
@@ -21,13 +20,11 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot
         public TelegramWebhookService(
             ILogger<TelegramWebhookService> logger,
             ITelegramHandlerRegistry handlerRegistry,
-            IOptions<TelegramBotOptions> options,
             IServiceScopeFactory serviceScopeFactory
         )
         {
             _logger = logger;
             _handlerRegistry = handlerRegistry;
-            _options = options.Value;
             _serviceScope = serviceScopeFactory;
         }
 

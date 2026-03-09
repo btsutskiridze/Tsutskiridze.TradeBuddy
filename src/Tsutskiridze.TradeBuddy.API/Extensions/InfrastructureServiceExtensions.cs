@@ -3,10 +3,10 @@ using OpenAI.Chat;
 using Telegram.Bot;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI.OpenAI;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Streaming;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema;
@@ -111,11 +111,14 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
 
             return services;
         }
-        
-        
+
+
         private static IServiceCollection AddHelperServices(this IServiceCollection services)
         {
             services.AddSingleton<ICurrencySymbolProvider, CurrencySymbolProvider>();
+
+            services.AddScoped<ITelegramSender, TelegramSender>();
+            services.AddScoped<ITelegramUpdateRouter, TelegramUpdateRouter>();
 
             return services;
         }
@@ -124,9 +127,11 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
         {
             var options = sp.GetRequiredService<IOptions<YahooOptions>>().Value;
             client.BaseAddress = new Uri(options.BaseUrl);
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+            client.DefaultRequestHeaders.Add("User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
             client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
-            client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/web");
+            client.DefaultRequestHeaders.Add("Accept",
+                "text/html,application/xhtml+xml,application/xml;q=0.9,image/web");
         };
     }
 }

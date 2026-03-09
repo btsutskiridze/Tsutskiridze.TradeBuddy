@@ -166,7 +166,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
                           $"- 🔔 Trading Volume: {analysis.volAnalysis}\n" +
                           $"- 📰 Overall News: {analysis.newsOverall.conf} Positive\n" +
                           $"- 🤖 AI Analysis: {analysis.ai.rec} ({analysis.ai.conf} Confidence)\n" +
-                          $"- ⏱️ Analysis Duration: {string.Format("{0:0.00}", analysis.ExecutionTime)}s";
+                          $"- ⏱️ Analysis Duration: {analysis.ExecutionTime:0.00}s";
 
             return message;
         }

@@ -21,8 +21,4 @@
         <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Core\Tsutskiridze.TradeBuddy.Core.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Abstractions\" />
-    </ItemGroup>
-
 </Project>
