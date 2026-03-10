@@ -1,10 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Tsutskiridze.TradeBuddy.API.Extensions;
+using Tsutskiridze.TradeBuddy.Application;
+using Tsutskiridze.TradeBuddy.Infrastructure;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddTradeBuddyServices(builder.Configuration);
+builder.Services
+    .AddApiServices(builder.Configuration)
+    .AddApplicationServices()
+    .AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 
