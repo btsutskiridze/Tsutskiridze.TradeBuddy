@@ -50,7 +50,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                 return;
             }
 
-            if (chat.IsActivated())
+            if (chat.TelegramChatId.HasValue)
             {
                 await _telegramClient.SendMessage(message.Chat.Id, "Activation already completed for this token.");
                 return;

@@ -29,6 +29,7 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
             services
+                .AddHelperServices()
                 .AddExternalApiClients()
                 .AddAIServices()
                 .AddStockMarketServices()
@@ -115,7 +116,7 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
             services.AddSingleton<ICurrencySymbolProvider, CurrencySymbolProvider>();
 
             services.AddScoped<ITelegramSender, TelegramSender>();
-            services.AddScoped<ITelegramUpdateRouter, TelegramUpdateRouter>();
+            services.AddScoped<ITelegramWebhookRouter, TelegramWebhookRouter>();
 
             return services;
         }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260309211534_PriceAlertsAndChatsIndex")]
+    partial class PriceAlertsAndChatsIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,7 +144,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                     b.HasOne("Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Chat", null)
                         .WithMany()
                         .HasForeignKey("ChatId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_price_alerts_chats_chat_id");
 

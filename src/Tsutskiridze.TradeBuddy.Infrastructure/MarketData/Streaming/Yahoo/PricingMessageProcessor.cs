@@ -1,5 +1,6 @@
 using MarketData;
 using Mediator;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Streaming;
@@ -9,14 +10,15 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo
 {
     public class PricingMessageProcessor : IPricingMessageProcessor
     {
-        private readonly IMediator _mediator;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<PricingMessageProcessor> _log;
 
+
         public PricingMessageProcessor(
-            IMediator mediator,
+            IServiceScopeFactory scopeFactory,
             ILogger<PricingMessageProcessor> log)
         {
-            _mediator = mediator;
+            _scopeFactory = scopeFactory;
             _log = log;
         }
 
@@ -24,15 +26,18 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo
         {
             try
             {
-                var obj = JObject.Parse(json);
-                var b64 = obj["message"]?.ToString();
-                if (string.IsNullOrEmpty(b64)) return;
+                await using var scope = _scopeFactory.CreateAsyncScope();
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                
+                var data = JObject.Parse(json);
+                var base64Message = data["message"]?.ToString();
+                if (string.IsNullOrEmpty(base64Message)) return;
 
-                var update = PricingData.Parser.ParseFrom(Convert.FromBase64String(b64));
+                var update = PricingData.Parser.ParseFrom(Convert.FromBase64String(base64Message));
                 _log.LogDebug("Parsed update {Symbol} @ {Price}", update.Id, update.Price);
 
-                await _mediator.Publish(
-                  new PricingUpdatedEvent(update.Id, (decimal)update.Price), ct);
+                await mediator.Publish(
+                    new PricingUpdatedEvent(update.Id, (decimal)update.Price), ct);
             }
             catch (Exception ex)
             {

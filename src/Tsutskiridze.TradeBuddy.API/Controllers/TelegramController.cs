@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using Telegram.Bot.Requests;
 using Telegram.Bot.Types;
+using Tsutskiridze.TradeBuddy.API.Contracts.Telegram;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
 
 namespace Tsutskiridze.TradeBuddy.API.Controllers
@@ -11,53 +13,45 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
     public class TelegramController : ControllerBase
     {
         private readonly TelegramWebhookService _telegramService;
-        private readonly ILogger<TelegramController> _logger;
+        private readonly ITelegramWebhookRouter _router;
 
-        public TelegramController(TelegramWebhookService handler, ILogger<TelegramController> logger)
+        public TelegramController(ITelegramWebhookRouter router)
         {
-            _telegramService = handler;
-            _logger = logger;
+            _router = router;
         }
 
         [HttpPost("Webhook")]
-        public async Task<IActionResult> Webhook()
+        public async Task<IActionResult> Webhook(TelegramWebhookRequest request, CancellationToken ct)
         {
-            using var reader = new StreamReader(Request.Body);
-            var json = await reader.ReadToEndAsync();
-            _logger.LogInformation("Received JSON: {json}", json);
-            reader.Close();
+            var update = ExtractTelegramUpdateDto(request);
 
-            var options = new JsonSerializerSettings
+            var result = await _router.RouteAsync(update, ct);
+
+            return result is null ? Ok() : Ok(result);
+        }
+
+        private static TelegramUpdateDto ExtractTelegramUpdateDto(TelegramWebhookRequest request)
+        {
+            var text = request.Message?.Text;
+
+            string? command = null;
+            string[] args = [];
+
+            if (!string.IsNullOrWhiteSpace(text))
             {
-                Converters = {
-                    new UnixDateTimeConverter(),
-                    new StringEnumConverter(
-                        new Newtonsoft.Json.Serialization.SnakeCaseNamingStrategy
-                        {
-                            ProcessDictionaryKeys = true,
-                            OverrideSpecifiedNames = true
-                        },
-                        allowIntegerValues: false
-                    )
-                },
-                Error = (sender, args) =>
-                {
-                    _logger.LogError(args.ErrorContext.Error, "Error during deserialization");
-                    args.ErrorContext.Handled = true;
-                },
-            };
-
-            var update = JsonConvert.DeserializeObject<Update>(json, options);
-
-            if (update == null)
-            {
-                _logger.LogError("Deserialization failed - update is null");
-                return BadRequest();
+                var parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                command = parts[0];
+                args = parts.Skip(1).ToArray();
             }
 
-            await _telegramService.HandleUpdate(update);
-
-            return Ok();
+            var update = new TelegramUpdateDto(
+                request.Message!.Chat.Id,
+                text,
+                command,
+                args
+            );
+            
+            return update;
         }
     }
 }

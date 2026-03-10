@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 
@@ -42,6 +43,11 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
                 .WithMany()
                 .HasForeignKey(pa => pa.StockId)
                 .OnDelete(DeleteBehavior.Restrict);
+            
+            builder.HasOne<Chat>()
+                .WithMany()
+                .HasForeignKey(pa => pa.ChatId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

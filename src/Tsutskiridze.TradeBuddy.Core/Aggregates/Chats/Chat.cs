@@ -1,4 +1,5 @@
 ﻿using SharedKernel;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Events;
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 
@@ -8,8 +9,10 @@ public class Chat : Entity<Guid>, IAggregateRoot
     public string? PrivateName { get; private set; }
     public string? ActivationToken { get; private set; }
 
-    private Chat(){}
-    
+    private Chat()
+    {
+    }
+
     public void Activate(long telegramChatId)
     {
         if (TelegramChatId.HasValue)
@@ -18,6 +21,7 @@ public class Chat : Entity<Guid>, IAggregateRoot
         }
 
         TelegramChatId = telegramChatId;
+        RaiseDomainEvent(new ChatActivatedEvent(this.Id, TelegramChatId.Value));
     }
 
     public bool IsActivated()

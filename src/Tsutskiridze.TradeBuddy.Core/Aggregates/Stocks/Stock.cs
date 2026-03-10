@@ -1,5 +1,5 @@
 ﻿using SharedKernel;
-using Tsutskiridze.TradeBuddy.Core.Events;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Event;
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
 

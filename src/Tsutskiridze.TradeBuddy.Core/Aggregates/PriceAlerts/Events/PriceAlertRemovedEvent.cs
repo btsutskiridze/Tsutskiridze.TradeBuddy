@@ -1,7 +1,6 @@
 ﻿using SharedKernel;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
 
-namespace Tsutskiridze.TradeBuddy.Core.Events;
+namespace Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Events;
 
 public class PriceAlertRemovedEvent : DomainEvent
 {

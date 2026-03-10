@@ -1,5 +1,5 @@
 using Mediator;
-using Tsutskiridze.TradeBuddy.Core.Events;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Event;
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Streaming
 {

@@ -1,6 +1,6 @@
 using SharedKernel;
+using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Events;
 using Tsutskiridze.TradeBuddy.Core.Enums;
-using Tsutskiridze.TradeBuddy.Core.Events;
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
 

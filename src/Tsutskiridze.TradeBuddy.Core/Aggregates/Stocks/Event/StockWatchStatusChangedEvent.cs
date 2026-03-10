@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace Tsutskiridze.TradeBuddy.Core.Events;
+namespace Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Event;
 
 public class StockWatchStatusChangedEvent : DomainEvent
 {

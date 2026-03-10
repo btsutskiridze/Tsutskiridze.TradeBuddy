@@ -7,6 +7,7 @@ using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram
 {
+    //todo: remove this class
     public class TelegramCommandsRegisterService : BackgroundService
     {
         private readonly ITelegramBotClient _bot;

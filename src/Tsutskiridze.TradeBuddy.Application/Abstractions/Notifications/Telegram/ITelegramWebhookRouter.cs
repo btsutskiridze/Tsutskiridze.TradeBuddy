@@ -2,7 +2,7 @@
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 
-public interface ITelegramUpdateRouter
+public interface ITelegramWebhookRouter
 {
-    Task RouteAsync(TelegramUpdateDto updateDto, CancellationToken ct);
+    Task<TelegramUpdateResultDto?> RouteAsync(TelegramUpdateDto update, CancellationToken ct);
 }
