@@ -22,8 +22,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
         }
 
         [HttpGet("{symbol}")]
-        public async Task<IActionResult> GetStockNews(string symbol, [FromQuery] int limit = 10,
-            [FromQuery] string sortType = "new")
+        public async Task<IActionResult> GetStockNews(string symbol, [FromQuery] int limit = 10)
         {
             var result = await _mediator.Send(new StockNewsQuery(symbol, limit));
 
