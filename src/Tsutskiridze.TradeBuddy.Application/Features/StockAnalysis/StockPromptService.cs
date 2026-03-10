@@ -1,15 +1,15 @@
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
-using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
 {
     public class StockPromptService
     {
-        private readonly NewsService _news;
+        private readonly INewsAggregator _news;
         private readonly IYahooMarketDataProvider _yahooSraper;
 
-        public StockPromptService(NewsService news, IYahooMarketDataProvider yahooSraper)
+        public StockPromptService(INewsAggregator news, IYahooMarketDataProvider yahooSraper)
         {
             _news = news;
             _yahooSraper = yahooSraper;

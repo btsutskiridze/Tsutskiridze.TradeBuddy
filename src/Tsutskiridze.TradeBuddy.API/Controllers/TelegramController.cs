@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Telegram.Bot.Requests;
-using Telegram.Bot.Types;
 using Tsutskiridze.TradeBuddy.API.Contracts.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
-using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
 
 namespace Tsutskiridze.TradeBuddy.API.Controllers
 {
@@ -12,7 +9,6 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
     [Route("api/[controller]")]
     public class TelegramController : ControllerBase
     {
-        private readonly TelegramWebhookService _telegramService;
         private readonly ITelegramWebhookRouter _router;
 
         public TelegramController(ITelegramWebhookRouter router)
@@ -23,9 +19,9 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
         [HttpPost("Webhook")]
         public async Task<IActionResult> Webhook(TelegramWebhookRequest request, CancellationToken ct)
         {
-            var update = ExtractTelegramUpdateDto(request);
+            var updateDto = ExtractTelegramUpdateDto(request);
 
-            var result = await _router.RouteAsync(update, ct);
+            var result = await _router.RouteAsync(updateDto, ct);
 
             return result is null ? Ok() : Ok(result);
         }

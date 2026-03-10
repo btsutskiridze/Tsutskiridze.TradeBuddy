@@ -2,16 +2,16 @@ using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.DTOs.News;
 using Tsutskiridze.TradeBuddy.Application.Enums;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation
+namespace Tsutskiridze.TradeBuddy.Infrastructure.News
 {
-    public class NewsService
+    public class NewsAggregator : INewsAggregator
     {
         private readonly IFinnhubNewsProvider _finnhub;
         private readonly IRedditNewsProvider _reddit;
         private readonly IYahooNewsProvider _yahooSraper;
         private readonly IGoogleNewsProvider _googleScraper;
 
-        public NewsService(IFinnhubNewsProvider finnhub,
+        public NewsAggregator(IFinnhubNewsProvider finnhub,
             IRedditNewsProvider reddit,
             IYahooNewsProvider yahooSraper,
             IGoogleNewsProvider googleScraper)
@@ -22,7 +22,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation
             _googleScraper = googleScraper;
         }
 
-        public async Task<StockNewsDto?> GetAllNews(string symbol, int? limit = null)
+        public async Task<StockNewsDto> GetAllNews(string symbol, int? limit = null)
         {
             var googleTask = GetGoogleNews(symbol, limit);
             var redditTask = GetRedditNews(symbol, RedditSortType.New, limit);
@@ -61,7 +61,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation
             return await _yahooSraper.GetNewsAsync(symbol, limit);
         }
 
-        public async Task<List<FinnhubNewsItemDto>?> GetFinnhubNews(string symbol, DateTime from, DateTime to, int? limit = null)
+        public async Task<List<FinnhubNewsItemDto>?> GetFinnhubNews(string symbol, DateTime from, DateTime to,
+            int? limit = null)
         {
             return await _finnhub.GetCompanyNewsAsync(symbol, from, to, limit);
         }

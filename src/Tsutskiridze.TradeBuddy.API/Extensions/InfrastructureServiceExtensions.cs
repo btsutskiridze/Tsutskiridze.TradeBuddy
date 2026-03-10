@@ -14,6 +14,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVantage;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialModelingPrep;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo;
+using Tsutskiridze.TradeBuddy.Infrastructure.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.News.Finnhub;
 using Tsutskiridze.TradeBuddy.Infrastructure.News.GoogleNews;
 using Tsutskiridze.TradeBuddy.Infrastructure.News.Reddit;
@@ -66,7 +67,9 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
             services.AddHttpClient<IYahooMarketDataProvider, YahooStockScraper>(configureYahooClient);
             services.AddHttpClient<IYahooNewsProvider, YahooNewsScraper>(configureYahooClient);
             services.AddTransient<IYahooCookieBypassService, YahooCookieBypassService>();
-
+            
+            services.AddTransient<INewsAggregator, NewsAggregator>();
+            
             return services;
         }
 

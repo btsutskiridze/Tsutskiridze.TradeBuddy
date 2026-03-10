@@ -1,6 +1,5 @@
 using System.Reflection;
 using SharedKernel.Validations.Mediator;
-using Tsutskiridze.TradeBuddy.Application.Features.NewsAggregation;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.EventHandlers;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.TelegramBot;
@@ -33,9 +32,6 @@ namespace Tsutskiridze.TradeBuddy.API.Extensions
 
         private static IServiceCollection AddFeatureServices(this IServiceCollection services)
         {
-            // News Services
-            services.AddTransient<NewsService>();
-
             // Stock Services
             services.AddTransient<StockPromptService>();
             services.AddTransient<StockAnalysisService>();
