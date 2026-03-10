@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Tsutskiridze.TradeBuddy.API.Extensions;
+using Tsutskiridze.TradeBuddy.API;
 using Tsutskiridze.TradeBuddy.Application;
 using Tsutskiridze.TradeBuddy.Infrastructure;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
