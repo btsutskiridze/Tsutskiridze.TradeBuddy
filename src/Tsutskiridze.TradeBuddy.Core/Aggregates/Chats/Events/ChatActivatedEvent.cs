@@ -2,4 +2,4 @@
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Events;
 
-public sealed class ChatActivatedEvent(Guid ChatId, long TelegramChatId) : DomainEvent;
+public sealed record ChatActivatedEvent(Guid ChatId, long TelegramChatId) : DomainEvent;
