@@ -1,6 +1,8 @@
 ﻿namespace SharedKernel;
 
-public class DomainException : Exception
+public class DomainException : BaseException
 {
-    public DomainException(string message, Exception? innerException = null) : base(message, innerException) {}
+    public DomainException(string message, int statusCode = 409, Exception? inner = null) : base(message, statusCode, inner)
+    {
+    }
 }

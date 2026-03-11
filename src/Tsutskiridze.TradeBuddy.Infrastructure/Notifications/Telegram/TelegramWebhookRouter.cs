@@ -27,7 +27,7 @@ public class TelegramWebhookRouter : ITelegramWebhookRouter
             await ExecuteHandler(update.ChatId, command, parts, ct);
             return null;
         }
-        catch (DomainException exception)
+        catch (BaseException exception)
         {
             return new TelegramUpdateResultDto()
             {

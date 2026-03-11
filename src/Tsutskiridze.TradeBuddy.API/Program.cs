@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Tsutskiridze.TradeBuddy.API;
+using Tsutskiridze.TradeBuddy.API.ExceptionHandlers;
 using Tsutskiridze.TradeBuddy.Application;
 using Tsutskiridze.TradeBuddy.Infrastructure;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
@@ -18,6 +19,15 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
+
+app.UseExceptionHandler();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+app.UseRouting();
 
 app.UseCors("AllowSpecificOrigins");
 

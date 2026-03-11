@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using SharedKernel.Validations.Mediator;
+using Tsutskiridze.TradeBuddy.API.ExceptionHandlers;
 using Tsutskiridze.TradeBuddy.Application;
 
 namespace Tsutskiridze.TradeBuddy.API;
@@ -45,6 +46,9 @@ public static class DependencyInjection
             });
         });
 
+        services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddProblemDetails();
+        
         return services;
     }
 }

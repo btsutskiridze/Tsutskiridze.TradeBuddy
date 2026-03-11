@@ -1,6 +1,7 @@
 ﻿using Mediator;
 using SharedKernel;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Application.Exceptions;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 
@@ -23,14 +24,9 @@ public sealed class ActivateChatHandler : ICommandHandler<ActivateBotCommand>
 
     public async ValueTask<Unit> Handle(ActivateBotCommand command, CancellationToken cancellationToken)
     {
-        var chat = await _repo.FirstOrDefaultAsync(new ChatByActivationTokenSpec(command.Token), cancellationToken);
-
-        if (chat is null)
-        {
-            await _sender.SendMessage(command.ChatId, "Invalid token provided", cancellationToken);
-            return Unit.Value;
-        }
-    
+        var chat = await _repo.FirstOrDefaultAsync(new ChatByActivationTokenSpec(command.Token), cancellationToken)
+            ?? throw new ResourceNotFoundException("Invalid activation token");
+        
         chat.Activate(command.ChatId);
         await _uow.SaveChangesAsync(cancellationToken);
 
