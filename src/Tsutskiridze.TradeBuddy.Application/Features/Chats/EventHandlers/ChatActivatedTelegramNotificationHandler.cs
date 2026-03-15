@@ -5,11 +5,11 @@ using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Events;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.EventHandlers;
 
-public sealed class ChatActivatedEventHandler : INotificationHandler<ChatActivatedEvent>
+public sealed class ChatActivatedTelegramNotificationHandler : INotificationHandler<ChatActivatedEvent>
 {
     private readonly ITelegramSender _sender;
 
-    public ChatActivatedEventHandler(ITelegramSender sender)
+    public ChatActivatedTelegramNotificationHandler(ITelegramSender sender)
     {
         _sender = sender;
     }

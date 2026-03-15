@@ -1,86 +1,64 @@
-﻿using Mediator;
+﻿using System.ComponentModel.DataAnnotations;
+using Mediator;
+using Microsoft.Extensions.Logging;
 using SharedKernel;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 
 public class TelegramWebhookRouter : ITelegramWebhookRouter
 {
     private readonly IMediator _mediator;
+    private readonly IReadOnlyDictionary<string, ITelegramCommandHandler> _handlers;
+    private readonly ILogger<ITelegramWebhookRouter> _logger;
 
-    public TelegramWebhookRouter(IMediator mediator)
+    public TelegramWebhookRouter(
+        IMediator mediator,
+        IEnumerable<ITelegramCommandHandler> handlers,
+        ILogger<ITelegramWebhookRouter> logger)
     {
         _mediator = mediator;
+        _handlers = handlers.ToDictionary(x => x.Command, StringComparer.OrdinalIgnoreCase);
+        _logger = logger;
     }
 
     public async Task<TelegramUpdateResultDto?> RouteAsync(TelegramUpdateDto update, CancellationToken ct)
     {
-        var text = ExtractText(update);
-        if(text is null) return null;
-        
-        var (command, parts) = ExtractParts(text);
+        if (update.Command is null)
+            return null;
+
+        if (!_handlers.TryGetValue(update.Command, out var handler))
+        {
+            return CreateResponse(update.ChatId, "Unknown Command");
+        }
 
         try
         {
-            await ExecuteHandler(update.ChatId, command, parts, ct);
+            await handler.Handle(update, ct);
             return null;
         }
-        catch (BaseException exception)
+        catch (Exception ex) when (ex is BaseException or ValidationException)
         {
-            return new TelegramUpdateResultDto()
-            {
-                ChatId = update.ChatId,
-                Text = exception.Message
-            };
+            return CreateResponse(update.ChatId, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to process Telegram command {Command} for chat {ChatId}",
+                update.Command, update.ChatId);
+
+            return CreateResponse(update.ChatId, "Internal server error.");
         }
     }
-
-    private static (string, string[]) ExtractParts(string text)
+    
+    private TelegramUpdateResultDto CreateResponse(long chatId, string message)
     {
-        var parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var command = parts[0].ToLowerInvariant();
-        
-        return (command, parts.Skip(1).ToArray());
-    }
-
-    private string? ExtractText(TelegramUpdateDto updateDto)
-    {
-        var text = updateDto.Text?.Trim();
-        
-        if (string.IsNullOrEmpty(text) || !text.StartsWith('/'))
+        return new TelegramUpdateResultDto()
         {
-            return null;
-        }
-
-        return text;
-    }
-
-
-    private async Task ExecuteHandler(long chatId, string command, string[] parts, CancellationToken ct)
-    {
-        switch (command)
-        {
-            case "/activate":
-                await _mediator.Send(new ActivateBotCommand(chatId, parts[0]), ct);
-                break;
-            // case "/start":
-            //     await _mediator.Send(new StartCommand(
-            //         update.Message.Chat.Id), ct);
-            //     break;
-            //
-            // case "/alert":
-            //     await _mediator.Send(new CreatePriceAlertCommand(
-            //         update.Message.Chat.Id,
-            //         parts[1],
-            //         decimal.Parse(parts[2])), ct);
-            //     break;
-            //
-            // case "/alerts":
-            //     await _mediator.Send(new ListAlertsQuery(
-            //         update.Message.Chat.Id), ct);
-            //     break;
-        }
+            ChatId = chatId,
+            Text = message
+        };
     }
 }

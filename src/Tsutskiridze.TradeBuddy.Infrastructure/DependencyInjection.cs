@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OpenAI.Chat;
 using SharedKernel;
@@ -26,6 +27,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.News.GoogleNews;
 using Tsutskiridze.TradeBuddy.Infrastructure.News.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.News.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 using Tsutskiridze.TradeBuddy.Infrastructure.Utilities;
@@ -43,6 +45,7 @@ public static class DependencyInjection
             .AddOptions(configuration)
             .AddPersistence(configuration)
             .AddHelperServices()
+            .AddTelegramNotificationServices()
             .AddExternalApiClients()
             .AddAiServices()
             .AddMarketDataServices()
@@ -56,7 +59,8 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.Configure<AlphaVantageOptions>(configuration.GetSection(AlphaVantageOptions.SectionName));
-        services.Configure<FinancialModelingPrepOptions>(configuration.GetSection(FinancialModelingPrepOptions.SectionName));
+        services.Configure<FinancialModelingPrepOptions>(
+            configuration.GetSection(FinancialModelingPrepOptions.SectionName));
         services.Configure<RedditOptions>(configuration.GetSection(RedditOptions.SectionName));
         services.Configure<FinnhubOptions>(configuration.GetSection(FinnhubOptions.SectionName));
         services.Configure<YahooOptions>(configuration.GetSection(YahooOptions.SectionName));
@@ -98,7 +102,8 @@ public static class DependencyInjection
             client.BaseAddress = new Uri(options.BaseUrl);
         });
 
-        services.AddHttpClient<IFinancialModelingPrepQuoteProvider, FinancialModelingPrepClient>((serviceProvider, client) =>
+        services.AddHttpClient<IFinancialModelingPrepQuoteProvider, FinancialModelingPrepClient>((serviceProvider,
+            client) =>
         {
             var options = serviceProvider.GetRequiredService<IOptions<FinancialModelingPrepOptions>>().Value;
             client.BaseAddress = new Uri(options.BaseUrl);
@@ -164,11 +169,31 @@ public static class DependencyInjection
     private static IServiceCollection AddHelperServices(this IServiceCollection services)
     {
         services.AddSingleton<ICurrencySymbolProvider, CurrencySymbolProvider>();
-        services.AddScoped<ITelegramSender, TelegramSender>();
-        services.AddScoped<ITelegramWebhookRouter, TelegramWebhookRouter>();
 
         return services;
     }
+
+    private static IServiceCollection AddTelegramNotificationServices(this IServiceCollection services)
+    {
+        services.AddScoped<ITelegramSender, TelegramSender>();
+        services.AddScoped<ITelegramWebhookRouter, TelegramWebhookRouter>();
+
+        var handlers = typeof(DependencyInjection).Assembly
+            .GetTypes()
+            .Where(x =>
+                x is { IsAbstract: false, IsInterface: false } && typeof(ITelegramCommandHandler).IsAssignableFrom(x)
+            );
+
+        foreach (var handler in handlers)
+        {
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient(typeof(ITelegramCommandHandler), handler
+            ));
+        }
+        
+        return services;
+    }
+
 
     private static readonly Action<IServiceProvider, HttpClient> ConfigureYahooClient = (serviceProvider, client) =>
     {
