@@ -1,6 +1,7 @@
 ﻿using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
@@ -31,5 +32,10 @@ public class TelegramSender : ITelegramSender
             _logger.LogError(e.Message);
             ExceptionDispatchInfo.Throw(e);
         }
+    }
+
+    public async Task SendTypingAction(long chatId, CancellationToken ct = default)
+    {
+        await _client.SendChatAction(chatId, ChatAction.Typing, cancellationToken: ct);
     }
 }
