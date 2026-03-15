@@ -15,15 +15,13 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3"/>
+        <PackageReference Include="Scalar.AspNetCore" Version="2.11.10"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.3">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0"/>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4"/>
         <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.4" />
-<!--        <PackageReference Include="Tsutskiridze.Bloom.Core" Version="1.0.10"/>-->
         <PackageReference Include="Mediator.SourceGenerator" Version="3.0.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -31,7 +29,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Application\Tsutskiridze.TradeBuddy.Application.csproj"/>
         <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Infrastructure\Tsutskiridze.TradeBuddy.Infrastructure.csproj"/>
     </ItemGroup>
 

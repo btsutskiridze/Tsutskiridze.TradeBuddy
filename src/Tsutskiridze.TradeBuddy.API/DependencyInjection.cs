@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Scalar.AspNetCore;
 using SharedKernel.Validations.Mediator;
 using Tsutskiridze.TradeBuddy.API.ExceptionHandlers;
 using Tsutskiridze.TradeBuddy.Application;
@@ -21,8 +22,8 @@ public static class DependencyInjection
             })
             .AddMediatorValidators(typeof(AssemblyReference).Assembly);
 
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        services.AddOpenApi();
+        
         services.AddControllers()
             .AddJsonOptions(options =>
             {
@@ -50,5 +51,23 @@ public static class DependencyInjection
         services.AddProblemDetails();
         
         return services;
+    }
+
+    public static WebApplication UseScalarUI(this WebApplication app)
+    {
+        app.MapOpenApi();
+        app.MapScalarApiReference(options => options
+            .WithTitle("v1")
+            .ShowOperationId()
+            .ExpandAllTags()
+            .HideDarkModeToggle()
+            .PreserveSchemaPropertyOrder()
+            .WithTheme(ScalarTheme.Purple)
+            .EnableDarkMode()
+        );
+
+        app.MapGet("/", () => Results.Redirect("/scalar")).ExcludeFromDescription().ExcludeFromApiReference();
+
+        return app;
     }
 }

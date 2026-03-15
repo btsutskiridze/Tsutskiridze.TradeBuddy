@@ -8,21 +8,20 @@
 
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
-        <PackageReference Include="Google.Protobuf" Version="3.34.0" />
-        <PackageReference Include="Telegram.Bot" Version="22.9.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-        <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
-<!--        <PackageReference Include="Tsutskiridze.Bloom.Core" Version="1.1.2" />-->
-        <PackageReference Include="Mediator.Abstractions" Version="3.0.1" />
+        <!--        todo: remove start -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3"/>
+        <PackageReference Include="Telegram.Bot" Version="22.9.0"/>
+        <!--        todo: remove end -->
+
+        <PackageReference Include="Mediator.Abstractions" Version="3.0.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Core\Tsutskiridze.TradeBuddy.Core.csproj" />
+        <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Core\Tsutskiridze.TradeBuddy.Core.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\PriceAlerts\Commands\" />
+        <Folder Include="Features\PriceAlerts\Commands\"/>
     </ItemGroup>
 
 </Project>
