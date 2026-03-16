@@ -1,4 +1,6 @@
-﻿namespace SharedKernel;
+﻿using SharedKernel.Events;
+
+namespace SharedKernel;
 
 public interface IHasDomainEvents
 {

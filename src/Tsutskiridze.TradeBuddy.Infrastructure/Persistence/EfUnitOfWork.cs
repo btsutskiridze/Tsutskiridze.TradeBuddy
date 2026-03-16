@@ -1,5 +1,6 @@
 ﻿using Mediator;
 using SharedKernel;
+using SharedKernel.Events;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 

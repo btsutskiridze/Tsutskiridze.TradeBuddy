@@ -13,7 +13,7 @@ public static class DependencyInjection
     {
         services.AddTransient<StockPromptService>();
         services.AddTransient<StockAnalysisService>();
-        services.AddSingleton<PricingUpdatedHandler>();
+        services.AddSingleton<PricingUpdatedIntegrationEventHandler>();
 
         RegisterTelegramCommandHandlers(services);
         services.AddSingleton<ITelegramHandlerRegistry, TelegramHandlerRegistry>();

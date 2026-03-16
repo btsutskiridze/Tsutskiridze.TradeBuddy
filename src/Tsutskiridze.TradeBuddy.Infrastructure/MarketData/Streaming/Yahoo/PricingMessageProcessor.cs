@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Streaming;
-using Tsutskiridze.TradeBuddy.Application.Events;
+using Tsutskiridze.TradeBuddy.Application.IntegrationEvents.MarketData;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo
 {
@@ -37,7 +37,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo
                 _log.LogDebug("Parsed update {Symbol} @ {Price}", update.Id, update.Price);
 
                 await mediator.Publish(
-                    new PricingUpdatedEvent(update.Id, (decimal)update.Price), ct);
+                    new PricingUpdatedIntegrationEvent(update.Id, (decimal)update.Price), ct);
             }
             catch (Exception ex)
             {

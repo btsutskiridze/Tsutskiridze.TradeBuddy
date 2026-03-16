@@ -21,7 +21,7 @@ public class Chat : Entity<Guid>, IAggregateRoot
         }
 
         TelegramChatId = telegramChatId;
-        RaiseDomainEvent(new ChatActivatedEvent(this.Id, TelegramChatId.Value));
+        RaiseDomainEvent(new ChatActivatedDomainEvent(this.Id, TelegramChatId.Value));
     }
 
     public bool IsActivated()

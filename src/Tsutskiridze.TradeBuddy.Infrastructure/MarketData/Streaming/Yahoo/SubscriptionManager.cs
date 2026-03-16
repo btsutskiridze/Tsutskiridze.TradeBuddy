@@ -44,7 +44,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo
             await _transport.SendAsync(JsonConvert.SerializeObject(new { subscribe = _watched }), ct);
         }
 
-        public async ValueTask Handle(StockWatchStatusChangedEvent evt, CancellationToken ct)
+        public async ValueTask Handle(StockWatchStatusChangedDomainEvent evt, CancellationToken ct)
         {
             var shouldSub = evt.IsWatched && !_watched.Contains(evt.Symbol);
             var shouldUnsub = !evt.IsWatched && _watched.Contains(evt.Symbol);

@@ -1,4 +1,4 @@
-using Mediator;
+using SharedKernel.Events;
 
 namespace SharedKernel;
 

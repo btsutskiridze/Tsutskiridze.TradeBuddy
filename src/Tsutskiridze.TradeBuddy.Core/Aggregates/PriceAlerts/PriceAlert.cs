@@ -35,8 +35,6 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
         Direction = direction;
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
-
-        RaiseDomainEvent(new PriceAlertCreatedEvent(this));
     }
 
     private PriceAlert()
@@ -73,6 +71,7 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
             throw new DomainException("Alert is already active");
 
         IsActive = true;
+        RaiseDomainEvent(new PriceAlertActivatedDomainEvent(this));
     }
 
     public void Deactivate()
@@ -81,6 +80,6 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
             throw new DomainException("Alert is already inactive");
 
         IsActive = false;
-        RaiseDomainEvent(new PriceAlertRemovedEvent(this));
+        RaiseDomainEvent(new PriceAlertDeactivatedDomainEvent(this));
     }
 }

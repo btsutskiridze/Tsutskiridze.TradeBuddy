@@ -31,7 +31,7 @@ public class Stock : Entity<Guid>, IAggregateRoot
         
         IsWatched = true;
         RaiseDomainEvent(
-            new StockWatchStatusChangedEvent(Symbol, IsWatched)
+            new StockWatchStatusChangedDomainEvent(Symbol, IsWatched)
         );
     }
     
@@ -41,7 +41,7 @@ public class Stock : Entity<Guid>, IAggregateRoot
         
         IsWatched = false;
         RaiseDomainEvent(
-            new StockWatchStatusChangedEvent(Symbol, IsWatched)
+            new StockWatchStatusChangedDomainEvent(Symbol, IsWatched)
         );
     }
 }

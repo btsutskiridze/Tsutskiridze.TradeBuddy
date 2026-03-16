@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Tsutskiridze.TradeBuddy.API;
-using Tsutskiridze.TradeBuddy.API.ExceptionHandlers;
 using Tsutskiridze.TradeBuddy.Application;
 using Tsutskiridze.TradeBuddy.Infrastructure;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;

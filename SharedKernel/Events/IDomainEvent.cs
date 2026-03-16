@@ -1,6 +1,6 @@
 ﻿using Mediator;
 
-namespace SharedKernel;
+namespace SharedKernel.Events;
 
 public interface IDomainEvent : INotification
 {

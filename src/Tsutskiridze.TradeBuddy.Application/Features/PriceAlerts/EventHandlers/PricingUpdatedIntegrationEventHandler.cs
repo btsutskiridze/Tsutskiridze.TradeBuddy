@@ -1,11 +1,11 @@
-using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SharedKernel;
+using SharedKernel.Events;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
-using Tsutskiridze.TradeBuddy.Application.Events;
+using Tsutskiridze.TradeBuddy.Application.IntegrationEvents.MarketData;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
@@ -16,21 +16,21 @@ using Tsutskiridze.TradeBuddy.Core.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.EventHandlers;
 
-public sealed class PricingUpdatedHandler : INotificationHandler<PricingUpdatedEvent>
+public sealed class PricingUpdatedIntegrationEventHandler : IIntegrationEventHandler<PricingUpdatedIntegrationEvent>
 {
     private readonly IServiceScopeFactory _scopes;
     private readonly ITelegramBotClient _bot;
     private readonly ICurrencySymbolProvider _currency;
-    private readonly ILogger<PricingUpdatedHandler> _log;
+    private readonly ILogger<PricingUpdatedIntegrationEventHandler> _log;
     private readonly SemaphoreSlim _lock = new(1, 1);
 
     private static readonly TimeSpan RateLimitWindow = TimeSpan.FromSeconds(10);
     private const int MaxNotifications = 5;
 
-    public PricingUpdatedHandler(
+    public PricingUpdatedIntegrationEventHandler(
         IServiceScopeFactory scopes,
         ITelegramBotClient bot,
-        ILogger<PricingUpdatedHandler> log,
+        ILogger<PricingUpdatedIntegrationEventHandler> log,
         ICurrencySymbolProvider currency)
     {
         _scopes = scopes;
@@ -39,7 +39,7 @@ public sealed class PricingUpdatedHandler : INotificationHandler<PricingUpdatedE
         _currency = currency;
     }
 
-    public async ValueTask Handle(PricingUpdatedEvent evt, CancellationToken ct)
+    public async ValueTask Handle(PricingUpdatedIntegrationEvent evt, CancellationToken ct)
     {
         await _lock.WaitAsync(ct);
 
@@ -124,7 +124,7 @@ public sealed class PricingUpdatedHandler : INotificationHandler<PricingUpdatedE
         }
         catch (Exception ex)
         {
-            _log.LogError(ex, "Error in {Handler} for {Symbol}", nameof(PricingUpdatedHandler), evt.Symbol);
+            _log.LogError(ex, "Error in {Handler} for {Symbol}", nameof(PricingUpdatedIntegrationEventHandler), evt.Symbol);
         }
         finally
         {

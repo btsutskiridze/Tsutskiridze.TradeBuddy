@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using SharedKernel;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
-using Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;

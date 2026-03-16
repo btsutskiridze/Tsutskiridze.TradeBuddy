@@ -1,4 +1,6 @@
-﻿namespace SharedKernel;
+﻿using SharedKernel.Events;
+
+namespace SharedKernel;
 
 public abstract class Entity<TId> : IHasDomainEvents, IEquatable<Entity<TId>> where TId : notnull
 {
