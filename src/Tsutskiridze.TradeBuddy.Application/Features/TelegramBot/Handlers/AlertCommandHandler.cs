@@ -6,7 +6,6 @@ using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Core.Enums;
-using Tsutskiridze.TradeBuddy.Core.Services;
 
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
@@ -38,7 +37,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
         {
             using var scope = _scopes.CreateScope();
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            var alertDomainService = scope.ServiceProvider.GetRequiredService<IAlertDomainService>();
+            // var alertDomainService = scope.ServiceProvider.GetRequiredService<IAlertDomainService>();
 
             var parts = message.Text!
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -71,14 +70,14 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
                     $"Failed to fetch quote for '{symbol}'.");
                 return;
             }
-
-            await alertDomainService.CreateAlertAsync(
-                message.Chat.Id,
-                symbol,
-                quote.Currency,
-                quote.Name,
-                price,
-                direction);
+            //
+            // await alertDomainService.CreateAlertAsync(
+            //     message.Chat.Id,
+            //     symbol,
+            //     quote.Currency,
+            //     quote.Name,
+            //     price,
+            //     direction);
 
             await unitOfWork.SaveChangesAsync();
 

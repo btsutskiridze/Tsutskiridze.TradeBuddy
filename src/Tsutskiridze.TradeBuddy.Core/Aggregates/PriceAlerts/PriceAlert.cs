@@ -70,6 +70,7 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
             throw new DomainException("Alert is already active");
 
         IsActive = true;
+        AlertCount = 0;
         RaiseDomainEvent(new PriceAlertActivatedDomainEvent(this));
     }
 

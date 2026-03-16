@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Mediator;
+﻿using Mediator;
 using Microsoft.Extensions.Logging;
 using SharedKernel;
+using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;

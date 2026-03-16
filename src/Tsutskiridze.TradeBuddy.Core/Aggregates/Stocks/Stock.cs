@@ -14,11 +14,12 @@ public class Stock : Entity<Guid>, IAggregateRoot
     {
         ArgumentException.ThrowIfNullOrEmpty(symbol);
         ArgumentException.ThrowIfNullOrEmpty(currency);
-        ArgumentException.ThrowIfNullOrEmpty(name);
 
         Symbol = symbol;
         Currency = currency;
-        Name = name;
+
+        if (string.IsNullOrEmpty(name))
+            Name = symbol;
     }
 
     private Stock()

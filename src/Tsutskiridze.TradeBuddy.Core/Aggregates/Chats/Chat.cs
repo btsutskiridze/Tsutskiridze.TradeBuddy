@@ -24,14 +24,9 @@ public class Chat : Entity<Guid>, IAggregateRoot
         RaiseDomainEvent(new ChatActivatedDomainEvent(this.Id, TelegramChatId.Value));
     }
 
-    public bool IsActivated()
-    {
-        return TelegramChatId.HasValue;
-    }
-    
     public void EnsureActivated()
     {
-        if (!IsActivated())
+        if (!TelegramChatId.HasValue)
             throw new DomainException("Chat is not activated");
     }
 }

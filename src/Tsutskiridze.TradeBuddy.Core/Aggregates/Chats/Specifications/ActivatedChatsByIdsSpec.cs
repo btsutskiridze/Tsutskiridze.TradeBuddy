@@ -6,6 +6,6 @@ public sealed class ActivatedChatsByIdsSpec : Specification<Chat>
 {
     public ActivatedChatsByIdsSpec(IReadOnlyCollection<Guid> chatIds)
     {
-        Query.Where(x => chatIds.Contains(x.Id) && x.IsActivated());
+        Query.Where(x => chatIds.Contains(x.Id) && x.TelegramChatId.HasValue);
     }
 }

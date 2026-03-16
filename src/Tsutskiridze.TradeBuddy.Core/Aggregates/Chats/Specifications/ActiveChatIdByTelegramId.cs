@@ -7,6 +7,6 @@ public sealed class ActiveChatIdByTelegramId : Specification<Chat, Guid?>
     public ActiveChatIdByTelegramId(long telegramId)
     {
         Query.Select(x => x.Id)
-            .Where(x => x.TelegramChatId == telegramId && x.IsActivated());
+            .Where(x => x.TelegramChatId == telegramId && x.TelegramChatId.HasValue);
     }
 }

@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Mediator;
+﻿using Mediator;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
+using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
@@ -73,6 +73,8 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand>
                 stock.Id,
                 command.Price,
                 command.Direction);
+            
+            alert.Activate();
 
             await _alerts.AddAsync(alert, ct);
         }
