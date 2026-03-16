@@ -44,7 +44,7 @@ public static class DependencyInjection
         services
             .AddOptions(configuration)
             .AddPersistence(configuration)
-            .AddHelperServices()
+            .AddUtilities()
             .AddTelegramNotificationServices()
             .AddExternalApiClients()
             .AddAiServices()
@@ -166,9 +166,10 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddHelperServices(this IServiceCollection services)
+    private static IServiceCollection AddUtilities(this IServiceCollection services)
     {
         services.AddSingleton<ICurrencySymbolProvider, CurrencySymbolProvider>();
+        services.AddSingleton<IDbExceptionClassifier, EfCoreDbExceptionClassifier>();
 
         return services;
     }

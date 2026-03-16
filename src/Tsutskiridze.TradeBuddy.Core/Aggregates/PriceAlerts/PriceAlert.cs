@@ -33,7 +33,6 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
         StockId = stockId;
         Price = price;
         Direction = direction;
-        IsActive = true;
         CreatedAt = DateTime.UtcNow;
     }
 

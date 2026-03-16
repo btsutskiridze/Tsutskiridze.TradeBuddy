@@ -36,9 +36,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
             builder.Property(pa => pa.CreatedAt)
                 .IsRequired();
             
-            builder.HasIndex(pa => pa.ChatId);
-            builder.HasIndex(pa => pa.StockId);
-            
             builder.HasOne<Stock>()
                 .WithMany()
                 .HasForeignKey(pa => pa.StockId)
@@ -48,6 +45,17 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
                 .WithMany()
                 .HasForeignKey(pa => pa.ChatId)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.HasIndex(pa => new
+                {
+                    pa.ChatId,
+                    pa.StockId,
+                    pa.Direction,
+                    pa.Price
+                })
+                .IsUnique()
+                .HasDatabaseName("UX_price_alerts_chat_stock_direction_price");
+
         }
     }
 }

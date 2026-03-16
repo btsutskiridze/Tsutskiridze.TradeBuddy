@@ -28,4 +28,10 @@ public class Chat : Entity<Guid>, IAggregateRoot
     {
         return TelegramChatId.HasValue;
     }
+    
+    public void EnsureActivated()
+    {
+        if (!IsActivated())
+            throw new DomainException("Chat is not activated");
+    }
 }

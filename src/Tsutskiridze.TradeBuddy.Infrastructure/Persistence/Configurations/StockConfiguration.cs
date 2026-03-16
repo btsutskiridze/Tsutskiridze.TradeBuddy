@@ -23,6 +23,10 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
             builder.Property(s => s.Name)
                 .IsRequired()
                 .HasMaxLength(200);
+            
+            builder.HasIndex(x => x.Symbol)
+                .IsUnique()
+                .HasDatabaseName("UX_stocks_symbol");
         }
     }
 }
