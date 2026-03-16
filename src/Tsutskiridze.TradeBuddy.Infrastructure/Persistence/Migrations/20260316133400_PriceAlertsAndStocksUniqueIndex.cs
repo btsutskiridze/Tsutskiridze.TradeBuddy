@@ -10,10 +10,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "ix_price_alerts_chat_id",
-                table: "price_alerts");
-
             migrationBuilder.CreateIndex(
                 name: "UX_stocks_symbol",
                 table: "stocks",
@@ -37,11 +33,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
             migrationBuilder.DropIndex(
                 name: "UX_price_alerts_chat_stock_direction_price",
                 table: "price_alerts");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_price_alerts_chat_id",
-                table: "price_alerts",
-                column: "chat_id");
         }
     }
 }
