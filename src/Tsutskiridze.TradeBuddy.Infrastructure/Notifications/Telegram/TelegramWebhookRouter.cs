@@ -12,18 +12,25 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 public class TelegramWebhookRouter : ITelegramWebhookRouter
 {
     private readonly IReadOnlyDictionary<string, ITelegramCommandHandler> _handlers;
+
+    private readonly ITelegramSender _sender;
     private readonly ILogger<ITelegramWebhookRouter> _logger;
+    
 
     public TelegramWebhookRouter(
+        ITelegramSender sender,
         IEnumerable<ITelegramCommandHandler> handlers,
         ILogger<ITelegramWebhookRouter> logger)
     {
-        _handlers = handlers.ToDictionary(x => x.Command, StringComparer.OrdinalIgnoreCase);
+        _sender = sender;
         _logger = logger;
+        _handlers = handlers.ToDictionary(x => x.Command, StringComparer.OrdinalIgnoreCase);
     }
 
     public async Task<TelegramUpdateResultDto?> RouteAsync(TelegramUpdateDto update, CancellationToken ct)
     {
+        await _sender.SendTypingAction(update.ChatId, ct);
+        
         if (update.Command is null)
             return null;
 
@@ -34,10 +41,12 @@ public class TelegramWebhookRouter : ITelegramWebhookRouter
 
         try
         {
+            await _sender.SendTypingAction(update.ChatId, ct);
             return await handler.Handle(update, ct);
         }
         catch (Exception ex)
         {
+            await _sender.SendTypingAction(update.ChatId, ct);
             _logger.LogError(ex, "Failed to route telegram command {Command}", update.Command);
             return CreateResponse(update.ChatId, ex);
         }
@@ -52,7 +61,7 @@ public class TelegramWebhookRouter : ITelegramWebhookRouter
         };
     }
 
-    private TelegramUpdateResultDto CreateResponse(long chatId, Exception ex)
+    private static TelegramUpdateResultDto CreateResponse(long chatId, Exception ex)
     {
         switch (ex)
         {

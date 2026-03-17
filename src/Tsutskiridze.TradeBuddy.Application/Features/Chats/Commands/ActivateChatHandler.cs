@@ -1,35 +1,39 @@
 ﻿using Mediator;
 using SharedKernel;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Exceptions;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands;
 
-public record ActivateBotCommand(long ChatId, string Token) : ICommand;
+public record ActivateBotCommand(long ChatId, string Token) : ICommand<TelegramUpdateResultDto>;
 
-public sealed class ActivateChatHandler : ICommandHandler<ActivateBotCommand>
+public sealed class ActivateChatHandler : ICommandHandler<ActivateBotCommand, TelegramUpdateResultDto>
 {
     private readonly IUnitOfWork _uow;
     private readonly IRepository<Chat> _repo;
-    private readonly ITelegramSender _sender;
 
-    public ActivateChatHandler(IUnitOfWork uow, IRepository<Chat> repo, ITelegramSender sender)
+    public ActivateChatHandler(IUnitOfWork uow, IRepository<Chat> repo)
     {
         _uow = uow;
         _repo = repo;
-        _sender = sender;
     }
 
-    public async ValueTask<Unit> Handle(ActivateBotCommand command, CancellationToken cancellationToken)
+    public async ValueTask<TelegramUpdateResultDto> Handle(ActivateBotCommand command,
+        CancellationToken cancellationToken)
     {
         var chat = await _repo.FirstOrDefaultAsync(new ChatByActivationTokenSpec(command.Token), cancellationToken)
-            ?? throw new ResourceNotFoundException("Invalid activation token");
-        
+                   ?? throw new ResourceNotFoundException("Invalid activation token");
+
         chat.Activate(command.ChatId);
         await _uow.SaveChangesAsync(cancellationToken);
 
-        return Unit.Value;
+        return new TelegramUpdateResultDto()
+        {
+            ChatId = command.ChatId,
+            Text = "StockBuddy Activated Successfully"
+        };
     }
 }

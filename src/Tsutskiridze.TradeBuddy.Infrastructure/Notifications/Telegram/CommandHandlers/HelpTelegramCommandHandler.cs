@@ -5,13 +5,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandH
 
 public class HelpTelegramCommandHandler : ITelegramCommandHandler
 {
-    public HelpTelegramCommandHandler()
-    {
-    }
-    
     public string Command => TelegramCommandCatalog.Help.Command;
     public string Description => TelegramCommandCatalog.Help.Description;
-    
     public Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct)
     {
         var helpText = string.Join("\n",

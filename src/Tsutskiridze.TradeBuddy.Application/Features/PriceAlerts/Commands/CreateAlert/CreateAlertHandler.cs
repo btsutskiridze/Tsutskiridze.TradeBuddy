@@ -1,13 +1,13 @@
-﻿using Mediator;
+﻿using System.Globalization;
+using Mediator;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Exceptions;
-using Tsutskiridze.TradeBuddy.Application.Notifications.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
@@ -18,46 +18,39 @@ using Tsutskiridze.TradeBuddy.Core.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.CreateAlert;
 
-public record CreateAlertCommand(long ChatId, string Symbol, PriceDirection Direction, decimal Price) : ICommand;
+public record CreateAlertCommand(long ChatId, string Symbol, PriceDirection Direction, decimal Price)
+    : ICommand<TelegramUpdateResultDto>;
 
-public class CreateAlertHandler : ICommandHandler<CreateAlertCommand>
+public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, TelegramUpdateResultDto>
 {
     private readonly IUnitOfWork _uow;
     private readonly IRepository<Stock> _stocks;
     private readonly IReadRepository<Chat> _chats;
     private readonly IRepository<PriceAlert> _alerts;
-    private readonly ITelegramSender _sender;
     private readonly IYahooMarketDataProvider _yahoo;
-    private readonly IMediator _mediator;
     private readonly IDbExceptionClassifier _excClassifier;
 
 
     public CreateAlertHandler(
         IUnitOfWork uow,
-        ITelegramSender sender,
         IYahooMarketDataProvider yahoo,
-        IMediator mediator,
         IRepository<Stock> stocks,
         IReadRepository<Chat> chats,
-        IRepository<PriceAlert> alerts, 
+        IRepository<PriceAlert> alerts,
         IDbExceptionClassifier excClassifier)
     {
         _uow = uow;
-        _sender = sender;
         _yahoo = yahoo;
-        _mediator = mediator;
         _stocks = stocks;
         _chats = chats;
         _alerts = alerts;
         _excClassifier = excClassifier;
     }
 
-    public async ValueTask<Unit> Handle(CreateAlertCommand command, CancellationToken ct)
+    public async ValueTask<TelegramUpdateResultDto> Handle(CreateAlertCommand command, CancellationToken ct)
     {
-        await _sender.SendTypingAction(command.ChatId, ct);
-
-        var stockQuote = await GetValidatedStockQuote(command.Symbol);
         var chat = await GetActiveChat(command.ChatId, ct);
+        var stockQuote = await GetValidatedStockQuote(command.Symbol);
         var stock = await GetOrCreateStock(command.Symbol, stockQuote.Name, stockQuote.Currency, ct);
         var existingAlert = await GetPriceAlert(chat.Id, stock.Id, command.Direction, command.Price, ct);
 
@@ -73,7 +66,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand>
                 stock.Id,
                 command.Price,
                 command.Direction);
-            
+
             alert.Activate();
 
             await _alerts.AddAsync(alert, ct);
@@ -87,34 +80,35 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand>
         }
         catch (DbUpdateException ex) when (_excClassifier.IsUniqueConstraintViolation(ex, out var constraintName))
         {
-            if (constraintName.Contains("UX_price_alerts")) 
+            if (constraintName.Contains("UX_price_alerts"))
             {
                 throw new ValidationException("Alert already exists.");
             }
-    
+
             if (constraintName.Contains("UX_stocks_symbol"))
             {
-                throw new ApplicationLayerException("The system was updating stock data. Please try your command again."); 
+                throw new ApplicationLayerException(
+                    "The system was updating stock data. Please try your command again.");
             }
-    
+
             throw;
         }
-        
-        await _mediator.Publish(
-            new PriceAlertActivatedNotification(
-                command.ChatId,
-                command.Symbol,
-                command.Direction,
-                stockQuote.Currency,
-                command.Price
-            ),
-            ct
-        );
 
-        return Unit.Value;
+        var culture = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
+            .FirstOrDefault(c => new RegionInfo(c.Name).ISOCurrencySymbol == stockQuote.Currency);
+
+        var currencySymbol = culture != null ? new RegionInfo(culture.Name).CurrencySymbol : stockQuote.Currency;
+        var text = $"✅ Price alert set for {command.Symbol} {command.Direction} {currencySymbol}{command.Price}";
+
+        return new TelegramUpdateResultDto()
+        {
+            ChatId = command.ChatId,
+            Text = text
+        };
     }
 
-    private async ValueTask<PriceAlert?> GetPriceAlert(Guid chatId, Guid stockId, PriceDirection direction, decimal price, CancellationToken ct)
+    private async ValueTask<PriceAlert?> GetPriceAlert(Guid chatId, Guid stockId, PriceDirection direction,
+        decimal price, CancellationToken ct)
     {
         var existingAlert = await _alerts.FirstOrDefaultAsync(
             new DuplicateAlertSpec(chatId, stockId, direction, price),
@@ -134,7 +128,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand>
     {
         var chat = await _chats.FirstOrDefaultAsync(new ChatByTelegramIdSpec(chatId), ct);
         if (chat is null)
-            throw new ResourceNotFoundException("Chat not found");
+            throw new ResourceNotFoundException("Chat isn't activated.");
 
         chat.EnsureActivated();
         return chat;

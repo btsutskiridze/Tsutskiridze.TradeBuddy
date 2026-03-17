@@ -16,7 +16,6 @@ public class ActivateChatTelegramCommandHandler : ITelegramCommandHandler
 
     public string Command => TelegramCommandCatalog.Activate.Command;
     public string Description => TelegramCommandCatalog.Activate.Description;
-
     public async Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct)
     {
         var token = update.Args.FirstOrDefault();
@@ -24,7 +23,6 @@ public class ActivateChatTelegramCommandHandler : ITelegramCommandHandler
         if (string.IsNullOrWhiteSpace(token))
             throw new ValidationException("Usage: /activate <token>");
 
-        await _mediator.Send(new ActivateBotCommand(update.ChatId, token), ct);
-        return null;
+        return await _mediator.Send(new ActivateBotCommand(update.ChatId, token), ct);
     }
 }

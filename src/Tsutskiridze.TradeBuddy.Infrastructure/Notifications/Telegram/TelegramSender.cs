@@ -36,6 +36,13 @@ public class TelegramSender : ITelegramSender
 
     public async Task SendTypingAction(long chatId, CancellationToken ct = default)
     {
-        await _client.SendChatAction(chatId, ChatAction.Typing, cancellationToken: ct);
+        try
+        {
+            await _client.SendChatAction(chatId, ChatAction.Typing, cancellationToken: ct);
+        }
+        catch(Exception e)
+        {
+            _logger.LogWarning(e.Message);
+        }
     }
 }
