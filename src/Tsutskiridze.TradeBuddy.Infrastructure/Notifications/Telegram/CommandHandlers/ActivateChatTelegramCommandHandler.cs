@@ -14,9 +14,10 @@ public class ActivateChatTelegramCommandHandler : ITelegramCommandHandler
         _mediator = mediator;
     }
 
-    public string Command => "/activate";
+    public string Command => TelegramCommandCatalog.Activate.Command;
+    public string Description => TelegramCommandCatalog.Activate.Description;
 
-    public async Task Handle(TelegramUpdateDto update, CancellationToken ct)
+    public async Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct)
     {
         var token = update.Args.FirstOrDefault();
 
@@ -24,5 +25,6 @@ public class ActivateChatTelegramCommandHandler : ITelegramCommandHandler
             throw new ValidationException("Usage: /activate <token>");
 
         await _mediator.Send(new ActivateBotCommand(update.ChatId, token), ct);
+        return null;
     }
 }

@@ -5,6 +5,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandH
 public interface ITelegramCommandHandler
 {
     string Command { get; }
+    string Description { get; }
 
-    Task Handle(TelegramUpdateDto update, CancellationToken ct);
+    Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct);
 }

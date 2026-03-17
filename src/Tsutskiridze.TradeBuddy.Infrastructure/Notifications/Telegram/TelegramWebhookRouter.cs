@@ -1,5 +1,4 @@
 using System.Text;
-using Mediator;
 using Microsoft.Extensions.Logging;
 using SharedKernel;
 using SharedKernel.Validations;
@@ -12,16 +11,13 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 
 public class TelegramWebhookRouter : ITelegramWebhookRouter
 {
-    private readonly IMediator _mediator;
     private readonly IReadOnlyDictionary<string, ITelegramCommandHandler> _handlers;
     private readonly ILogger<ITelegramWebhookRouter> _logger;
 
     public TelegramWebhookRouter(
-        IMediator mediator,
         IEnumerable<ITelegramCommandHandler> handlers,
         ILogger<ITelegramWebhookRouter> logger)
     {
-        _mediator = mediator;
         _handlers = handlers.ToDictionary(x => x.Command, StringComparer.OrdinalIgnoreCase);
         _logger = logger;
     }
@@ -38,8 +34,7 @@ public class TelegramWebhookRouter : ITelegramWebhookRouter
 
         try
         {
-            await handler.Handle(update, ct);
-            return null;
+            return await handler.Handle(update, ct);
         }
         catch (Exception ex)
         {
@@ -72,7 +67,7 @@ public class TelegramWebhookRouter : ITelegramWebhookRouter
                 {
                     ChatId = chatId,
                     Text = sb.ToString(),
-                    Method = nameof(ParseMode.MarkdownV2)
+                    Method = nameof(ParseMode.Markdown)
                 };
             }
             case BaseException baseExc:

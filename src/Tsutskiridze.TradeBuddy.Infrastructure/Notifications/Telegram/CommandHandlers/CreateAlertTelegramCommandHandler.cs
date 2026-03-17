@@ -15,9 +15,10 @@ public class CreateAlertTelegramCommandHandler : ITelegramCommandHandler
         _mediator = mediator;
     }
 
-    public string Command => "/alert";
+    public string Command => TelegramCommandCatalog.Alert.Description;
+    public string Description => TelegramCommandCatalog.Alert.Description;
 
-    public async Task Handle(TelegramUpdateDto update, CancellationToken ct)
+    public async Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct)
     {
         if (update.Args.Length != 3 || !Enum.TryParse<PriceDirection>(
                 update.Args[1], true, out var direction) ||
@@ -29,5 +30,6 @@ public class CreateAlertTelegramCommandHandler : ITelegramCommandHandler
         var symbol = update.Args[0];
 
         await _mediator.Send(new CreateAlertCommand(update.ChatId, symbol, direction, price), ct);
+        return null;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using SharedKernel.Validations;
-using Tsutskiridze.TradeBuddy.Core.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.CreateAlert;
 
