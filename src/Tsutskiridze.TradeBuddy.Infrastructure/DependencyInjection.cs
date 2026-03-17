@@ -160,7 +160,6 @@ public static class DependencyInjection
 
     private static IServiceCollection AddBackgroundServices(this IServiceCollection services)
     {
-        services.AddHostedService<TelegramCommandsRegisterService>();
         services.AddHostedService<StockPriceWebSocketListener>();
 
         return services;
@@ -178,6 +177,7 @@ public static class DependencyInjection
     {
         services.AddScoped<ITelegramSender, TelegramSender>();
         services.AddScoped<ITelegramWebhookRouter, TelegramWebhookRouter>();
+        services.AddHostedService<TelegramCommandsRegistrationHostedService>();
 
         var handlers = typeof(DependencyInjection).Assembly
             .GetTypes()
