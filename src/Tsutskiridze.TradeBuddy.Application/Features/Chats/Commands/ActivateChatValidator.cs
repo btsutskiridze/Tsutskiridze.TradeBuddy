@@ -1,4 +1,4 @@
-﻿using SharedKernel.Validations;
+using SharedKernel.Validations;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands;
 
@@ -6,20 +6,22 @@ public class ActivateChatValidator : IValidator<ActivateBotCommand>
 {
     public ValueTask<ValidationResult> ValidateAsync(ActivateBotCommand obj, CancellationToken cancellationToken)
     {
+        List<ValidationError> errors = [];
+
         if (obj.ChatId == 0)
         {
-            return ValueTask.FromResult(ValidationResult.Failure([
-                new ValidationError(nameof(obj.ChatId), "chatId Required")
-            ]));
+            errors.Add(new ValidationError(nameof(obj.ChatId), "chatId Required"));
         }
         
         if (string.IsNullOrEmpty(obj.Token))
         {
-            return ValueTask.FromResult(ValidationResult.Failure([
-                new ValidationError(nameof(obj.Token), "Token Required")
-            ]));
+            errors.Add(new ValidationError(nameof(obj.Token), "Token Required"));
         }
         
-        return ValueTask.FromResult(ValidationResult.Success());
+        return ValueTask.FromResult(
+            errors.Count == 0
+                ? ValidationResult.Success()
+                : ValidationResult.Failure(errors)
+        );
     }
 }

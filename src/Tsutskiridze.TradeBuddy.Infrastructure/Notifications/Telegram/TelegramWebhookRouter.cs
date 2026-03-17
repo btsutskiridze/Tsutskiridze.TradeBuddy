@@ -1,7 +1,9 @@
-﻿using Mediator;
+using System.Text;
+using Mediator;
 using Microsoft.Extensions.Logging;
 using SharedKernel;
 using SharedKernel.Validations;
+using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
@@ -39,25 +41,44 @@ public class TelegramWebhookRouter : ITelegramWebhookRouter
             await handler.Handle(update, ct);
             return null;
         }
-        catch (Exception ex) when (ex is BaseException or ValidationException)
-        {
-            return CreateResponse(update.ChatId, ex.Message);
-        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to process Telegram command {Command} for chat {ChatId}",
-                update.Command, update.ChatId);
-
-            return CreateResponse(update.ChatId, "Internal server error.");
+            _logger.LogError(ex, "Failed to route telegram command {Command}", update.Command);
+            return CreateResponse(update.ChatId, ex);
         }
     }
-    
-    private TelegramUpdateResultDto CreateResponse(long chatId, string message)
+
+    private static TelegramUpdateResultDto CreateResponse(long chatId, string text)
     {
-        return new TelegramUpdateResultDto()
+        return new TelegramUpdateResultDto
         {
             ChatId = chatId,
-            Text = message
+            Text = text
         };
+    }
+
+    private TelegramUpdateResultDto CreateResponse(long chatId, Exception ex)
+    {
+        switch (ex)
+        {
+            case ValidationException exc:
+            {
+                StringBuilder sb = new();
+                sb.AppendLine(exc.Message);
+                foreach (var err in exc.Errors)
+                    sb.AppendLine($"- {err.ErrorMessage}");
+            
+                return new TelegramUpdateResultDto()
+                {
+                    ChatId = chatId,
+                    Text = sb.ToString(),
+                    Method = nameof(ParseMode.MarkdownV2)
+                };
+            }
+            case BaseException baseExc:
+                return CreateResponse(chatId, baseExc.Message);
+            default:
+                return CreateResponse(chatId, "Internal Server Error");
+        }
     }
 }
