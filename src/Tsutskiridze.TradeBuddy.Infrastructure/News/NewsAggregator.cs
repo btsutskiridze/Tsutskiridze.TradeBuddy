@@ -48,7 +48,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.News
 
         public async Task<List<GoogleNewsItemDto>?> GetGoogleNews(string symbol, int? limit = null)
         {
-            return await _googleScraper.GetNewsAsync(symbol, limit);
+            return null;
+            // return await _googleScraper.GetNewsAsync(symbol, limit);
         }
 
         public async Task<List<RedditPostDto>?> GetRedditNews(string symbol, RedditSortType sort, int? limit = null)

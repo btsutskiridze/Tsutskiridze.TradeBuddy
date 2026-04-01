@@ -82,13 +82,11 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
                 var analysis = await GenerateAiStockAnalysis(stock);
 
                 _logger.LogInformation("Sending stock analysis to Telegram");
-                await SendTelegramMessage(analysis);
 
                 return new StockAnalysisExecutionResultDto
                 {
                     Stock = stock,
-                    Analysis = analysis,
-                    TelegramMessage = CreateStockTelegramMessage(analysis)
+                    Analysis = analysis
                 };
             }
             catch (Exception ex)
@@ -134,41 +132,6 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
             {
                 watch.Stop();
             }
-        }
-
-        private async Task SendTelegramMessage(StockAnalysisResultDto analysis)
-        {
-            var message = CreateStockTelegramMessage(analysis);
-            await _telegramBot.SendMessage(_options.GroupChatID, message);
-        }
-
-        public async Task SendStockAnalysisToTelegram(long chatID, StockAnalysisResultDto analysis)
-        {
-            try
-            {
-                var message = CreateStockTelegramMessage(analysis);
-                await _telegramBot.SendMessage(chatID, message);
-                _logger.LogInformation("Stock analysis sent to Telegram");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error sending stock analysis to Telegram");
-                await _telegramBot.SendMessage(chatID, "Failed to send stock analysis");
-            }
-        }
-
-        public static string CreateStockTelegramMessage(StockAnalysisResultDto analysis)
-        {
-            // Build the message using string interpolation
-            var message = $"🚨 Stock Alert: {analysis.Symbol} 🚨\n" +
-                          $"- 📈 Current Price: {analysis.price}\n" +
-                          $"- 📊 50-day Avg: {analysis.bench.avg50} | Year High: {analysis.bench.yearHigh}\n" +
-                          $"- 🔔 Trading Volume: {analysis.volAnalysis}\n" +
-                          $"- 📰 Overall News: {analysis.newsOverall.conf} Positive\n" +
-                          $"- 🤖 AI Analysis: {analysis.ai.rec} ({analysis.ai.conf} Confidence)\n" +
-                          $"- ⏱️ Analysis Duration: {analysis.ExecutionTime:0.00}s";
-
-            return message;
         }
     }
 }

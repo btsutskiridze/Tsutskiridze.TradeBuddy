@@ -63,7 +63,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.TelegramBot.Handlers
             await _telegramClient.SendChatAction(message.Chat.Id, ChatAction.Typing);
 
             var symbol = parts[1].ToUpperInvariant();
-            if (!await _scraper.StockSymbolExits(symbol))
+            if (!await _scraper.StockSymbolExists(symbol))
             {
                 await _telegramClient.SendMessage(message.Chat.Id,
                     $"Stock symbol '{symbol}' not found.");
