@@ -16,7 +16,7 @@ public static class TelegramCommandCatalog
         new("/alert", "Create a stock alert. e.g: /alert NVDA above 300");
 
     public static readonly TelegramCommandDefinition MyAlerts = 
-        new("/myAlerts", "List all your alerts e.g: /myAlerts");
+        new("/myalerts", "List all your alerts e.g: /myAlerts");
 
     public static readonly TelegramCommandDefinition StockQuote = 
         new("/quote", "Get stock analysis for a symbol. e.g: /quote NVDA");

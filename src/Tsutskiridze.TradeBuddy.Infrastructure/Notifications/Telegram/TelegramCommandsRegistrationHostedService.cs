@@ -19,7 +19,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram
         public async Task StartAsync(CancellationToken ct)
         {
             var commands = TelegramCommandCatalog.All
-                .Select(x => new BotCommand(x.Command, x.Description)).ToList();
+                .Select(x => new BotCommand(x.Command[1..].ToLowerInvariant(), x.Description)).ToList();
 
             // await _bot.DeleteMyCommands(cancellationToken: ct);
             await _bot.SetMyCommands(commands, cancellationToken: ct);
