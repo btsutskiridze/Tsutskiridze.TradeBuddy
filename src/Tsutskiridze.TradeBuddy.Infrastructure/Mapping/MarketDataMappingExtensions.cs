@@ -72,3 +72,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Mapping
         }
     }
 }
+

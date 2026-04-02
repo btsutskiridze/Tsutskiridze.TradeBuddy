@@ -58,3 +58,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.News.Finnhub
         }
     }
 }
+

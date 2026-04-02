@@ -7,3 +7,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Utilities.Yahoo
         Task<string> GetHtmlContentWithCookieBypass(HttpClient client, string url, ILogger logger);
     }
 }
+

@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.Gemini
+namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.Gemini
 {
     public class GeminiOptions
     {
@@ -7,3 +7,4 @@
         public string ModelID { get; set; } = string.Empty;
     }
 }
+

@@ -79,3 +79,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVanta
         }
     }
 }
+

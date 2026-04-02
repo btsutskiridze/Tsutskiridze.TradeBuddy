@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram
 {
     public class TelegramClientOptions
     {
@@ -6,3 +6,4 @@
         public string BotToken { get; set; } = string.Empty;
     }
 }
+

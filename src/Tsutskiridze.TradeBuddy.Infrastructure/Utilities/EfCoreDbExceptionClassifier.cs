@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 

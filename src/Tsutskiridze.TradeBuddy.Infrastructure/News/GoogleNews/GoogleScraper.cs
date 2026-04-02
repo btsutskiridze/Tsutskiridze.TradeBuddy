@@ -142,3 +142,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.News.GoogleNews
         }
     }
 }
+

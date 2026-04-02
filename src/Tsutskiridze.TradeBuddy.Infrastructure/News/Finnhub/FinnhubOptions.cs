@@ -7,3 +7,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.News.Finnhub
         public string ApiKey { get; set; } = string.Empty;
     }
 }
+

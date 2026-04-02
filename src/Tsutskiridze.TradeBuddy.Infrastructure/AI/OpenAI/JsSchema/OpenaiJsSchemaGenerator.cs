@@ -26,3 +26,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema
         }
     }
 }
+

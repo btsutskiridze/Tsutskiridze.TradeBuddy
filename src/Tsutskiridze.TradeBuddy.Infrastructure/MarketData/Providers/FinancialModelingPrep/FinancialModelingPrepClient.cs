@@ -33,3 +33,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialM
         }
     }
 }
+

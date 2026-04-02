@@ -1,4 +1,4 @@
-﻿using SharedKernel;
+using SharedKernel;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
 

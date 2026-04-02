@@ -12,3 +12,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.News.Reddit
         public string UserAgent { get; set; } = string.Empty;
     }
 }
+

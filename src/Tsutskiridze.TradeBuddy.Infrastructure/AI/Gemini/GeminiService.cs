@@ -69,3 +69,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.Gemini
 
     }
 }
+

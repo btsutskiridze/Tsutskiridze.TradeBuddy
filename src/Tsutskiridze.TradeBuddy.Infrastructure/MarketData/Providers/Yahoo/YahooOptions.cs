@@ -6,3 +6,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.Yahoo
         public string BaseUrl { get; set; } = string.Empty;
     }
 }
+

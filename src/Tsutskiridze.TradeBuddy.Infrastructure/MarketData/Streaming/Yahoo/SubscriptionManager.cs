@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -75,3 +75,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo
         }
     }
 }
+

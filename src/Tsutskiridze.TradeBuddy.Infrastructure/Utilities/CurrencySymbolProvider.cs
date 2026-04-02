@@ -21,3 +21,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Utilities
         }
     }
 }
+

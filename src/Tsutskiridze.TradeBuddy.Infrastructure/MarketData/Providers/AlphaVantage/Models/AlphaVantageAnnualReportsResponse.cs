@@ -5,3 +5,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVanta
         public List<AlphaVantageAnnualReportResponse> AnnualReports { get; set; }
     }
 }
+

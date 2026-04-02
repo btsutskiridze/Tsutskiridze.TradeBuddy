@@ -26,3 +26,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialM
         public string Timestamp { get; set; }
     }
 }
+

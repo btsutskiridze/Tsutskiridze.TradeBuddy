@@ -7,3 +7,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVanta
         public string BaseUrl { get; set; } = string.Empty;
     }
 }
+

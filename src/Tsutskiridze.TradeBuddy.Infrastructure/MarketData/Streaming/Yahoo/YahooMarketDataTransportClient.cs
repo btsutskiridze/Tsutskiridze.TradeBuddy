@@ -80,3 +80,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo
         }
     }
 }
+

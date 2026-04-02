@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Schema;
+using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -64,4 +64,5 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema
         }
     }
 }
+
 

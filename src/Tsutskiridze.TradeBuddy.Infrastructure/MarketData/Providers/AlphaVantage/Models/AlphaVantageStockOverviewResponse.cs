@@ -10,3 +10,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVanta
         public string SharesOutstanding { get; set; }
     }
 }
+

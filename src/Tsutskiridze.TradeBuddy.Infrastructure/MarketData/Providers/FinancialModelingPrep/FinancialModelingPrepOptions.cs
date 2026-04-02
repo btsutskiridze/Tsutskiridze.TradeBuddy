@@ -7,3 +7,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialM
         public string BaseUrl { get; set; } = string.Empty;
     }
 }
+

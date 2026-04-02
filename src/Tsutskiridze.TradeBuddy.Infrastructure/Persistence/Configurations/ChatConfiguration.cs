@@ -14,3 +14,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
         }
     }
 }
+

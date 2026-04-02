@@ -1,4 +1,4 @@
-﻿using Mediator;
+using Mediator;
 using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.CreateAlert;

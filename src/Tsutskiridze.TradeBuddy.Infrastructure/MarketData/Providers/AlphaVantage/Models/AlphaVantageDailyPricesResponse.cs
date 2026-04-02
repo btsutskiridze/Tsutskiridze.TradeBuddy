@@ -8,3 +8,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVanta
         public Dictionary<string, AlphaVantageStockDayPriceResponse> Prices { get; set; }
     }
 }
+

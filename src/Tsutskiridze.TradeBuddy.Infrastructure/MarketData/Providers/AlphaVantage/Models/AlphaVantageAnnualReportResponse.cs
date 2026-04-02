@@ -12,3 +12,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVanta
         public string DepreciationAndAmortization { get; set; }
     }
 }
+

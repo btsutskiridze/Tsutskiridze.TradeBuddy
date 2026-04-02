@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI
+namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI
 {
     public class OpenAIOptions
     {
@@ -7,3 +7,4 @@
         public string ModelID { get; set; } = string.Empty;
     }
 }
+

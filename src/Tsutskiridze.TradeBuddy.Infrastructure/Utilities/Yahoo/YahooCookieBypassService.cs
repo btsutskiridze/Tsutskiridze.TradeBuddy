@@ -86,3 +86,4 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Utilities.Yahoo
         }
     }
 }
+

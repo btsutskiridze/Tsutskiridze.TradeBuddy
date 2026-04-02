@@ -20,6 +20,11 @@ using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.AlphaVantage;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.FinancialModelingPrep;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.Yahoo;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.Yahoo.Shared.Abstractions;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.Yahoo.Shared.Abstractions.Parsing;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.Yahoo.Shared.Helpers;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.Yahoo.Shared.Loading;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Providers.Yahoo.Parsing;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.News.Finnhub;
@@ -117,8 +122,15 @@ public static class DependencyInjection
         });
 
         services.AddHttpClient<IGoogleNewsProvider, GoogleScraper>();
-        services.AddHttpClient<IYahooMarketDataProvider, YahooStockScraper>(ConfigureYahooClient);
-        services.AddHttpClient<IYahooNewsProvider, YahooNewsScraper>(ConfigureYahooClient);
+        services.AddTransient<IYahooPayloadExtractor, YahooPayloadExtractor>();
+        services.AddTransient<IYahooJsonNavigator, YahooJsonNavigator>();
+        services.AddTransient<IYahooQuotePageParser, YahooQuotePageParser>();
+        services.AddTransient<IYahooHistoryPageParser, YahooHistoryPageParser>();
+        services.AddTransient<IYahooKeyStatisticsPageParser, YahooKeyStatisticsPageParser>();
+        services.AddTransient<IYahooFinancialsPageParser, YahooFinancialsPageParser>();
+        services.AddHttpClient<IYahooPageLoader, YahooPageLoader>(ConfigureYahooClient);
+        services.AddTransient<IYahooMarketDataProvider, YahooStockScraper>();
+        services.AddTransient<IYahooNewsProvider, YahooNewsScraper>();
         services.AddTransient<IYahooCookieBypassService, YahooCookieBypassService>();
 
         services.AddTransient<INewsAggregator, NewsAggregator>();
