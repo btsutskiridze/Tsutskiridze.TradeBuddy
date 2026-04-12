@@ -2,9 +2,7 @@
 using System.Text;
 using Mediator;
 using SharedKernel;
-using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Exceptions;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
@@ -15,9 +13,11 @@ using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.MyAlerts;
 
-public sealed record MyAlertsCommand(long ChatId) : ICommand<TelegramUpdateResultDto?>;
+public sealed record MyAlertsCommand(long ChatId) : ICommand<MyAlertsResult>;
 
-public sealed class MyAlertsHandler : ICommandHandler<MyAlertsCommand, TelegramUpdateResultDto?>
+public sealed record MyAlertsResult(string Message);
+
+public sealed class MyAlertsHandler : ICommandHandler<MyAlertsCommand, MyAlertsResult>
 {
     private readonly IReadRepository<Chat> _chats;
     private readonly IReadRepository<Stock> _stocks;
@@ -36,7 +36,7 @@ public sealed class MyAlertsHandler : ICommandHandler<MyAlertsCommand, TelegramU
         _currency = currency;
     }
 
-    public async ValueTask<TelegramUpdateResultDto?> Handle(MyAlertsCommand command, CancellationToken ct)
+    public async ValueTask<MyAlertsResult> Handle(MyAlertsCommand command, CancellationToken ct)
     {
         var chatId = await _chats.FirstOrDefaultAsync(new ActiveChatIdByTelegramId(command.ChatId), ct)
                      ?? throw new ResourceNotFoundException("Chat isn't Activated.");
@@ -63,11 +63,6 @@ public sealed class MyAlertsHandler : ICommandHandler<MyAlertsCommand, TelegramU
                 .Select((a, i) => $"{i + 1}. {a}"))
             .ToString();
         
-        return new TelegramUpdateResultDto()
-        {
-            ChatId = command.ChatId,
-            Text = text,
-            ParseMode = nameof(ParseMode.Markdown)
-        };
+        return new MyAlertsResult(text);
     }
 }

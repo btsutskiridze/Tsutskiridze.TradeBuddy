@@ -1,4 +1,5 @@
 using Mediator;
+using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.MyAlerts;
 
@@ -17,6 +18,13 @@ public class MyAlertsTelegramCommandHandler : ITelegramCommandHandler
     public string Description => TelegramCommandCatalog.MyAlerts.Description;
     public async Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct)
     {
-        return await _mediator.Send(new MyAlertsCommand(update.ChatId), ct);
+        var result = await _mediator.Send(new MyAlertsCommand(update.ChatId), ct);
+
+        return new TelegramUpdateResultDto
+        {
+            ChatId = update.ChatId,
+            Text = result.Message,
+            ParseMode = nameof(ParseMode.Markdown)
+        };
     }
 }
