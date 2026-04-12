@@ -1,16 +1,16 @@
 ﻿using Mediator;
 using SharedKernel;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Exceptions;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands;
 
-public record ActivateBotCommand(long ChatId, string Token) : ICommand<TelegramUpdateResultDto>;
+public sealed record ActivateChatCommand(long ChatId, string Token) : ICommand<ActivateChatResult>;
 
-public sealed class ActivateChatHandler : ICommandHandler<ActivateBotCommand, TelegramUpdateResultDto>
+public sealed record ActivateChatResult(string Message);
+
+public sealed class ActivateChatHandler : ICommandHandler<ActivateChatCommand, ActivateChatResult>
 {
     private readonly IUnitOfWork _uow;
     private readonly IRepository<Chat> _repo;
@@ -21,7 +21,7 @@ public sealed class ActivateChatHandler : ICommandHandler<ActivateBotCommand, Te
         _repo = repo;
     }
 
-    public async ValueTask<TelegramUpdateResultDto> Handle(ActivateBotCommand command,
+    public async ValueTask<ActivateChatResult> Handle(ActivateChatCommand command,
         CancellationToken cancellationToken)
     {
         var chat = await _repo.FirstOrDefaultAsync(new ChatByActivationTokenSpec(command.Token), cancellationToken)
@@ -30,10 +30,6 @@ public sealed class ActivateChatHandler : ICommandHandler<ActivateBotCommand, Te
         chat.Activate(command.ChatId);
         await _uow.SaveChangesAsync(cancellationToken);
 
-        return new TelegramUpdateResultDto()
-        {
-            ChatId = command.ChatId,
-            Text = "StockBuddy Activated Successfully"
-        };
+        return new ActivateChatResult("StockBuddy Activated Successfully");
     }
 }

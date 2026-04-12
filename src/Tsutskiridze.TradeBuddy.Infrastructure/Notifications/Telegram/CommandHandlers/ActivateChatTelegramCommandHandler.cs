@@ -23,6 +23,12 @@ public class ActivateChatTelegramCommandHandler : ITelegramCommandHandler
         if (string.IsNullOrWhiteSpace(token))
             throw new ValidationException("Usage: /activate <token>");
 
-        return await _mediator.Send(new ActivateBotCommand(update.ChatId, token), ct);
+        var result = await _mediator.Send(new ActivateChatCommand(update.ChatId, token), ct);
+
+        return new TelegramUpdateResultDto
+        {
+            ChatId = update.ChatId,
+            Text = result.Message
+        };
     }
 }

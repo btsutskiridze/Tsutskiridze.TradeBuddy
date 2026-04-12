@@ -2,9 +2,9 @@ using SharedKernel.Validations;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands;
 
-public class ActivateChatValidator : IValidator<ActivateBotCommand>
+public sealed class ActivateChatValidator : IValidator<ActivateChatCommand>
 {
-    public ValueTask<ValidationResult> ValidateAsync(ActivateBotCommand obj, CancellationToken cancellationToken)
+    public ValueTask<ValidationResult> ValidateAsync(ActivateChatCommand obj, CancellationToken cancellationToken)
     {
         List<ValidationError> errors = [];
 
@@ -13,7 +13,7 @@ public class ActivateChatValidator : IValidator<ActivateBotCommand>
             errors.Add(new ValidationError(nameof(obj.ChatId), "chatId Required"));
         }
         
-        if (string.IsNullOrEmpty(obj.Token))
+        if (string.IsNullOrWhiteSpace(obj.Token))
         {
             errors.Add(new ValidationError(nameof(obj.Token), "Token Required"));
         }
