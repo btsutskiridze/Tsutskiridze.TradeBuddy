@@ -10,7 +10,6 @@
     </Folder>
     <Folder Name="/solution-items/">
         <File Path="docker-compose.yml" />
-        <File Path=".cursor/plans/ddd_layer_reorganization_1fad4d37.plan.md" />
         <File Path=".dockerignore" />
         <File Path=".env" />
         <File Path=".gitattributes" />
@@ -20,6 +19,7 @@
         <File Path="Jenkinsfile" />
         <File Path="README.md" />
         <File Path="test.json" />
+        <File Path="AGENTS.md" />
     </Folder>
     <Folder Name="/src/">
         <Project Path="SharedKernel/SharedKernel.csproj" />
