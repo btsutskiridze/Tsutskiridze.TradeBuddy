@@ -1,6 +1,6 @@
 ﻿namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
-public sealed record TelegramUpdateDto(
+public sealed record TelegramMessageRequest(
     long ChatId,
     string? Text,
     string? Command,

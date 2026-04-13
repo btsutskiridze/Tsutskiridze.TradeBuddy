@@ -18,7 +18,7 @@ public class RemoveAlertTelegramCommandHandler : ITelegramCommandHandler
     public string Command => TelegramCommandCatalog.RemoveAlert.Command;
     public string Description => TelegramCommandCatalog.RemoveAlert.Description;
 
-    public async Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct)
+    public async Task<TelegramMessageResponse?> Handle(TelegramMessageRequest update, CancellationToken ct)
     {
         if (update.Args.Length != 3 || !Enum.TryParse<PriceDirection>(
                 update.Args[1], true, out var direction) ||
@@ -31,7 +31,7 @@ public class RemoveAlertTelegramCommandHandler : ITelegramCommandHandler
 
         var result = await _mediator.Send(new RemoveAlertCommand(update.ChatId, symbol, direction, price), ct);
         
-        return new TelegramUpdateResultDto
+        return new TelegramMessageResponse
         {
             ChatId = update.ChatId,
             Text = result.Message

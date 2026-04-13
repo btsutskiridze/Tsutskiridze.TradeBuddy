@@ -27,7 +27,7 @@ public class TelegramWebhookRouter : ITelegramWebhookRouter
         _handlers = handlers.ToDictionary(x => x.Command, StringComparer.OrdinalIgnoreCase);
     }
 
-    public async Task<TelegramUpdateResultDto?> RouteAsync(TelegramUpdateDto update, CancellationToken ct)
+    public async Task<TelegramMessageResponse?> RouteAsync(TelegramMessageRequest update, CancellationToken ct)
     {
         await _sender.SendTypingAction(update.ChatId, ct);
         
@@ -52,16 +52,16 @@ public class TelegramWebhookRouter : ITelegramWebhookRouter
         }
     }
 
-    private static TelegramUpdateResultDto CreateResponse(long chatId, string text)
+    private static TelegramMessageResponse CreateResponse(long chatId, string text)
     {
-        return new TelegramUpdateResultDto
+        return new TelegramMessageResponse
         {
             ChatId = chatId,
             Text = text
         };
     }
 
-    private static TelegramUpdateResultDto CreateResponse(long chatId, Exception ex)
+    private static TelegramMessageResponse CreateResponse(long chatId, Exception ex)
     {
         switch (ex)
         {
@@ -72,7 +72,7 @@ public class TelegramWebhookRouter : ITelegramWebhookRouter
                 foreach (var err in exc.Errors)
                     sb.AppendLine($"- {err.ErrorMessage}");
             
-                return new TelegramUpdateResultDto()
+                return new TelegramMessageResponse()
                 {
                     ChatId = chatId,
                     Text = sb.ToString(),

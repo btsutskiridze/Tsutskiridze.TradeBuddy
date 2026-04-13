@@ -7,5 +7,5 @@ public interface ITelegramCommandHandler
     string Command { get; }
     string Description { get; }
 
-    Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct);
+    Task<TelegramMessageResponse?> Handle(TelegramMessageRequest update, CancellationToken ct);
 }

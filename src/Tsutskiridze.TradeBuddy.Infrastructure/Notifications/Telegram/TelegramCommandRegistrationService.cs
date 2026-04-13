@@ -5,12 +5,12 @@ using Telegram.Bot.Types;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram
 {
-    public class TelegramCommandsRegistrationHostedService : IHostedService
+    public class TelegramCommandRegistrationService : IHostedService
     {
         private readonly ITelegramBotClient _bot;
-        private readonly ILogger<TelegramCommandsRegistrationHostedService> _logger;
+        private readonly ILogger<TelegramCommandRegistrationService> _logger;
 
-        public TelegramCommandsRegistrationHostedService(ITelegramBotClient bot, ILogger<TelegramCommandsRegistrationHostedService> logger)
+        public TelegramCommandRegistrationService(ITelegramBotClient bot, ILogger<TelegramCommandRegistrationService> logger)
         {
             _bot = bot;
             _logger = logger;

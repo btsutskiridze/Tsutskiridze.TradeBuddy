@@ -16,11 +16,11 @@ public class MyAlertsTelegramCommandHandler : ITelegramCommandHandler
     
     public string Command => TelegramCommandCatalog.MyAlerts.Command;
     public string Description => TelegramCommandCatalog.MyAlerts.Description;
-    public async Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct)
+    public async Task<TelegramMessageResponse?> Handle(TelegramMessageRequest update, CancellationToken ct)
     {
         var result = await _mediator.Send(new MyAlertsCommand(update.ChatId), ct);
 
-        return new TelegramUpdateResultDto
+        return new TelegramMessageResponse
         {
             ChatId = update.ChatId,
             Text = result.Message,

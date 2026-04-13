@@ -2,7 +2,7 @@
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
-public class TelegramUpdateResultDto
+public class TelegramMessageResponse
 {
     [JsonPropertyName("method")]
     public string Method = "sendMessage";

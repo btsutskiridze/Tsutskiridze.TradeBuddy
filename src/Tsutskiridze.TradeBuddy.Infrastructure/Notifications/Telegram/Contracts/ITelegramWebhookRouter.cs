@@ -2,5 +2,5 @@
 
 public interface ITelegramWebhookRouter
 {
-    Task<TelegramUpdateResultDto?> RouteAsync(TelegramUpdateDto update, CancellationToken ct);
+    Task<TelegramMessageResponse?> RouteAsync(TelegramMessageRequest update, CancellationToken ct);
 }

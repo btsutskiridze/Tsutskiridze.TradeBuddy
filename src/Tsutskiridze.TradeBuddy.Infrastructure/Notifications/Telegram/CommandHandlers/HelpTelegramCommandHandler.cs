@@ -7,12 +7,12 @@ public class HelpTelegramCommandHandler : ITelegramCommandHandler
 {
     public string Command => TelegramCommandCatalog.Help.Command;
     public string Description => TelegramCommandCatalog.Help.Description;
-    public Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct)
+    public Task<TelegramMessageResponse?> Handle(TelegramMessageRequest update, CancellationToken ct)
     {
         var helpText = string.Join("\n",
             TelegramCommandCatalog.All.Select((h, i) => $"{i + 1}. *{h.Command}* � {h.Description}"));
 
-        return Task.FromResult<TelegramUpdateResultDto?>(new TelegramUpdateResultDto()
+        return Task.FromResult<TelegramMessageResponse?>(new TelegramMessageResponse()
         {
             ChatId = update.ChatId,
             Text = helpText,

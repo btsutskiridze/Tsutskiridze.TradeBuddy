@@ -25,7 +25,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
             return result is null ? Ok() : Ok(result);
         }
 
-        private static TelegramUpdateDto ExtractTelegramUpdateDto(TelegramWebhookRequest request)
+        private static TelegramMessageRequest ExtractTelegramUpdateDto(TelegramWebhookRequest request)
         {
             var text = request.Message?.Text;
 
@@ -39,7 +39,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
                 args = parts.Skip(1).ToArray();
             }
 
-            var update = new TelegramUpdateDto(
+            var update = new TelegramMessageRequest(
                 request.Message!.Chat.Id,
                 text,
                 command,

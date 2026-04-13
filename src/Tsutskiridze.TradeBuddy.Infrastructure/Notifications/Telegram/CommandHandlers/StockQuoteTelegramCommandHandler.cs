@@ -20,7 +20,7 @@ public class StockQuoteTelegramCommandHandler : ITelegramCommandHandler
     public string Command => TelegramCommandCatalog.StockQuote.Command;
     public string Description => TelegramCommandCatalog.StockQuote.Description;
 
-    public async Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct)
+    public async Task<TelegramMessageResponse?> Handle(TelegramMessageRequest update, CancellationToken ct)
     {
         var symbol = update.Args.FirstOrDefault();
 
@@ -32,7 +32,7 @@ public class StockQuoteTelegramCommandHandler : ITelegramCommandHandler
         if (!string.IsNullOrWhiteSpace(result.AnalysisMessage))
             await _sender.SendMessage(update.ChatId, result.AnalysisMessage, ct);
 
-        return new TelegramUpdateResultDto
+        return new TelegramMessageResponse
         {
             ChatId = update.ChatId,
             Text = result.SummaryMessage

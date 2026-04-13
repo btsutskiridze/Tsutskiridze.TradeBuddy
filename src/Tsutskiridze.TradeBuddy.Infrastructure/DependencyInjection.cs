@@ -190,7 +190,7 @@ public static class DependencyInjection
     {
         services.AddScoped<ITelegramSender, TelegramSender>();
         services.AddScoped<ITelegramWebhookRouter, TelegramWebhookRouter>();
-        services.AddHostedService<TelegramCommandsRegistrationHostedService>();
+        services.AddHostedService<TelegramCommandRegistrationService>();
 
         var handlers = typeof(DependencyInjection).Assembly
             .GetTypes()

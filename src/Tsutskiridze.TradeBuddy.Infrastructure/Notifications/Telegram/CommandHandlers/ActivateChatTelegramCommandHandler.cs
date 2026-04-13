@@ -16,7 +16,7 @@ public class ActivateChatTelegramCommandHandler : ITelegramCommandHandler
 
     public string Command => TelegramCommandCatalog.Activate.Command;
     public string Description => TelegramCommandCatalog.Activate.Description;
-    public async Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct)
+    public async Task<TelegramMessageResponse?> Handle(TelegramMessageRequest update, CancellationToken ct)
     {
         var token = update.Args.FirstOrDefault();
 
@@ -25,7 +25,7 @@ public class ActivateChatTelegramCommandHandler : ITelegramCommandHandler
 
         var result = await _mediator.Send(new ActivateChatCommand(update.ChatId, token), ct);
 
-        return new TelegramUpdateResultDto
+        return new TelegramMessageResponse
         {
             ChatId = update.ChatId,
             Text = result.Message
