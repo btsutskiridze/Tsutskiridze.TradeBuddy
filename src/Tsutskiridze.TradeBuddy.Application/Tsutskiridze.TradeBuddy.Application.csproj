@@ -19,11 +19,4 @@
     <ItemGroup>
         <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Core\Tsutskiridze.TradeBuddy.Core.csproj"/>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Features\Chats\EventHandlers\" />
-      <Folder Include="Features\PriceAlerts\NotificationHandlers\" />
-      <Folder Include="Notifications\PriceAlerts\" />
-    </ItemGroup>
-
 </Project>
