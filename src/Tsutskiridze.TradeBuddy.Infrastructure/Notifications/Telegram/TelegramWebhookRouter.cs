@@ -4,8 +4,8 @@ using SharedKernel;
 using SharedKernel.Validations;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 

@@ -33,6 +33,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.News.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.News.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 using Tsutskiridze.TradeBuddy.Infrastructure.Utilities;

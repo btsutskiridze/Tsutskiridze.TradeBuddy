@@ -6,7 +6,6 @@ using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Exceptions;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
@@ -19,9 +18,11 @@ using Tsutskiridze.TradeBuddy.Core.Enums;
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.CreateAlert;
 
 public record CreateAlertCommand(long ChatId, string Symbol, PriceDirection Direction, decimal Price)
-    : ICommand<TelegramUpdateResultDto>;
+    : ICommand<CreateAlertResult>;
 
-public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, TelegramUpdateResultDto>
+public sealed record CreateAlertResult(string Message);
+
+public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAlertResult>
 {
     private readonly IUnitOfWork _uow;
     private readonly IRepository<Stock> _stocks;
@@ -47,7 +48,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, TelegramUp
         _excClassifier = excClassifier;
     }
 
-    public async ValueTask<TelegramUpdateResultDto> Handle(CreateAlertCommand command, CancellationToken ct)
+    public async ValueTask<CreateAlertResult> Handle(CreateAlertCommand command, CancellationToken ct)
     {
         var chat = await GetActiveChat(command.ChatId, ct);
         var stockQuote = await GetValidatedStockQuote(command.Symbol);
@@ -100,11 +101,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, TelegramUp
         var currencySymbol = culture != null ? new RegionInfo(culture.Name).CurrencySymbol : stockQuote.Currency;
         var text = $"✅ Price alert set for {command.Symbol} {command.Direction} {currencySymbol}{command.Price}";
 
-        return new TelegramUpdateResultDto()
-        {
-            ChatId = command.ChatId,
-            Text = text
-        };
+        return new CreateAlertResult(text);
     }
 
     private async ValueTask<PriceAlert?> GetPriceAlert(Guid chatId, Guid stockId, PriceDirection direction,

@@ -1,17 +1,20 @@
 using Mediator;
 using SharedKernel.Validations;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
-using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Commands.StockQuote;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
 
 public class StockQuoteTelegramCommandHandler : ITelegramCommandHandler
 {
     private readonly IMediator _mediator;
+    private readonly ITelegramSender _sender;
 
-    public StockQuoteTelegramCommandHandler(IMediator mediator)
+    public StockQuoteTelegramCommandHandler(IMediator mediator, ITelegramSender sender)
     {
         _mediator = mediator;
+        _sender = sender;
     }
 
     public string Command => TelegramCommandCatalog.StockQuote.Command;
@@ -22,8 +25,17 @@ public class StockQuoteTelegramCommandHandler : ITelegramCommandHandler
         var symbol = update.Args.FirstOrDefault();
 
         if (string.IsNullOrWhiteSpace(symbol))
-            throw new ValidationException("Usage: /activate <token>");
+            throw new ValidationException("Usage: /quote <symbol>");
 
-        return await _mediator.Send(new StockQuoteCommand(update.ChatId, symbol), ct);
+        var result = await _mediator.Send(new StockQuoteCommand(update.ChatId, symbol), ct);
+
+        if (!string.IsNullOrWhiteSpace(result.AnalysisMessage))
+            await _sender.SendMessage(update.ChatId, result.AnalysisMessage, ct);
+
+        return new TelegramUpdateResultDto
+        {
+            ChatId = update.ChatId,
+            Text = result.SummaryMessage
+        };
     }
 }

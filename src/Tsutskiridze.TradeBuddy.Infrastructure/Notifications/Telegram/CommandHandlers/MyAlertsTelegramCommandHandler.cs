@@ -1,7 +1,8 @@
 using Mediator;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.MyAlerts;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
 

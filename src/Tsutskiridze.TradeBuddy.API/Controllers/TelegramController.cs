@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tsutskiridze.TradeBuddy.API.Contracts.Telegram;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
 namespace Tsutskiridze.TradeBuddy.API.Controllers
 {

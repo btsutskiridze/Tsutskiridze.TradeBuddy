@@ -1,5 +1,5 @@
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
 
@@ -10,7 +10,7 @@ public class HelpTelegramCommandHandler : ITelegramCommandHandler
     public Task<TelegramUpdateResultDto?> Handle(TelegramUpdateDto update, CancellationToken ct)
     {
         var helpText = string.Join("\n",
-            TelegramCommandCatalog.All.Select((h, i) => $"{i + 1}. *{h.Command}* — {h.Description}"));
+            TelegramCommandCatalog.All.Select((h, i) => $"{i + 1}. *{h.Command}* ï¿½ {h.Description}"));
 
         return Task.FromResult<TelegramUpdateResultDto?>(new TelegramUpdateResultDto()
         {

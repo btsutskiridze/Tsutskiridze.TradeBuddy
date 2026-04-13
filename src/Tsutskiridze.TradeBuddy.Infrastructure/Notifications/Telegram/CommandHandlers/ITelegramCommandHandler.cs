@@ -1,4 +1,4 @@
-using Tsutskiridze.TradeBuddy.Application.DTOs.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
 
