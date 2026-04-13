@@ -10,7 +10,7 @@ public static class DependencyInjection
     {
         services.AddTransient<StockAnalysisPromptBuilder>();
         services.AddTransient<StockAnalysisGenerator>();
-        services.AddSingleton<PricingUpdatedIntegrationEventHandler>();
+        // services.AddSingleton<PricingUpdatedIntegrationEventHandler>();
         
         return services;
     }

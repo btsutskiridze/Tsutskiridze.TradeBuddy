@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SharedKernel;
@@ -19,41 +20,45 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.EventHandlers
 //todo: fix this implementation
 public sealed class PricingUpdatedIntegrationEventHandler : IIntegrationEventHandler<PricingUpdatedIntegrationEvent>
 {
-    private readonly IServiceScopeFactory _scopes;
+    private readonly IUnitOfWork _uow;
+    private readonly IReadRepository<Chat> _chats;
+    private readonly IRepository<Stock> _stocks;
+    private readonly IRepository<PriceAlert> _alerts;
     private readonly ITelegramBotClient _bot;
     private readonly ICurrencySymbolProvider _currency;
     private readonly ILogger<PricingUpdatedIntegrationEventHandler> _log;
-    private readonly SemaphoreSlim _lock = new(1, 1);
+    private readonly IDbExceptionClassifier _excClassifier;
+
 
     private static readonly TimeSpan RateLimitWindow = TimeSpan.FromSeconds(10);
     private const int MaxNotifications = 5;
 
+
     public PricingUpdatedIntegrationEventHandler(
-        IServiceScopeFactory scopes,
+        IUnitOfWork uow,
+        IReadRepository<Chat> chats,
+        IRepository<Stock> stocks,
+        IRepository<PriceAlert> alerts,
         ITelegramBotClient bot,
+        ICurrencySymbolProvider currency,
         ILogger<PricingUpdatedIntegrationEventHandler> log,
-        ICurrencySymbolProvider currency)
+        IDbExceptionClassifier excClassifier)
     {
-        _scopes = scopes;
+        _uow = uow;
+        _chats = chats;
+        _stocks = stocks;
+        _alerts = alerts;
         _bot = bot;
-        _log = log;
         _currency = currency;
+        _log = log;
+        _excClassifier = excClassifier;
     }
 
     public async ValueTask Handle(PricingUpdatedIntegrationEvent evt, CancellationToken ct)
     {
-        await _lock.WaitAsync(ct);
-
         try
         {
-            using var scope = _scopes.CreateScope();
-
-            var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-            var chatReadRepo = scope.ServiceProvider.GetRequiredService<IReadRepository<Chat>>();
-            var stockRepo = scope.ServiceProvider.GetRequiredService<IRepository<Stock>>();
-            var alertRepo = scope.ServiceProvider.GetRequiredService<IRepository<PriceAlert>>();
-
-            var stock = await stockRepo.FirstOrDefaultAsync(
+            var stock = await _stocks.FirstOrDefaultAsync(
                 new StockBySymbolSpec(evt.Symbol),
                 ct: ct
             );
@@ -61,7 +66,7 @@ public sealed class PricingUpdatedIntegrationEventHandler : IIntegrationEventHan
             if (stock is null)
                 return;
 
-            var activeAlerts = await alertRepo.ListAsync(
+            var activeAlerts = await _alerts.ListAsync(
                 new ActiveAlertsByStockIdSpec(stock.Id),
                 ct
             );
@@ -81,7 +86,7 @@ public sealed class PricingUpdatedIntegrationEventHandler : IIntegrationEventHan
                 .Distinct()
                 .ToList();
 
-            var chatsDict = (await chatReadRepo.ListAsync(
+            var chatsDict = (await _chats.ListAsync(
                 new ActivatedChatsByIdsSpec(chatIds),
                 ct: ct)).ToDictionary(x => x.Id);
 
@@ -104,7 +109,7 @@ public sealed class PricingUpdatedIntegrationEventHandler : IIntegrationEventHan
 
                 alert.RecordNotification();
                 if (!alert.HasReachedMaxNotifications(MaxNotifications)) continue;
-                
+
                 alert.Deactivate();
                 outgoingMessages.Add(new OutgoingTelegramMessage(
                     chat.TelegramChatId.Value,
@@ -118,18 +123,20 @@ public sealed class PricingUpdatedIntegrationEventHandler : IIntegrationEventHan
                 stock.UnWatch();
             }
 
-            await uow.SaveChangesAsync(ct);
+            await _uow.SaveChangesAsync(ct);
 
-            var tasks = outgoingMessages.Select(x => SendTelegramMessage(x, ct));
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(outgoingMessages.Select(x => SendTelegramMessage(x, ct)));
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            _log.LogWarning(ex,
+                "Concurrency conflict while processing pricing update for {Symbol}",
+                evt.Symbol);
         }
         catch (Exception ex)
         {
-            _log.LogError(ex, "Error in {Handler} for {Symbol}", nameof(PricingUpdatedIntegrationEventHandler), evt.Symbol);
-        }
-        finally
-        {
-            _lock.Release();
+            _log.LogError(ex, "Error in {Handler} for {Symbol}", nameof(PricingUpdatedIntegrationEventHandler),
+                evt.Symbol);
         }
     }
 

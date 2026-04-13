@@ -35,7 +35,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo
 
                 var update = PricingData.Parser.ParseFrom(Convert.FromBase64String(base64Message));
                 _log.LogDebug("Parsed update {Symbol} @ {Price}", update.Id, update.Price);
-
+    
                 await mediator.Publish(
                     new PricingUpdatedIntegrationEvent(update.Id, (decimal)update.Price), ct);
             }
