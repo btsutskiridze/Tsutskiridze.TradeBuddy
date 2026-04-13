@@ -27,8 +27,6 @@ public sealed class PricingUpdatedIntegrationEventHandler : IIntegrationEventHan
     private readonly ITelegramBotClient _bot;
     private readonly ICurrencySymbolProvider _currency;
     private readonly ILogger<PricingUpdatedIntegrationEventHandler> _log;
-    private readonly IDbExceptionClassifier _excClassifier;
-
 
     private static readonly TimeSpan RateLimitWindow = TimeSpan.FromSeconds(10);
     private const int MaxNotifications = 5;
@@ -41,8 +39,7 @@ public sealed class PricingUpdatedIntegrationEventHandler : IIntegrationEventHan
         IRepository<PriceAlert> alerts,
         ITelegramBotClient bot,
         ICurrencySymbolProvider currency,
-        ILogger<PricingUpdatedIntegrationEventHandler> log,
-        IDbExceptionClassifier excClassifier)
+        ILogger<PricingUpdatedIntegrationEventHandler> log)
     {
         _uow = uow;
         _chats = chats;
@@ -51,7 +48,6 @@ public sealed class PricingUpdatedIntegrationEventHandler : IIntegrationEventHan
         _bot = bot;
         _currency = currency;
         _log = log;
-        _excClassifier = excClassifier;
     }
 
     public async ValueTask Handle(PricingUpdatedIntegrationEvent evt, CancellationToken ct)
