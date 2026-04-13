@@ -9,6 +9,8 @@ public class Stock : Entity<Guid>, IAggregateRoot
     public string Currency { get; private init; }
     public string Name { get; private init; }
     public bool IsWatched { get; private set; }
+    
+    public uint Version { get; private set; }
 
     public Stock(string symbol, string currency, string name)
     {

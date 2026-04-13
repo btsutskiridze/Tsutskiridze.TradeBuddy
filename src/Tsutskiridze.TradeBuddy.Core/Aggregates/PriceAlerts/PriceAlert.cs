@@ -16,6 +16,8 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
     public DateTime CreatedAt { get; private init; }
     public DateTime? UpdatedAt { get; private set; }
     public bool IsActive { get; private set; }
+    
+    public uint Version { get; private set; }
 
     public PriceAlert(
         Guid id,

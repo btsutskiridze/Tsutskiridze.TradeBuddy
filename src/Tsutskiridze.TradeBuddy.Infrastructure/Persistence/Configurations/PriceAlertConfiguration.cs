@@ -36,6 +36,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
             builder.Property(pa => pa.CreatedAt)
                 .IsRequired();
             
+            builder.Property(pa => pa.Version)
+                .IsRowVersion();
+            
             builder.HasOne<Stock>()
                 .WithMany()
                 .HasForeignKey(pa => pa.StockId)

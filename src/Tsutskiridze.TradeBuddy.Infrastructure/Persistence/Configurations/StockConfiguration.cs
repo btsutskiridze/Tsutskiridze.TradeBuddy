@@ -24,6 +24,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(200);
             
+            builder.Property(s => s.Version)
+                .IsRowVersion();
+            
             builder.HasIndex(x => x.Symbol)
                 .IsUnique()
                 .HasDatabaseName("UX_stocks_symbol");
