@@ -3,7 +3,7 @@ using Tsutskiridze.TradeBuddy.Application.DTOs.News;
 
 namespace Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis
 {
-    public class StockAnalysisContextDto : StockOverviewDto
+    public class StockAnalysisInputDto : StockOverviewDto
     {
         public string Symbol { get; set; }
         public string Name { get; set; }

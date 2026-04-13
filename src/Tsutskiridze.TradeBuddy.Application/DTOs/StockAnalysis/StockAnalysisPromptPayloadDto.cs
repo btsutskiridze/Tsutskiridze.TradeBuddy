@@ -1,9 +1,9 @@
 namespace Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis
 {
-    public class StockAnalysisPromptDto
+    public class StockAnalysisPromptPayloadDto
     {
         public string AnalysisRequest { get; set; }
         public string InvestmentHorizon { get; set; }
-        public StockAnalysisContextDto Stock { get; set; }
+        public StockAnalysisInputDto Stock { get; set; }
     }
 }

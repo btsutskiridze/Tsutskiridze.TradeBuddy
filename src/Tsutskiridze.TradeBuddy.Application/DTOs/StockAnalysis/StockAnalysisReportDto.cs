@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis
 {
-    public class StockAnalysisResultDto
+    public class StockAnalysisReportDto
     {
         [Required]
         public string Symbol { get; set; }

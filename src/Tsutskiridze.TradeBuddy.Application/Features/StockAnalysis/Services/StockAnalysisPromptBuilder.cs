@@ -1,33 +1,34 @@
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
+﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
+using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Prompts;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
+namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services
 {
-    public class StockPromptService
+    public class StockAnalysisPromptBuilder
     {
         private readonly INewsAggregator _news;
-        private readonly IYahooMarketDataProvider _yahooSraper;
+        private readonly IYahooMarketDataProvider _yahooScraper;
 
-        public StockPromptService(INewsAggregator news, IYahooMarketDataProvider yahooSraper)
+        public StockAnalysisPromptBuilder(INewsAggregator news, IYahooMarketDataProvider yahooScraper)
         {
             _news = news;
-            _yahooSraper = yahooSraper;
+            _yahooScraper = yahooScraper;
         }
 
-        public async Task<StockAnalysisPromptDto?> GetStockPrompt(string symbol)
+        public async Task<StockAnalysisPromptPayloadDto> BuildAsync(string symbol)
         {
             try
             {
-                var quote = _yahooSraper.GetStockQuote(symbol);
-                var stockOverview = _yahooSraper.GetStockOverview(symbol);
-                var prevDayPrices = _yahooSraper.GetStockPrevDaysClosePrices(symbol, 10);
-                var annualReport = _yahooSraper.GetStockLastAnnualReport(symbol);
+                var quote = _yahooScraper.GetStockQuote(symbol);
+                var stockOverview = _yahooScraper.GetStockOverview(symbol);
+                var prevDayPrices = _yahooScraper.GetStockPrevDaysClosePrices(symbol, 10);
+                var annualReport = _yahooScraper.GetStockLastAnnualReport(symbol);
                 var allNews = _news.GetAllNews(symbol, 3);
 
                 await Task.WhenAll(quote, stockOverview, prevDayPrices, annualReport, allNews);
 
-                var stock = new StockAnalysisContextDto
+                var stock = new StockAnalysisInputDto
                 {
                     Name = quote.Result.Name,
                     Symbol = symbol,
@@ -44,18 +45,16 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
                     News = allNews.Result
                 };
 
-                var prompt = new StockAnalysisPromptDto
+                return new StockAnalysisPromptPayloadDto
                 {
-                    AnalysisRequest = StockPromptParams.AnalysisRequest,
-                    InvestmentHorizon = StockPromptParams.InvestmentHorizon,
+                    AnalysisRequest = StockAnalysisPromptTemplate.AnalysisRequest,
+                    InvestmentHorizon = StockAnalysisPromptTemplate.InvestmentHorizon,
                     Stock = stock
                 };
-
-                return prompt;
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to get stock prompt", ex);
+                throw new Exception("Failed to build stock analysis prompt", ex);
             }
         }
     }

@@ -1,8 +1,7 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis
+﻿namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Prompts
 {
-    public static class StockPromptParams
+    public static class StockAnalysisPromptTemplate
     {
-        //public static readonly string AnalysisRequest = "Analyze the given stock data and market sentiment to determine if now is a good time to BUY, SELL, or HOLD RCAT. Provide reasons for your decision.";
         public static readonly string AnalysisRequest =
             "Analyze the supplied stock quote, trading history, " +
             "financials and recent Google/Yahoo/Reddit headlines for Stock " +
@@ -11,6 +10,7 @@
             "review earnings and ROE. From these factors and headline " +
             "sentiment, decide whether Stock is a BUY, SELL or HOLD and " +
             "briefly list the key reasons.";
+
         public static readonly string InvestmentHorizon = "Short-Term (1-4 weeks)";
     }
 }

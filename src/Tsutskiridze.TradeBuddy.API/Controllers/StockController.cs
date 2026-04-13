@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis;
+using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services;
 
 namespace Tsutskiridze.TradeBuddy.API.Controllers
 {
@@ -9,17 +9,17 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
     [Route("api/[controller]")]
     public class StockController : ControllerBase
     {
-        private readonly StockAnalysisService _stockAnalysis;
+        private readonly StockAnalysisGenerator _stockAnalysis;
 
-        public StockController(StockAnalysisService stockAnalysisService)
+        public StockController(StockAnalysisGenerator stockAnalysisGenerator)
         {
-            _stockAnalysis = stockAnalysisService;
+            _stockAnalysis = stockAnalysisGenerator;
         }
         
         [HttpPost("{stock}/Analysis")]
         public async Task<IActionResult> AnalyseStock(string stock)
         {
-            var result = await _stockAnalysis.ExecuteStockAnalysis(stock);
+            var result = await _stockAnalysis.AnalyzeAsync(stock);
 
             if (result == null)
             {
