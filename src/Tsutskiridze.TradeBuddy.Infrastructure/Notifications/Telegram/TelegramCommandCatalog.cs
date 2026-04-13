@@ -10,19 +10,19 @@ public static class TelegramCommandCatalog
         new("/help", "List all available commands");
 
     public static readonly TelegramCommandDefinition Activate =
-        new("/activate", "Activate the bot. e.g: /activate de1few34f67fef8fe0");
+        new("/start", "Activate the bot. e.g: /start de1few34f67fef8fe0");
 
     public static readonly TelegramCommandDefinition Alert =
-        new("/alert", "Create a stock alert. e.g: /alert NVDA above 300");
+        new("/set", "Create a stock alert. e.g: /set NVDA above 300");
 
     public static readonly TelegramCommandDefinition MyAlerts =
-        new("/myalerts", "List all your alerts e.g: /myAlerts");
+        new("/list", "List all your active alerts");
 
     public static readonly TelegramCommandDefinition StockQuote =
-        new("/quote", "Get stock analysis for a symbol. e.g: /quote NVDA");
+        new("/price", "Get current price and analysis. e.g: /price NVDA");
 
     public static readonly TelegramCommandDefinition RemoveAlert =
-        new("/removealert", "Remove a price alert. e.g: /removealert NVDA above 300");
+        new("/del", "Delete a price alert. e.g: /del NVDA above 300");
 
     public static readonly IReadOnlyList<TelegramCommandDefinition> All =
     [
