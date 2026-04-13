@@ -23,7 +23,7 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
         IQueryable<TEntity> query = Set;
 
         if (UseNoTracking)
-            query.AsNoTracking();
+            query = query.AsNoTracking();
 
         if (spec is not null)
             query = SpecificationEvaluator<TEntity>.ShapeQuery(spec, query);
@@ -36,7 +36,7 @@ public class EfReadRepository<TEntity> : IReadRepository<TEntity>
         IQueryable<TEntity> startQuery = Set;
 
         if (UseNoTracking)
-            startQuery.AsNoTracking();
+            startQuery = startQuery.AsNoTracking();
 
         var query = SpecificationEvaluator<TEntity>.ShapeQuery(spec, startQuery);
 
