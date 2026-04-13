@@ -3,8 +3,8 @@ using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Streaming;
 using Tsutskiridze.TradeBuddy.Application.IntegrationEvents.MarketData;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo.Contracts;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo
 {

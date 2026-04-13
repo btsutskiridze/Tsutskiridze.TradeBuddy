@@ -22,15 +22,24 @@
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0"/>
         <PackageReference Include="OpenAI" Version="2.8.0"/>
 
-        <PackageReference Include="Google.Protobuf" Version="3.34.0"/>
+        <PackageReference Include="Google.Protobuf" Version="3.27.2" />
+        <PackageReference Include="Grpc.Tools" Version="2.65.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         
         <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1"/>
+        <PackageReference Include="Telegram.Bot" Version="22.9.0"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Application\Tsutskiridze.TradeBuddy.Application.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Protobuf Include="MarketData\Streaming\Yahoo\Contracts\Protos\market_data.proto" GrpcServices="None" />
+    </ItemGroup>
+    
     <ItemGroup>
         <Folder Include="MarketData\Providers\"/>
         <Folder Include="Notifications\"/>

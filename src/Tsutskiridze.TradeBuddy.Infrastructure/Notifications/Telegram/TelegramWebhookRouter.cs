@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using SharedKernel;
 using SharedKernel.Validations;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 

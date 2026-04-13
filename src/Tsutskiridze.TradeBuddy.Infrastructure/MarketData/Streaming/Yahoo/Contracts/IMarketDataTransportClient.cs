@@ -1,4 +1,4 @@
-namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Streaming
+namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo.Contracts
 {
     public interface IMarketDataTransportClient : IAsyncDisposable
     {

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Streaming;
+using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo.Contracts;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo
 {

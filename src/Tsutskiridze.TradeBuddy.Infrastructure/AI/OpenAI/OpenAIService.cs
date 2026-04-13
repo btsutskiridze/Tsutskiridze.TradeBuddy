@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using OpenAI.Chat;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.AI.OpenAI;
+using Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI.JsSchema;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.AI.OpenAI
 {

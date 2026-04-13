@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
+﻿namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
 public interface ITelegramSender
 {

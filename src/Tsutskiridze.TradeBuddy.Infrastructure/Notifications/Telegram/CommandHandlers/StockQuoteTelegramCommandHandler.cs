@@ -1,6 +1,5 @@
 using Mediator;
 using SharedKernel.Validations;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Commands.StockQuote;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
