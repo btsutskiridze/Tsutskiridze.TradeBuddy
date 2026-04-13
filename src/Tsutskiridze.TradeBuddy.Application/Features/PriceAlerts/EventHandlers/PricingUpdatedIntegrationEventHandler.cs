@@ -16,6 +16,7 @@ using Tsutskiridze.TradeBuddy.Core.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.EventHandlers;
 
+//todo: fix this implementation
 public sealed class PricingUpdatedIntegrationEventHandler : IIntegrationEventHandler<PricingUpdatedIntegrationEvent>
 {
     private readonly IServiceScopeFactory _scopes;
