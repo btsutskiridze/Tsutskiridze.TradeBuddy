@@ -22,7 +22,7 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
     private readonly INotificationDispatcher _notifier;
     private readonly ILogger<MarketPriceUpdatedApplicationEventHandler> _log;
 
-    private static readonly TimeSpan RateLimitWindow = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan AlertWindow = TimeSpan.FromSeconds(10);
     private const int MaxNotifications = 5;
 
 
@@ -73,7 +73,7 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
             var result = alert.ProcessMarketPrice(
                 evt.Price,
                 DateTime.UtcNow,
-                RateLimitWindow,
+                AlertWindow,
                 MaxNotifications);
 
             if (result is null)
@@ -92,12 +92,9 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
 
         await _uow.SaveChangesAsync(ct);
         
-        //todo: notification handlers and concurrency update checking and notification dispatcher implementation
-        await _notifier.DispatchAsync(notifications, ct);
         //todo: finally add outbox
-        _log.LogInformation(
-            "Processed market price update for {Symbol}. Notifications sent: {Count}",
-            evt.Symbol,
-            notifications.Count);
+        await _notifier.DispatchAsync(notifications, ct);
+
+        _log.LogInformation($"Processed market price update for {evt.Symbol}. Notifications sent: {notifications.Count}");
     }
 }
