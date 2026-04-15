@@ -3,6 +3,7 @@ using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using Tsutskiridze.TradeBuddy.Application.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Events;
 using Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo.Contracts;
 
@@ -28,16 +29,20 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData.Streaming.Yahoo
             {
                 await using var scope = _scopeFactory.CreateAsyncScope();
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                
+
                 var data = JObject.Parse(json);
                 var base64Message = data["message"]?.ToString();
                 if (string.IsNullOrEmpty(base64Message)) return;
 
                 var update = PricingData.Parser.ParseFrom(Convert.FromBase64String(base64Message));
                 _log.LogDebug("Parsed update {Symbol} @ {Price}", update.Id, update.Price);
-    
+
                 await mediator.Publish(
                     new MarketPriceUpdatedEvent(update.Id, (decimal)update.Price), ct);
+            }
+            catch (ConcurrencyConflictException ex)
+            {
+                _log.LogWarning(ex, "Concurrency conflict");
             }
             catch (Exception ex)
             {
