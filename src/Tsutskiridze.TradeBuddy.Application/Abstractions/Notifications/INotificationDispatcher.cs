@@ -1,5 +1,4 @@
-﻿using Mediator;
-using SharedKernel;
+﻿using SharedKernel;
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
 

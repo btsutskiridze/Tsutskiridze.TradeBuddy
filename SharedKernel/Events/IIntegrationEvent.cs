@@ -1,6 +1,4 @@
-﻿using Mediator;
-
-namespace SharedKernel.Events;
+﻿namespace SharedKernel.Events;
 
 public interface IIntegrationEvent:IBaseNotification
 {

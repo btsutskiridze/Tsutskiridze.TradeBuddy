@@ -1,5 +1,4 @@
-﻿using Mediator;
-using SharedKernel;
+﻿using SharedKernel;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Notifications;
