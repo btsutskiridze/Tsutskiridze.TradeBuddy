@@ -10,8 +10,6 @@ public class Stock : Entity<Guid>, IAggregateRoot
     public string Name { get; private init; }
     public bool IsWatched { get; private set; }
     
-    public uint Version { get; private set; }
-
     public Stock(string symbol, string currency, string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(symbol);
@@ -19,9 +17,7 @@ public class Stock : Entity<Guid>, IAggregateRoot
 
         Symbol = symbol;
         Currency = currency;
-
-        if (string.IsNullOrEmpty(name))
-            Name = symbol;
+        Name = string.IsNullOrEmpty(name) ? symbol : name;
     }
 
     private Stock()

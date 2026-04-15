@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using Mediator;
-using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
@@ -55,31 +54,28 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
         var stock = await GetOrCreateStock(command.Symbol, stockQuote.Name, stockQuote.Currency, ct);
         var existingAlert = await GetPriceAlert(chat.Id, stock.Id, command.Direction, command.Price, ct);
 
-        if (existingAlert is not null)
-        {
-            existingAlert.Activate();
-        }
-        else
+        if (existingAlert is null)
         {
             var alert = new PriceAlert(
                 Guid.NewGuid(),
                 chat.Id,
                 stock.Id,
                 command.Price,
-                command.Direction);
+                command.Direction,
+                DateTime.UtcNow);
 
             alert.Activate();
 
             await _alerts.AddAsync(alert, ct);
         }
-
-        stock.Watch();
+        else
+            existingAlert.Activate();
 
         try
         {
             await _uow.SaveChangesAsync(ct);
         }
-        catch (DbUpdateException ex) when (_excClassifier.IsUniqueConstraintViolation(ex, out var constraintName))
+        catch (Exception ex) when (_excClassifier.IsUniqueConstraintViolation(ex, out var constraintName))
         {
             if (constraintName.Contains("UX_price_alerts"))
             {
@@ -97,7 +93,8 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
 
         var culture = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
             .FirstOrDefault(c => new RegionInfo(c.Name).ISOCurrencySymbol == stockQuote.Currency);
-
+        
+        // todo: return result details and not the actual messages
         var currencySymbol = culture != null ? new RegionInfo(culture.Name).CurrencySymbol : stockQuote.Currency;
         var text = $"✅ Price alert set for {command.Symbol} {command.Direction} {currencySymbol}{command.Price}";
 

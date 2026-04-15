@@ -24,8 +24,11 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(200);
             
-            builder.Property(s => s.Version)
-                .IsRowVersion();
+            builder.Property<uint>("xmin")
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .ValueGeneratedOnAddOrUpdate()
+                .IsConcurrencyToken();
             
             builder.HasIndex(x => x.Symbol)
                 .IsUnique()

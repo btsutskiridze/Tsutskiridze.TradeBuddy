@@ -1,10 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
+﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 
 public interface IDbExceptionClassifier
 {
-    bool IsUniqueConstraintViolation(DbUpdateException exception, out string constraintName);
-    bool IsForeignKeyViolation(DbUpdateException exception);
+    bool IsUniqueConstraintViolation(Exception exception, out string constraintName);
+    bool IsForeignKeyViolation(Exception exception);
     bool IsDeadlock(Exception exception);
 }

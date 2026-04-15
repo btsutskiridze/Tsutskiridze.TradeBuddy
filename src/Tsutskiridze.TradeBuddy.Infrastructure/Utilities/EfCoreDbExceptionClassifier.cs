@@ -7,7 +7,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Utilities;
 
 public sealed class EfCoreDbExceptionClassifier : IDbExceptionClassifier
 {
-    public bool IsUniqueConstraintViolation(DbUpdateException ex, out string constraintName)
+    public bool IsUniqueConstraintViolation(Exception ex, out string constraintName)
     {
         constraintName = string.Empty;
 
@@ -21,7 +21,7 @@ public sealed class EfCoreDbExceptionClassifier : IDbExceptionClassifier
         return false;
     }
 
-    public bool IsForeignKeyViolation(DbUpdateException exception)
+    public bool IsForeignKeyViolation(Exception exception)
     {
         throw new NotImplementedException();
     }

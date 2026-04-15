@@ -2,7 +2,6 @@
 using Mediator;
 using SharedKernel;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Exceptions;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
@@ -38,6 +37,7 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
         _yahoo = yahoo;
     }
 
+    //todo: check all the features add validators
     public async ValueTask<RemoveAlertCommandResult> Handle(RemoveAlertCommand command, CancellationToken ct)
     {
         var chat = await GetActiveChat(command.ChatId, ct);
@@ -45,22 +45,12 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
         var stock = await GetStock(command.Symbol, ct);
         var alert = await GetPriceAlert(chat.Id, stock.Id, command.Direction, command.Price, ct);
 
-        if (!await OtherAlertsExist(alert, ct))
-        {
-            stock.UnWatch();
-        }
-
-        _alerts.Remove(alert);
+        alert.Deactivate();
         await _uow.SaveChangesAsync(ct);
 
         return new RemoveAlertCommandResult(
             $"Alert for *{command.Symbol}* with direction *{command.Direction.ToString().ToLower()}* and price *{stockQuote.Price}* has been removed."
         );
-    }
-
-    private async ValueTask<bool> OtherAlertsExist(PriceAlert alert, CancellationToken ct)
-    {
-        return await _alerts.AnyAsync(new OtherAlertsByStockIdSpec(alert.StockId, alert.Id), ct);
     }
 
     private async Task<StockQuoteDto> GetValidatedStockQuote(string symbol)

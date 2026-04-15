@@ -16,15 +16,15 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
     public DateTime CreatedAt { get; private init; }
     public DateTime? UpdatedAt { get; private set; }
     public bool IsActive { get; private set; }
-    
-    public uint Version { get; private set; }
+
 
     public PriceAlert(
         Guid id,
         Guid chatId,
         Guid stockId,
         decimal price,
-        PriceDirection direction) : base(id)
+        PriceDirection direction,
+        DateTime nowUtc) : base(id)
     {
         if (Guid.Empty == id) throw new DomainException("Invalid id");
         if (Guid.Empty == chatId) throw new DomainException("Invalid chatId");
@@ -35,22 +35,12 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
         StockId = stockId;
         Price = price;
         Direction = direction;
-        CreatedAt = DateTime.UtcNow;
+        CreatedAt = nowUtc;
     }
 
     private PriceAlert()
     {
     }
-
-    public bool IsTriggered(decimal currentPrice)
-    {
-        return Direction == PriceDirection.Above
-            ? currentPrice >= Price
-            : currentPrice <= Price;
-    }
-
-    public bool IsRateLimited(DateTime nowUtc, TimeSpan window)
-        => UpdatedAt.HasValue && UpdatedAt.Value >= nowUtc.Subtract(window);
 
     public void RecordNotification()
     {
@@ -61,27 +51,76 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public bool HasReachedMaxNotifications(int max)
-    {
-        return AlertCount >= max;
-    }
-
     public void Activate()
     {
         if (IsActive)
-            throw new DomainException("Alert is already active");
+            return;
 
         IsActive = true;
         AlertCount = 0;
-        RaiseDomainEvent(new PriceAlertActivatedDomainEvent(this));
+        RaiseDomainEvent(new PriceAlertActivatedDomainEvent(StockId));
     }
 
     public void Deactivate()
     {
         if (!IsActive)
-            throw new DomainException("Alert is already inactive");
+            return;
 
         IsActive = false;
-        RaiseDomainEvent(new PriceAlertDeactivatedDomainEvent(this));
+        RaiseDomainEvent(new PriceAlertDeactivatedDomainEvent(StockId));
     }
+
+    public PriceAlertProcessingResult? ProcessMarketPrice(
+        decimal currentPrice,
+        DateTime nowUtc,
+        TimeSpan window,
+        int maxNotifications
+    )
+    {
+        if (!IsActive)
+            return null;
+
+        if (!IsTriggered(currentPrice))
+            return null;
+
+        if (IsRateLimited(nowUtc, window))
+            return null;
+
+        AlertCount++;
+        UpdatedAt = nowUtc;
+
+        var wasDeactivated = false;
+        if (AlertCount >= maxNotifications)
+        {
+            Deactivate();
+            wasDeactivated = true;
+        }
+
+        return new PriceAlertProcessingResult(
+            ChatId,
+            StockId,
+            Price,
+            currentPrice,
+            Direction,
+            wasDeactivated
+        );
+    }
+
+    private bool IsTriggered(decimal currentPrice)
+    {
+        return Direction == PriceDirection.Above
+            ? currentPrice >= Price
+            : currentPrice <= Price;
+    }
+
+    private bool IsRateLimited(DateTime nowUtc, TimeSpan window)
+        => UpdatedAt.HasValue && UpdatedAt.Value >= nowUtc.Subtract(window);
+
+    public sealed record PriceAlertProcessingResult(
+        Guid ChatId,
+        Guid StockId,
+        decimal AlertPrice,
+        decimal CurrentPrice,
+        PriceDirection Direction,
+        bool WasDeactivated);
 }

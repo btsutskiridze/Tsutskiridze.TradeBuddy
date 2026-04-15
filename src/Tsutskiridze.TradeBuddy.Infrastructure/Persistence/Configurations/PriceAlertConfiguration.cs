@@ -36,8 +36,11 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
             builder.Property(pa => pa.CreatedAt)
                 .IsRequired();
             
-            builder.Property(pa => pa.Version)
-                .IsRowVersion();
+            builder.Property<uint>("xmin")
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .ValueGeneratedOnAddOrUpdate()
+                .IsConcurrencyToken();
             
             builder.HasOne<Stock>()
                 .WithMany()

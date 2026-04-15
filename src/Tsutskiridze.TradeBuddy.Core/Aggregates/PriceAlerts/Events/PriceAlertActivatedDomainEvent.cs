@@ -2,4 +2,4 @@
 
 namespace Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Events;
 
-public sealed record PriceAlertActivatedDomainEvent(PriceAlert PriceAlert) : DomainEvent;
+public sealed record PriceAlertActivatedDomainEvent(Guid StockId) : DomainEvent;
