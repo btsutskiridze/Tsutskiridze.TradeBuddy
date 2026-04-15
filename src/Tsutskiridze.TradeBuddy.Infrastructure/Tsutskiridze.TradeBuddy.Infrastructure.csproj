@@ -42,7 +42,6 @@
     
     <ItemGroup>
         <Folder Include="MarketData\Providers\"/>
-        <Folder Include="Notifications\"/>
     </ItemGroup>
 
 </Project>

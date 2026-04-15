@@ -9,6 +9,7 @@ using Telegram.Bot;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Application.Options;
 using Tsutskiridze.TradeBuddy.Infrastructure.AI.Gemini;
@@ -29,6 +30,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.News.Finnhub;
 using Tsutskiridze.TradeBuddy.Infrastructure.News.GoogleNews;
 using Tsutskiridze.TradeBuddy.Infrastructure.News.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.News.Yahoo;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
@@ -49,7 +51,7 @@ public static class DependencyInjection
             .AddOptions(configuration)
             .AddPersistence(configuration)
             .AddUtilities()
-            .AddTelegramNotificationServices()
+            .AddNotificationServices()
             .AddExternalApiClients()
             .AddAiServices()
             .AddMarketDataServices()
@@ -184,8 +186,9 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddTelegramNotificationServices(this IServiceCollection services)
+    private static IServiceCollection AddNotificationServices(this IServiceCollection services)
     {
+        services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
         services.AddScoped<ITelegramSender, TelegramSender>();
         services.AddScoped<ITelegramWebhookRouter, TelegramWebhookRouter>();
         services.AddHostedService<TelegramCommandRegistrationService>();

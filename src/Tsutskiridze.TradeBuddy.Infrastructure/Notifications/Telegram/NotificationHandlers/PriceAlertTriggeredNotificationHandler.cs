@@ -1,0 +1,45 @@
+﻿using Microsoft.Extensions.Logging;
+using SharedKernel;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
+using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Notifications;
+using Tsutskiridze.TradeBuddy.Core.Enums;
+using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
+
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.NotificationHandlers;
+
+public sealed class PriceAlertTriggeredNotificationHandler : IBaseNotificationHandler<PriceAlertTriggeredNotification>
+{
+    private readonly ITelegramSender _sender;
+    private readonly ICurrencySymbolProvider _currency;
+    private readonly ILogger<PriceAlertTriggeredNotificationHandler> _logger;
+
+    public PriceAlertTriggeredNotificationHandler(ITelegramSender sender, ICurrencySymbolProvider currency,
+        ILogger<PriceAlertTriggeredNotificationHandler> logger)
+    {
+        _sender = sender;
+        _currency = currency;
+        _logger = logger;
+    }
+
+    public async ValueTask Handle(PriceAlertTriggeredNotification notification, CancellationToken ct)
+    {
+        var currencySymbol = _currency.GetSymbol(notification.CurrencyCode) ?? notification.CurrencyCode;
+        var directionEmoji = notification.Direction == PriceDirection.Above ? "🚀" : "📉";
+        var directionText = notification.Direction == PriceDirection.Above ? "Above" : "Below";
+
+        var triggerMessage =
+            $"🔔 *{notification.Symbol}*: {currencySymbol}{notification.CurrentPrice:N2} 🔔\n" +
+            $"{directionEmoji} {directionText} {currencySymbol}{notification.AlertPrice:N2}";
+
+        await _sender.SendMessage(notification.ChatId, triggerMessage, ct);
+
+        if (notification.WasDeactivated)
+        {
+            var removedMessage =
+                $"🚫 *{notification.Symbol}* alert removed after {notification.MaxNotifications} notifications.";
+            await _sender.SendMessage(notification.ChatId, removedMessage, ct);
+        }
+
+        _logger.LogInformation("Price alert notification delivery completed");
+    }
+}
