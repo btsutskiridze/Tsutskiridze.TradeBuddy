@@ -2,6 +2,6 @@
 
 namespace SharedKernel.Events;
 
-public interface IDomainEventHandler<in T> : INotificationHandler<T> where T : IDomainEvent
+public interface IDomainEventHandler<in T> : IBaseNotificationHandler<T> where T : IDomainEvent
 {
 }

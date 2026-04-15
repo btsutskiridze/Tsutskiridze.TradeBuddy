@@ -2,7 +2,7 @@
 
 namespace SharedKernel.Events;
 
-public interface IIntegrationEvent:IBaseNotification
+public interface IApplicationEvent:IBaseNotification
 {
     
 }

@@ -2,6 +2,6 @@
 
 namespace SharedKernel.Events;
 
-public interface IIntegrationEventHandler<in T> : INotificationHandler<T> where T : IIntegrationEvent
+public interface IIntegrationEventHandler<in T> : IBaseNotificationHandler<T> where T : IIntegrationEvent
 {
 }
