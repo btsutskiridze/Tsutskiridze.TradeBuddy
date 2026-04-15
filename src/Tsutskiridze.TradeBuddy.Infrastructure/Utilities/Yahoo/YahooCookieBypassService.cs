@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Utilities.Yahoo
 {
+    
+    //todo: yahoo has sperated folders and many locations. plan to reorganize all that
     public class YahooCookieBypassService : IYahooCookieBypassService
     {
         /// <summary>
