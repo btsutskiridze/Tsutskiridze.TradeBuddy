@@ -37,7 +37,6 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
         _yahoo = yahoo;
     }
 
-    //todo: check all the features add validators
     public async ValueTask<RemoveAlertCommandResult> Handle(RemoveAlertCommand command, CancellationToken ct)
     {
         var chat = await GetActiveChat(command.ChatId, ct);
