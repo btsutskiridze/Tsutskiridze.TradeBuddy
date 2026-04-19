@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Mediator;
+﻿using Mediator;
+using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.RemoveAlert;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;

@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Mediator;
+﻿using Mediator;
 using SharedKernel;
+using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Exceptions;

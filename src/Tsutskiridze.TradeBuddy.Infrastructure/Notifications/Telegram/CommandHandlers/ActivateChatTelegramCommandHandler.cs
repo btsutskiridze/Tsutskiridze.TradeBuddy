@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using Mediator;
+using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
