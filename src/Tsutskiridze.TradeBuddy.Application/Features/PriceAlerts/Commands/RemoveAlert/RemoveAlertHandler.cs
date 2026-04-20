@@ -2,8 +2,8 @@
 using SharedKernel;
 using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
+using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
-using Tsutskiridze.TradeBuddy.Application.Exceptions;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
@@ -25,10 +25,10 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
     private readonly IRepository<Stock> _stocks;
     private readonly IReadRepository<Chat> _chats;
     private readonly IRepository<PriceAlert> _alerts;
-    private readonly IYahooMarketDataProvider _yahoo;
+    private readonly IMarketDataProvider _yahoo;
 
     public RemoveAlertHandler(IUnitOfWork uow, IRepository<Stock> stocks, IReadRepository<Chat> chats,
-        IRepository<PriceAlert> alerts, IYahooMarketDataProvider yahoo)
+        IRepository<PriceAlert> alerts, IMarketDataProvider yahoo)
     {
         _uow = uow;
         _stocks = stocks;

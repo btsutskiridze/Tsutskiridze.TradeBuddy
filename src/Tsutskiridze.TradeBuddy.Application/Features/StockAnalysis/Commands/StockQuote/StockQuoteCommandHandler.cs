@@ -14,7 +14,7 @@ public class StockQuoteCommandHandler : ICommandHandler<StockQuoteCommand, Stock
 {
     private readonly ILogger<StockQuoteCommandHandler> _logger;
     private readonly StockAnalysisGenerator _stockAnalysisGenerator;
-    private readonly IYahooMarketDataProvider _yahooStockScraper;
+    private readonly IMarketDataProvider _stockScraper;
 
     private static int _analysisCount = 0;
     private static DateTime _lastReset = DateTime.UtcNow.Date;
@@ -27,11 +27,11 @@ public class StockQuoteCommandHandler : ICommandHandler<StockQuoteCommand, Stock
     public StockQuoteCommandHandler(
         ILogger<StockQuoteCommandHandler> logger,
         StockAnalysisGenerator stockAnalysisGenerator,
-        IYahooMarketDataProvider yahooStockScraper)
+        IMarketDataProvider stockScraper)
     {
         _logger = logger;
         _stockAnalysisGenerator = stockAnalysisGenerator;
-        _yahooStockScraper = yahooStockScraper;
+        _stockScraper = stockScraper;
     }
 
     public async ValueTask<StockQuoteResult> Handle(StockQuoteCommand command, CancellationToken ct)
@@ -86,7 +86,7 @@ public class StockQuoteCommandHandler : ICommandHandler<StockQuoteCommand, Stock
         {
             _logger.LogDebug("Received stock command for symbol {StockSymbol}", symbol);
 
-            if (!await _yahooStockScraper.StockSymbolExists(symbol))
+            if (!await _stockScraper.StockSymbolExists(symbol))
             {
                 await RefundAnalysisCount();
                 reservationMade = false;

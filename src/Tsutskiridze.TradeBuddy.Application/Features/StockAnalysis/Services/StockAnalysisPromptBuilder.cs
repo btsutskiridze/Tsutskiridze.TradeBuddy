@@ -7,23 +7,23 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services
 {
     public class StockAnalysisPromptBuilder
     {
-        private readonly INewsAggregator _news;
-        private readonly IYahooMarketDataProvider _yahooScraper;
+        private readonly INewsProvider _news;
+        private readonly IMarketDataProvider _scraper;
 
-        public StockAnalysisPromptBuilder(INewsAggregator news, IYahooMarketDataProvider yahooScraper)
+        public StockAnalysisPromptBuilder(INewsProvider news, IMarketDataProvider scraper)
         {
             _news = news;
-            _yahooScraper = yahooScraper;
+            _scraper = scraper;
         }
 
         public async Task<StockAnalysisPromptPayloadDto> BuildAsync(string symbol)
         {
             try
             {
-                var quote = _yahooScraper.GetStockQuote(symbol);
-                var stockOverview = _yahooScraper.GetStockOverview(symbol);
-                var prevDayPrices = _yahooScraper.GetStockPrevDaysClosePrices(symbol, 10);
-                var annualReport = _yahooScraper.GetStockLastAnnualReport(symbol);
+                var quote = _scraper.GetStockQuote(symbol);
+                var stockOverview = _scraper.GetStockOverview(symbol);
+                var prevDayPrices = _scraper.GetStockPrevDaysClosePrices(symbol, 10);
+                var annualReport = _scraper.GetStockLastAnnualReport(symbol);
                 var allNews = _news.GetAllNews(symbol, 3);
 
                 await Task.WhenAll(quote, stockOverview, prevDayPrices, annualReport, allNews);

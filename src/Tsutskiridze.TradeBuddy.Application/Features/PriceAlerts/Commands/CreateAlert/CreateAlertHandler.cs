@@ -4,8 +4,8 @@ using SharedKernel;
 using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
+using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
-using Tsutskiridze.TradeBuddy.Application.Exceptions;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
@@ -27,13 +27,13 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
     private readonly IRepository<Stock> _stocks;
     private readonly IReadRepository<Chat> _chats;
     private readonly IRepository<PriceAlert> _alerts;
-    private readonly IYahooMarketDataProvider _yahoo;
+    private readonly IMarketDataProvider _yahoo;
     private readonly IDbExceptionClassifier _excClassifier;
 
 
     public CreateAlertHandler(
         IUnitOfWork uow,
-        IYahooMarketDataProvider yahoo,
+        IMarketDataProvider yahoo,
         IRepository<Stock> stocks,
         IReadRepository<Chat> chats,
         IRepository<PriceAlert> alerts,

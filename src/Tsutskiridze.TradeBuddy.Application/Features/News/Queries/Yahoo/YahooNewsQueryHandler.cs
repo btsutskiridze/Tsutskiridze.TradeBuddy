@@ -8,9 +8,9 @@ public record YahooNewsQuery(string Symbol, int? Limit = null) : IQuery<List<Yah
 
 public class YahooNewsQueryHandler : IQueryHandler<YahooNewsQuery, List<YahooNewsItemDto>?>
 {
-    private readonly INewsAggregator _news;
+    private readonly INewsProvider _news;
 
-    public YahooNewsQueryHandler(INewsAggregator news)
+    public YahooNewsQueryHandler(INewsProvider news)
     {
         _news = news;
     }

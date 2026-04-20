@@ -9,13 +9,13 @@
     <ItemGroup>
         <PackageReference Include="EFCore.NamingConventions" Version="10.0.1"/>
         <PackageReference Include="HtmlAgilityPack" Version="1.12.4"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.3">
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.3"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0"/>
         <PackageReference Include="Microsoft.Playwright" Version="1.58.0"/>
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0"/>
@@ -37,11 +37,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="MarketData\Streaming\Yahoo\Contracts\Protos\market_data.proto" GrpcServices="None" />
-    </ItemGroup>
-    
-    <ItemGroup>
-        <Folder Include="MarketData\Providers\"/>
+      <Protobuf Include="Integrations\Yahoo\MarketData\Streaming\Schemas\market_data.proto">
+        <Generator>MSBuild:Compile</Generator>
+      </Protobuf>
     </ItemGroup>
 
 </Project>

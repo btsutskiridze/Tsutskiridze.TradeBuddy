@@ -13,16 +13,16 @@ public class StockAnalysisGenerator
     };
 
     private readonly StockAnalysisPromptBuilder _promptBuilder;
-    private readonly IAiService _aiService;
+    private readonly IAiClient _aiClient;
     private readonly ILogger<StockAnalysisGenerator> _logger;
 
     public StockAnalysisGenerator(
         StockAnalysisPromptBuilder promptBuilder,
-        IAiService aiService,
+        IAiClient aiClient,
         ILogger<StockAnalysisGenerator> logger)
     {
         _promptBuilder = promptBuilder;
-        _aiService = aiService;
+        _aiClient = aiClient;
         _logger = logger;
     }
 
@@ -60,7 +60,7 @@ public class StockAnalysisGenerator
         var stockPromptJson = JsonConvert.SerializeObject(stockPrompt, JsonSettings);
 
         _logger.LogInformation("Sending stock prompt to AI service");
-        var analysis = await _aiService.Ask<StockAnalysisReportDto>(stockPromptJson);
+        var analysis = await _aiClient.Ask<StockAnalysisReportDto>(stockPromptJson);
 
         analysis.ExecutionTime = (DateTime.UtcNow - startedAt).TotalSeconds;
         _logger.LogInformation("StockAnalysis completed in {ElapsedSeconds}s", analysis.ExecutionTime);

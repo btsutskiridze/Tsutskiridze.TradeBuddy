@@ -7,11 +7,11 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
     [Route("api/yahoo-scraper")]
     public class YahooScraperController : ControllerBase
     {
-        private readonly IYahooMarketDataProvider _yahooMarketDataProvider;
+        private readonly IMarketDataProvider _marketDataProvider;
 
-        public YahooScraperController(IYahooMarketDataProvider yahooMarketDataProvider)
+        public YahooScraperController(IMarketDataProvider marketDataProvider)
         {
-            _yahooMarketDataProvider = yahooMarketDataProvider;
+            _marketDataProvider = marketDataProvider;
         }
 
         [HttpGet("{symbol}/exists")]
@@ -22,7 +22,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
                 return BadRequest("Stock symbol is required.");
             }
 
-            var exists = await _yahooMarketDataProvider.StockSymbolExists(symbol);
+            var exists = await _marketDataProvider.StockSymbolExists(symbol);
             return Ok(exists);
         }
 
@@ -39,7 +39,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
                 return BadRequest("Days must be greater than 0 when provided.");
             }
 
-            var history = await _yahooMarketDataProvider.GetStockPrevDaysClosePrices(symbol, days);
+            var history = await _marketDataProvider.GetStockPrevDaysClosePrices(symbol, days);
             return Ok(history);
         }
 
@@ -51,7 +51,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
                 return BadRequest("Stock symbol is required.");
             }
 
-            var overview = await _yahooMarketDataProvider.GetStockOverview(symbol);
+            var overview = await _marketDataProvider.GetStockOverview(symbol);
             return Ok(overview);
         }
 
@@ -63,7 +63,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
                 return BadRequest("Stock symbol is required.");
             }
 
-            var annualReport = await _yahooMarketDataProvider.GetStockLastAnnualReport(symbol);
+            var annualReport = await _marketDataProvider.GetStockLastAnnualReport(symbol);
             return Ok(annualReport);
         }
 
@@ -75,7 +75,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
                 return BadRequest("Stock symbol is required.");
             }
 
-            var quote = await _yahooMarketDataProvider.GetStockQuote(symbol);
+            var quote = await _marketDataProvider.GetStockQuote(symbol);
             return Ok(quote);
         }
     }

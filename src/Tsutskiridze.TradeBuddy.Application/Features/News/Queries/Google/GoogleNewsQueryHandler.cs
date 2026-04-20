@@ -8,9 +8,9 @@ public record GoogleNewsQuery(string Symbol, int? Limit = null) : IQuery<List<Go
 
 public class GoogleNewsQueryHandler : IQueryHandler<GoogleNewsQuery, List<GoogleNewsItemDto>?>
 {
-    private readonly INewsAggregator _news;
+    private readonly INewsProvider _news;
 
-    public GoogleNewsQueryHandler(INewsAggregator news)
+    public GoogleNewsQueryHandler(INewsProvider news)
     {
         _news = news;
     }

@@ -12,9 +12,9 @@ public record FinnhubNewsQuery(
 
 public class FinnhubNewsQueryHandler : IQueryHandler<FinnhubNewsQuery, List<FinnhubNewsItemDto>?>
 {
-    private readonly INewsAggregator _news;
+    private readonly INewsProvider _news;
 
-    public FinnhubNewsQueryHandler(INewsAggregator news)
+    public FinnhubNewsQueryHandler(INewsProvider news)
     {
         _news = news;
     }

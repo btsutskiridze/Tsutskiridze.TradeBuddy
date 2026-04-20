@@ -1,7 +1,7 @@
 using Mediator;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
+using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 using Tsutskiridze.TradeBuddy.Application.DTOs.News;
-using Tsutskiridze.TradeBuddy.Application.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.News.Queries.Reddit;
 
@@ -12,9 +12,9 @@ public record RedditNewsQuery(
 
 public class RedditNewsQueryHandler : IQueryHandler<RedditNewsQuery, List<RedditPostDto>?>
 {
-    private readonly INewsAggregator _news;
+    private readonly INewsProvider _news;
 
-    public RedditNewsQueryHandler(INewsAggregator news)
+    public RedditNewsQueryHandler(INewsProvider news)
     {
         _news = news;
     }

@@ -8,9 +8,9 @@ public record StockNewsQuery(string Symbol, int? Limit = null) : IQuery<StockNew
 
 public class StockNewsQueryHandler : IQueryHandler<StockNewsQuery, StockNewsDto>
 {
-    private readonly INewsAggregator _news;
+    private readonly INewsProvider _news;
 
-    public StockNewsQueryHandler(INewsAggregator news)
+    public StockNewsQueryHandler(INewsProvider news)
     {
         _news = news;
     }
