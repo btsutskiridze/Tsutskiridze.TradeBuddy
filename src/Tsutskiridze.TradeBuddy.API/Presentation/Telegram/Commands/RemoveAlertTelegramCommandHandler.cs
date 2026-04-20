@@ -18,19 +18,19 @@ public class RemoveAlertTelegramCommandHandler : ITelegramCommandHandler
     public string Command => TelegramCommandCatalog.RemoveAlert.Command;
     public string Description => TelegramCommandCatalog.RemoveAlert.Description;
 
-    public async Task<TelegramCommandDispatchResult> Handle(TelegramCommandRequest request, CancellationToken ct)
+    public async Task<TelegramCommandDispatchResponse> Handle(TelegramCommandDispatchRequest dispatchRequest, CancellationToken ct)
     {
-        if (request.Args.Count != 3 || !Enum.TryParse<PriceDirection>(
-                request.Args[1], true, out var direction) ||
-            !decimal.TryParse(request.Args[2], out var price))
+        if (dispatchRequest.Args.Count != 3 || !Enum.TryParse<PriceDirection>(
+                dispatchRequest.Args[1], true, out var direction) ||
+            !decimal.TryParse(dispatchRequest.Args[2], out var price))
         {
             throw new TelegramPresentationException($"Usage: /{Command} NVDA above 300");
         }
 
-        var symbol = request.Args[0];
+        var symbol = dispatchRequest.Args[0];
 
-        var result = await _mediator.Send(new RemoveAlertCommand(request.ChatId, symbol, direction, price), ct);
+        var result = await _mediator.Send(new RemoveAlertCommand(dispatchRequest.ChatId, symbol, direction, price), ct);
         
-        return TelegramCommandDispatchResult.TextReply(request.ChatId, result.Message);
+        return TelegramCommandDispatchResponse.TextReply(dispatchRequest.ChatId, result.Message);
     }
 }

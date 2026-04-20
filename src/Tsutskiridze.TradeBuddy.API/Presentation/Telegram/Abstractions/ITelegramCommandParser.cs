@@ -5,5 +5,5 @@ namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Abstractions;
 
 public interface ITelegramCommandParser
 {
-    TelegramCommandRequest? Parse(TelegramWebhookRequest request);
+    TelegramCommandDispatchRequest? Parse(TelegramWebhookRequest request);
 }

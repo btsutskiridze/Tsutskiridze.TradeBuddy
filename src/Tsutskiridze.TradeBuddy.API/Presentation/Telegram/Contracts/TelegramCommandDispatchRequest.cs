@@ -1,6 +1,6 @@
 ﻿namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
 
-public sealed record TelegramCommandRequest(
+public sealed record TelegramCommandDispatchRequest(
     long ChatId,
     string RawText,
     string Command,

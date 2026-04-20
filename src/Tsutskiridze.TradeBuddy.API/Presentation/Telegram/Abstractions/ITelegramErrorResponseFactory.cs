@@ -4,5 +4,5 @@ namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Abstractions;
 
 public interface ITelegramErrorResponseFactory
 {
-    TelegramCommandDispatchResult Create(long chatId, Exception exception);
+    TelegramCommandDispatchResponse Create(long chatId, Exception exception);
 }

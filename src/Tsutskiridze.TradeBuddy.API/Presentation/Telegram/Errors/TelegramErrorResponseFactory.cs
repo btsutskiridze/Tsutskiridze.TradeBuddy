@@ -9,21 +9,21 @@ namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
 
 public class TelegramErrorResponseFactory : ITelegramErrorResponseFactory
 {
-    public TelegramCommandDispatchResult Create(long chatId, Exception exception)
+    public TelegramCommandDispatchResponse Create(long chatId, Exception exception)
     {
         return exception switch
         {
             TelegramPresentationException ex =>
-                TelegramCommandDispatchResult.TextReply(chatId, ex.Message, ParseMode.Markdown),
+                TelegramCommandDispatchResponse.TextReply(chatId, ex.Message, ParseMode.Markdown),
 
             ValidationException ex =>
-                TelegramCommandDispatchResult.TextReply(chatId, BuildValidationMessage(ex), ParseMode.Markdown),
+                TelegramCommandDispatchResponse.TextReply(chatId, BuildValidationMessage(ex), ParseMode.Markdown),
 
             BaseException ex =>
-                TelegramCommandDispatchResult.TextReply(chatId, ex.Message),
+                TelegramCommandDispatchResponse.TextReply(chatId, ex.Message),
 
             _ =>
-                TelegramCommandDispatchResult.TextReply(chatId, "Internal server error")
+                TelegramCommandDispatchResponse.TextReply(chatId, "Internal server error")
         };
     }
 

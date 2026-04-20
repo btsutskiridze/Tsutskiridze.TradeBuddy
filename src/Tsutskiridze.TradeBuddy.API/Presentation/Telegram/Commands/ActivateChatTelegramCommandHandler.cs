@@ -16,18 +16,18 @@ public class ActivateChatTelegramCommandHandler : ITelegramCommandHandler
 
     public string Command => TelegramCommandCatalog.Activate.Command;
     public string Description => TelegramCommandCatalog.Activate.Description;
-    public async Task<TelegramCommandDispatchResult> Handle(TelegramCommandRequest request, CancellationToken ct)
+    public async Task<TelegramCommandDispatchResponse> Handle(TelegramCommandDispatchRequest dispatchRequest, CancellationToken ct)
     {
-        if(request.Args.Count != 1)
+        if(dispatchRequest.Args.Count != 1)
             throw new TelegramPresentationException("Usage: /activate <token>");
         
-        var token = request.Args[0];
+        var token = dispatchRequest.Args[0];
 
         if (string.IsNullOrWhiteSpace(token))
             throw new TelegramPresentationException("Usage: /activate <token>");
 
-        var result = await _mediator.Send(new ActivateChatCommand(request.ChatId, token), ct);
+        var result = await _mediator.Send(new ActivateChatCommand(dispatchRequest.ChatId, token), ct);
 
-        return TelegramCommandDispatchResult.TextReply(request.ChatId, result.Message);
+        return TelegramCommandDispatchResponse.TextReply(dispatchRequest.ChatId, result.Message);
     }
 }

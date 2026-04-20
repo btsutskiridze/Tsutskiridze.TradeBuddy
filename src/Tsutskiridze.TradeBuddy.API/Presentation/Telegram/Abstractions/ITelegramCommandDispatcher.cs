@@ -4,5 +4,5 @@ namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Abstractions;
 
 public interface ITelegramCommandDispatcher
 {
-    Task<TelegramCommandDispatchResult> Dispatch(TelegramCommandRequest request, CancellationToken ct);
+    Task<TelegramCommandDispatchResponse> Dispatch(TelegramCommandDispatchRequest dispatchRequest, CancellationToken ct);
 }

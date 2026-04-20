@@ -7,5 +7,5 @@ public interface ITelegramCommandHandler
     string Command { get; }
     string Description { get; }
 
-    Task<TelegramCommandDispatchResult> Handle(TelegramCommandRequest request, CancellationToken ct);
+    Task<TelegramCommandDispatchResponse> Handle(TelegramCommandDispatchRequest dispatchRequest, CancellationToken ct);
 }

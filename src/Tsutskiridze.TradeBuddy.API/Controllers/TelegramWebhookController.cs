@@ -24,9 +24,9 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
             if (command == null)
                 return Ok();
             
-            var result = await _dispatcher.Dispatch(command, ct);
+            var response = await _dispatcher.Dispatch(command, ct);
 
-            return result.HasWebhookReply ? Ok(result.WebhookReply) : Ok();
+            return response.HasWebhookReply ? Ok(response.WebhookReply) : Ok();
         }
     }
 }

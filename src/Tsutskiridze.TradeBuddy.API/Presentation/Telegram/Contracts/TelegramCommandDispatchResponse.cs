@@ -1,11 +1,12 @@
 ﻿using Telegram.Bot.Types.Enums;
+using Tsutskiridze.TradeBuddy.API.Contracts.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
 
-public sealed class TelegramCommandDispatchResult
+public sealed class TelegramCommandDispatchResponse
 {
-    public TelegramWebhookReply? WebhookReply { get; init; }
+    public TelegramWebhookResponse? WebhookReply { get; init; }
 
     public IReadOnlyList<TelegramOutgoingMessage> PriorMessages { get; init; } =
         Array.Empty<TelegramOutgoingMessage>();
@@ -13,23 +14,23 @@ public sealed class TelegramCommandDispatchResult
     public bool HasWebhookReply => WebhookReply is not null;
     public bool HasPriorMessages => PriorMessages.Count > 0;
 
-    public static TelegramCommandDispatchResult Empty() =>
+    public static TelegramCommandDispatchResponse Empty() =>
         new();
 
-    public static TelegramCommandDispatchResult ReplyOnly(TelegramWebhookReply reply) =>
+    public static TelegramCommandDispatchResponse ReplyOnly(TelegramWebhookResponse reply) =>
         new()
         {
             WebhookReply = reply
         };
 
-    public static TelegramCommandDispatchResult PriorOnly(IReadOnlyList<TelegramOutgoingMessage> priorMessages) =>
+    public static TelegramCommandDispatchResponse PriorOnly(IReadOnlyList<TelegramOutgoingMessage> priorMessages) =>
         new()
         {
             PriorMessages = priorMessages
         };
 
-    public static TelegramCommandDispatchResult ReplyWithPrior(
-        TelegramWebhookReply reply,
+    public static TelegramCommandDispatchResponse ReplyWithPrior(
+        TelegramWebhookResponse reply,
         IReadOnlyList<TelegramOutgoingMessage> priorMessages) =>
         new()
         {
@@ -37,14 +38,14 @@ public sealed class TelegramCommandDispatchResult
             PriorMessages = priorMessages
         };
 
-    public static TelegramCommandDispatchResult TextReply(
+    public static TelegramCommandDispatchResponse TextReply(
         long chatId,
         string text,
         ParseMode? parseMode = null,
         IReadOnlyList<TelegramOutgoingMessage>? priorMessages = null) =>
         new()
         {
-            WebhookReply = TelegramWebhookReply.Text(chatId, text, parseMode),
+            WebhookReply = TelegramWebhookResponse.Text(chatId, text, parseMode),
             PriorMessages = priorMessages ?? Array.Empty<TelegramOutgoingMessage>()
         };
 }

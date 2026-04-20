@@ -6,7 +6,7 @@ namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram;
 
 public class TelegramCommandParser:ITelegramCommandParser
 {
-    public TelegramCommandRequest? Parse(TelegramWebhookRequest request)
+    public TelegramCommandDispatchRequest? Parse(TelegramWebhookRequest request)
     {
         var text = request.Message?.Text?.Trim();
 
@@ -20,7 +20,7 @@ public class TelegramCommandParser:ITelegramCommandParser
         var command = parts[0].Split('@')[0].ToLowerInvariant();
         var args = parts.Skip(1).ToArray();
 
-        return new TelegramCommandRequest(
+        return new TelegramCommandDispatchRequest(
             ChatId: request.Message!.Chat.Id,
             RawText: text,
             Command: command,

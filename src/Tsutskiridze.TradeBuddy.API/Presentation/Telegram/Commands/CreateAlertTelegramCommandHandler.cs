@@ -17,21 +17,21 @@ public class CreateAlertTelegramCommandHandler : ITelegramCommandHandler
 
     public string Command => TelegramCommandCatalog.Alert.Command;
     public string Description => TelegramCommandCatalog.Alert.Description;
-    public async Task<TelegramCommandDispatchResult> Handle(TelegramCommandRequest request, CancellationToken ct)
+    public async Task<TelegramCommandDispatchResponse> Handle(TelegramCommandDispatchRequest dispatchRequest, CancellationToken ct)
     {
-        if (request.Args.Count != 3)
+        if (dispatchRequest.Args.Count != 3)
             throw new TelegramPresentationException("Usage: `/set NVDA above 300`");
 
-        var symbol = request.Args[0];
+        var symbol = dispatchRequest.Args[0];
 
-        if (!Enum.TryParse<PriceDirection>(request.Args[1], true, out var direction))
+        if (!Enum.TryParse<PriceDirection>(dispatchRequest.Args[1], true, out var direction))
             throw new TelegramPresentationException("Direction must be `above` or `below`.");
 
-        if (!decimal.TryParse(request.Args[2], out var price))
+        if (!decimal.TryParse(dispatchRequest.Args[2], out var price))
             throw new TelegramPresentationException("Price must be a valid decimal number.");
         
-        var result = await _mediator.Send(new CreateAlertCommand(request.ChatId, symbol, direction, price), ct);
+        var result = await _mediator.Send(new CreateAlertCommand(dispatchRequest.ChatId, symbol, direction, price), ct);
 
-        return TelegramCommandDispatchResult.TextReply(request.ChatId, result.Message);
+        return TelegramCommandDispatchResponse.TextReply(dispatchRequest.ChatId, result.Message);
     }
 }

@@ -1,12 +1,7 @@
-using System.Text;
-using SharedKernel;
-using SharedKernel.Validations;
-using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Abstractions;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Commands;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram;
@@ -29,20 +24,20 @@ public class TelegramCommandDispatcher : ITelegramCommandDispatcher
         _sender = sender;
     }
 
-    public async Task<TelegramCommandDispatchResult> Dispatch(TelegramCommandRequest request, CancellationToken ct)
+    public async Task<TelegramCommandDispatchResponse> Dispatch(TelegramCommandDispatchRequest dispatchRequest, CancellationToken ct)
     {
-        if (!_handlers.TryGetValue(request.Command, out var handler))
+        if (!_handlers.TryGetValue(dispatchRequest.Command, out var handler))
         {
-            return TelegramCommandDispatchResult.TextReply(
-                request.ChatId,
-                $"Unknown command: `{request.Command}`. Try `/help`.",
+            return TelegramCommandDispatchResponse.TextReply(
+                dispatchRequest.ChatId,
+                $"Unknown command: `{dispatchRequest.Command}`. Try `/help`.",
                 ParseMode.Markdown
             );
         }
 
         try
         {
-            var result = await handler.Handle(request, ct);
+            var result = await handler.Handle(dispatchRequest, ct);
             
             if (result.HasPriorMessages)
                 await _sender.Send(result.PriorMessages, ct);
@@ -51,7 +46,7 @@ public class TelegramCommandDispatcher : ITelegramCommandDispatcher
         }
         catch (Exception ex)
         {
-            return _errorFactory.Create(request.ChatId, ex);
+            return _errorFactory.Create(dispatchRequest.ChatId, ex);
         }
     }
 }

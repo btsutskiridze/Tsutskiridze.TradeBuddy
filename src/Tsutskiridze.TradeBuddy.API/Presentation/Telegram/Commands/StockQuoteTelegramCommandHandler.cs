@@ -18,24 +18,24 @@ public class StockQuoteTelegramCommandHandler : ITelegramCommandHandler
     public string Command => TelegramCommandCatalog.StockQuote.Command;
     public string Description => TelegramCommandCatalog.StockQuote.Description;
 
-    public async Task<TelegramCommandDispatchResult> Handle(TelegramCommandRequest request, CancellationToken ct)
+    public async Task<TelegramCommandDispatchResponse> Handle(TelegramCommandDispatchRequest dispatchRequest, CancellationToken ct)
     {
-        if (request.Args.Count != 1)
+        if (dispatchRequest.Args.Count != 1)
             throw new TelegramPresentationException("Usage: /price <symbol>");
         
-        var symbol = request.Args[0];
+        var symbol = dispatchRequest.Args[0];
 
         if (string.IsNullOrWhiteSpace(symbol))
             throw new TelegramPresentationException("Usage: /price <symbol>");
 
-        var result = await _mediator.Send(new StockQuoteCommand(request.ChatId, symbol), ct);
+        var result = await _mediator.Send(new StockQuoteCommand(dispatchRequest.ChatId, symbol), ct);
 
         var priorMessages = new List<TelegramOutgoingMessage>();
         if (!string.IsNullOrWhiteSpace(result.AnalysisMessage))
-            priorMessages.Add(new TelegramOutgoingMessage(request.ChatId, result.AnalysisMessage));
+            priorMessages.Add(new TelegramOutgoingMessage(dispatchRequest.ChatId, result.AnalysisMessage));
 
-        return TelegramCommandDispatchResult.TextReply(
-            request.ChatId, 
+        return TelegramCommandDispatchResponse.TextReply(
+            dispatchRequest.ChatId, 
             result.SummaryMessage, 
             priorMessages: priorMessages
         );
