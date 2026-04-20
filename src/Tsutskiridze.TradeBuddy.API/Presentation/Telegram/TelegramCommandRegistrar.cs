@@ -1,16 +1,14 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram
+namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram
 {
-    public class TelegramCommandRegistrationService : IHostedService
+    public class TelegramCommandRegistrar : IHostedService
     {
         private readonly ITelegramBotClient _bot;
-        private readonly ILogger<TelegramCommandRegistrationService> _logger;
+        private readonly ILogger<TelegramCommandRegistrar> _logger;
 
-        public TelegramCommandRegistrationService(ITelegramBotClient bot, ILogger<TelegramCommandRegistrationService> logger)
+        public TelegramCommandRegistrar(ITelegramBotClient bot, ILogger<TelegramCommandRegistrar> logger)
         {
             _bot = bot;
             _logger = logger;

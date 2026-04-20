@@ -1,8 +1,6 @@
-using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 
@@ -16,33 +14,23 @@ public class TelegramSender : ITelegramSender
         _client = client;
         _logger = logger;
     }
-
-    public async Task SendMessage(long chatId, string text, CancellationToken ct = default)
+    //todo: add resilience everywhere it is necessary
+    public async Task Send(TelegramOutgoingMessage message, CancellationToken ct = default)
     {
-        try
+        await _client.SendMessage(message.ChatId, message.Text, cancellationToken: ct);
+    }
+
+    public async Task Send(IEnumerable<TelegramOutgoingMessage> messages, CancellationToken ct = default)
+    {
+        foreach (var message in messages)
         {
-            await _client.SendMessage(
-                chatId,
-                text,
-                cancellationToken: ct
-            );
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            ExceptionDispatchInfo.Throw(e);
+            ct.ThrowIfCancellationRequested();
+            await Send(message, ct);
         }
     }
 
     public async Task SendTypingAction(long chatId, CancellationToken ct = default)
     {
-        try
-        {
-            await _client.SendChatAction(chatId, ChatAction.Typing, cancellationToken: ct);
-        }
-        catch(Exception e)
-        {
-            _logger.LogWarning(e.Message);
-        }
+        await _client.SendChatAction(chatId, ChatAction.Typing, cancellationToken: ct);
     }
 }

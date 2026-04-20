@@ -1,4 +1,4 @@
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
+namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram;
 
 public sealed record TelegramCommandDefinition(
     string Command,

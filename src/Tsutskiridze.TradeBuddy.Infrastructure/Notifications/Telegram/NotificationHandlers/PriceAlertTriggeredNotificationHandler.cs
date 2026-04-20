@@ -3,7 +3,6 @@ using SharedKernel;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Notifications;
 using Tsutskiridze.TradeBuddy.Core.Enums;
-using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.NotificationHandlers;
 
@@ -30,14 +29,13 @@ public sealed class PriceAlertTriggeredNotificationHandler : IBaseNotificationHa
         var triggerMessage =
             $"🔔 *{notification.Symbol}*: {currencySymbol}{notification.CurrentPrice:N2} 🔔\n" +
             $"{directionEmoji} {directionText} {currencySymbol}{notification.AlertPrice:N2}";
-
-        await _sender.SendMessage(notification.ChatId, triggerMessage, ct);
-
+        await _sender.Send(new TelegramOutgoingMessage(notification.ChatId, triggerMessage), ct);
+        
         if (notification.WasDeactivated)
         {
             var removedMessage =
                 $"🚫 *{notification.Symbol}* alert removed after {notification.MaxNotifications} notifications.";
-            await _sender.SendMessage(notification.ChatId, removedMessage, ct);
+            await _sender.Send(new TelegramOutgoingMessage(notification.ChatId, removedMessage), ct);
         }
 
         _logger.LogInformation("Price alert notification delivery completed");

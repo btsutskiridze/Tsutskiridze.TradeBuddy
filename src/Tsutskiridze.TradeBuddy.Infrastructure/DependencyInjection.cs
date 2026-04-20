@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OpenAI.Chat;
 using SharedKernel;
@@ -31,8 +30,6 @@ using Tsutskiridze.TradeBuddy.Infrastructure.News.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.News.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
-using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.CommandHandlers;
-using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 using Tsutskiridze.TradeBuddy.Infrastructure.Utilities;
@@ -189,22 +186,7 @@ public static class DependencyInjection
     {
         services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
         services.AddScoped<ITelegramSender, TelegramSender>();
-        services.AddScoped<ITelegramWebhookRouter, TelegramWebhookRouter>();
-        services.AddHostedService<TelegramCommandRegistrationService>();
 
-        var handlers = typeof(DependencyInjection).Assembly
-            .GetTypes()
-            .Where(x =>
-                x is { IsAbstract: false, IsInterface: false } && typeof(ITelegramCommandHandler).IsAssignableFrom(x)
-            );
-
-        foreach (var handler in handlers)
-        {
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient(typeof(ITelegramCommandHandler), handler
-            ));
-        }
-        
         return services;
     }
 
