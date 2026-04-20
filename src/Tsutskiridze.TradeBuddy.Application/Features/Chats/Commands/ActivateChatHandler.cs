@@ -1,6 +1,6 @@
 ﻿using Mediator;
 using SharedKernel;
-using Tsutskiridze.TradeBuddy.Application.Exceptions;
+using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 

@@ -2,7 +2,7 @@
 using SharedKernel;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Common.Messaging;
 
 public sealed class NotificationDispatcher : INotificationDispatcher
 {

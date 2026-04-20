@@ -3,7 +3,7 @@ using System.Text;
 using Mediator;
 using SharedKernel;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
-using Tsutskiridze.TradeBuddy.Application.Exceptions;
+using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;

@@ -1,7 +1,7 @@
 using Npgsql;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Utilities;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Common.Data;
 
 
 public sealed class EfCoreDbExceptionClassifier : IDbExceptionClassifier

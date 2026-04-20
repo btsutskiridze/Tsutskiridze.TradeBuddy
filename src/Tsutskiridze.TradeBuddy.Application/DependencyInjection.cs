@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
+using Tsutskiridze.TradeBuddy.Application.Common.Localization;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services;
 
 namespace Tsutskiridze.TradeBuddy.Application;
@@ -9,6 +11,8 @@ public static class DependencyInjection
     {
         services.AddTransient<StockAnalysisPromptBuilder>();
         services.AddTransient<StockAnalysisGenerator>();
+        
+        services.AddSingleton<ICurrencySymbolProvider, CurrencySymbolProvider>();
         
         return services;
     }

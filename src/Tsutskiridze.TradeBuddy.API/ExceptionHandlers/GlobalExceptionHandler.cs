@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
 using SharedKernel.Validations;
-using Tsutskiridze.TradeBuddy.Application.Exceptions;
-using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
+using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 
 namespace Tsutskiridze.TradeBuddy.API.ExceptionHandlers;
 

@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Constants
+﻿namespace Tsutskiridze.TradeBuddy.Application.Common.Constants
 {
     public static class Stocks
     {

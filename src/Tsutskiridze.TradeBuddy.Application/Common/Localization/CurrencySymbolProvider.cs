@@ -1,7 +1,7 @@
 using System.Globalization;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Utilities
+namespace Tsutskiridze.TradeBuddy.Application.Common.Localization
 {
     public class CurrencySymbolProvider : ICurrencySymbolProvider
     {

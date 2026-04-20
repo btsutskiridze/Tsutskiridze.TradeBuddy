@@ -1,5 +1,5 @@
+using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 using Tsutskiridze.TradeBuddy.Application.DTOs.News;
-using Tsutskiridze.TradeBuddy.Application.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions.News
 {

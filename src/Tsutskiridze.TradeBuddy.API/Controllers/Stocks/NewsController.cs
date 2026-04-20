@@ -1,6 +1,6 @@
 ﻿using Mediator;
 using Microsoft.AspNetCore.Mvc;
-using Tsutskiridze.TradeBuddy.Application.Enums;
+using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 using Tsutskiridze.TradeBuddy.Application.Features.News.Queries;
 using Tsutskiridze.TradeBuddy.Application.Features.News.Queries.Finnhub;
 using Tsutskiridze.TradeBuddy.Application.Features.News.Queries.Google;

@@ -1,7 +1,7 @@
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
-using Tsutskiridze.TradeBuddy.Application.Exceptions;
+using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 

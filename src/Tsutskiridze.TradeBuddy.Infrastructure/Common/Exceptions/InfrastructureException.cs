@@ -1,6 +1,6 @@
 using SharedKernel;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 
 public class InfrastructureException : BaseException
 {

@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Exceptions;
+﻿namespace Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 
 public class ResourceNotFoundException : ApplicationLayerException
 {
