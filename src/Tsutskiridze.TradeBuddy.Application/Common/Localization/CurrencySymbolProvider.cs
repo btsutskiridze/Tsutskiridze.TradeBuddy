@@ -1,5 +1,4 @@
 using System.Globalization;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 
 namespace Tsutskiridze.TradeBuddy.Application.Common.Localization
 {

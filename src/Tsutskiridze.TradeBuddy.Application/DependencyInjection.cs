@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Application.Common.Localization;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services;
 

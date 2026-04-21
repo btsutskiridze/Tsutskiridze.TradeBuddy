@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Common.Data;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Infrastructure.Common.Data;
 using Tsutskiridze.TradeBuddy.Infrastructure.Common.Messaging;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage;

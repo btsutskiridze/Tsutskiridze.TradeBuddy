@@ -1,5 +1,5 @@
 using Npgsql;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Common.Data;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Common.Data;
 

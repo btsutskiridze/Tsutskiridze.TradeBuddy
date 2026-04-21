@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SharedKernel;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
+using Tsutskiridze.TradeBuddy.Application.Common.Localization;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Notifications;
 using Tsutskiridze.TradeBuddy.Core.Enums;
 

@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
+﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.Common.Data;
 
 public interface IDbExceptionClassifier
 {

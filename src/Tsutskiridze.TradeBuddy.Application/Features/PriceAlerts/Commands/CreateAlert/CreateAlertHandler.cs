@@ -2,8 +2,8 @@
 using Mediator;
 using SharedKernel;
 using SharedKernel.Validations;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Common.Data;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Utilities;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
 using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
