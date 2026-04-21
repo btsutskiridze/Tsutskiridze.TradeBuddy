@@ -49,7 +49,7 @@ public static class SpecificationEvaluator<TEntity> where TEntity : Entity<Guid>
 
         if (specification.Take.HasValue)
         {
-            query = query.Skip(specification.Take.Value);
+            query = query.Take(specification.Take.Value);
         }
 
         return query;
