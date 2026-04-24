@@ -16,4 +16,8 @@
     <ItemGroup>
         <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Core\Tsutskiridze.TradeBuddy.Core.csproj"/>
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\Stocks\" />
+    </ItemGroup>
 </Project>
