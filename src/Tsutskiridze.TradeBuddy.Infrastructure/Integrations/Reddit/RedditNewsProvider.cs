@@ -3,9 +3,8 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
-using Tsutskiridze.TradeBuddy.Application.DTOs.News;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
 {
@@ -26,7 +25,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
             _logger = logger;
         }
 
-        public async Task<List<RedditPostDto>?> GetRedditPosts(string keyword, RedditSortType sortType, int? limit = null)
+        public async Task<List<RedditPost>?> GetRedditPosts(string keyword, SortType sortType, int? limit = null)
         {
             string limitQuery = limit.HasValue ? $"&limit={limit}" : string.Empty;
 
@@ -48,7 +47,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
                 return null;
             }
 
-            var posts = new List<RedditPostDto>();
+            var posts = new List<RedditPost>();
 
             foreach (var item in json["data"]!["children"]!)
             {
@@ -60,7 +59,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
                     if (score >= 5 && comments >= 3)
                     {
                         var body = item["data"]?["selftext"]?.Value<string>() ?? string.Empty;
-                        posts.Add(new RedditPostDto
+                        posts.Add(new RedditPost
                         {
                             Title = item["data"]?["title"]?.Value<string>() ?? string.Empty,
                             Url = item["data"]?["url"]?.Value<string>() ?? string.Empty,

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Helpers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Loading;
@@ -23,7 +22,7 @@ public static class DependencyInjection
         services.AddCommonServices()
             .AddParsingServices()
             .AddStreamingServices();
-        
+
         services.AddTransient<IYahooNewsProvider, YahooNewsProvider>();
 
         return services;
@@ -53,10 +52,10 @@ public static class DependencyInjection
     {
         services.AddSingleton<IMarketDataTransportClient, YahooMarketDataTransportClient>();
         services.AddSingleton<IPricingMessageProcessor, PricingMessageProcessor>();
-        
+
         services.AddSingleton<SubscriptionManager>();
         services.AddSingleton<ISubscriptionManager>(sp => sp.GetRequiredService<SubscriptionManager>());
-        
+
         services.AddHostedService<StockPriceWebSocketListener>();
 
         return services;

@@ -1,6 +1,6 @@
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
 
-namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep
 {
     public interface IFinancialModelingPrepQuoteProvider
     {

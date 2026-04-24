@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
-using Tsutskiridze.TradeBuddy.Application.DTOs.News;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.GoogleNews.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.GoogleNews
 {
@@ -16,7 +15,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.GoogleNews
             _logger = logger;
         }
 
-        public async Task<List<GoogleNewsItemDto>?> GetNewsAsync(string symbol, int? limit = null)
+        public async Task<List<GoogleNewsItem>?> GetNewsAsync(string symbol, int? limit = null)
         {
             using var playwright = await Playwright.CreateAsync();
             await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
@@ -68,11 +67,11 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.GoogleNews
             }
         }
 
-        private static async Task<List<GoogleNewsItemDto>?> ParseNewsAsync(IPage page, int? limit)
+        private static async Task<List<GoogleNewsItem>?> ParseNewsAsync(IPage page, int? limit)
         {
             await page.WaitForSelectorAsync("div.SoaBEf");
 
-            var newsList = new List<GoogleNewsItemDto>();
+            var newsList = new List<GoogleNewsItem>();
 
             var newsItems = await page.QuerySelectorAllAsync("div.SoaBEf");
             foreach (var item in newsItems)
@@ -95,7 +94,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.GoogleNews
                 if (url.StartsWith("/url?q="))
                     url = url.Substring(7).Split("&")[0];
 
-                newsList.Add(new GoogleNewsItemDto
+                newsList.Add(new GoogleNewsItem
                 {
                     Title = title,
                     Url = url,

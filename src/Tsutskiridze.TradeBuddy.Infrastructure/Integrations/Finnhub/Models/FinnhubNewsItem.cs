@@ -1,6 +1,6 @@
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.News
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub.Models
 {
-    public class FinnhubNewsItemDto
+    public class FinnhubNewsItem
     {
         public string Category { get; set; }
         public string Title { get; set; }

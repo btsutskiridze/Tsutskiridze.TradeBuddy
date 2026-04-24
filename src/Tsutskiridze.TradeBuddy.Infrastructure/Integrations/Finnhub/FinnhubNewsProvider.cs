@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
-using Tsutskiridze.TradeBuddy.Application.DTOs.News;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub
 {
@@ -16,7 +15,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub
             _client = client;
         }
 
-        public async Task<List<FinnhubNewsItemDto>?> GetCompanyNewsAsync(string symbol, DateTime from, DateTime to, int? limit = null)
+        public async Task<List<FinnhubNewsItem>?> GetCompanyNewsAsync(string symbol, DateTime from, DateTime to, int? limit = null)
         {
             var response = await _client.GetAsync($"api/v1/company-news?symbol={symbol}&from={from:yyyy-MM-dd}&to={to:yyyy-MM-dd}&token={_options.ApiKey}");
             response.EnsureSuccessStatusCode();
@@ -28,13 +27,13 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub
                 return null;
             }
 
-            var newsList = new List<FinnhubNewsItemDto>();
+            var newsList = new List<FinnhubNewsItem>();
 
             foreach (var item in json)
             {
                 try
                 {
-                    newsList.Add(new FinnhubNewsItemDto
+                    newsList.Add(new FinnhubNewsItem
                     {
                         Category = item["category"].Value<string>(),
                         Title = item["headline"].Value<string>(),

@@ -1,10 +1,24 @@
+using Tsutskiridze.TradeBuddy.Application.Common.Enums;
+
 namespace Tsutskiridze.TradeBuddy.Application.DTOs.News
 {
     public class StockNewsDto
     {
-        public List<GoogleNewsItemDto>? Google { get; set; }
-        public List<RedditPostDto>? Reddit { get; set; }
-        public List<YahooNewsItemDto>? Yahoo { get; set; }
-        public List<FinnhubNewsItemDto>? Finnhub { get; set; }
+        public IReadOnlyCollection<StockNewsItem> Items { get; set; }
+
+        public class StockNewsItem
+        {
+            public string Title { get; set; }
+            public string Url { get; set; }
+            public string Summary { get; set; }
+            public string PublishTime { get; set; }
+            public NewsSource Source { get; set; }
+            public IReadOnlyDictionary<string, string> Metadata { get; init; }
+
+            public StockNewsItem()
+            {
+                Metadata = new Dictionary<string, string>();
+            }
+        }
     }
 }

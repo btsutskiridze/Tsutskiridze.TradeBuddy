@@ -7,8 +7,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddNewsServices(this IServiceCollection services)
     {
-        services.AddScoped<INewsProvider, NewsProvider>();
-        
+        services.AddScoped<IStockNewsReader, StockNewsReader>();
+
         return services;
     }
 }

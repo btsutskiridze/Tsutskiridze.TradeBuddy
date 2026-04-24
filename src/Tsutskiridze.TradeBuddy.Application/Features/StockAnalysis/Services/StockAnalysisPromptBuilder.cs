@@ -7,12 +7,12 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services
 {
     public class StockAnalysisPromptBuilder
     {
-        private readonly INewsProvider _news;
+        private readonly IStockNewsReader _newsReader;
         private readonly IMarketDataProvider _scraper;
 
-        public StockAnalysisPromptBuilder(INewsProvider news, IMarketDataProvider scraper)
+        public StockAnalysisPromptBuilder(IStockNewsReader newsReader, IMarketDataProvider scraper)
         {
-            _news = news;
+            _newsReader = newsReader;
             _scraper = scraper;
         }
 
@@ -24,7 +24,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services
                 var stockOverview = _scraper.GetStockOverview(symbol);
                 var prevDayPrices = _scraper.GetStockPrevDaysClosePrices(symbol, 10);
                 var annualReport = _scraper.GetStockLastAnnualReport(symbol);
-                var allNews = _news.GetAllNews(symbol, 3);
+                var allNews = _newsReader.GetNewsAsync(symbol, limit: 3);
 
                 await Task.WhenAll(quote, stockOverview, prevDayPrices, annualReport, allNews);
 

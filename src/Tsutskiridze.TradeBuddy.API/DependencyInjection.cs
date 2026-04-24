@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Scalar.AspNetCore;
 using SharedKernel.Validations.Mediator;
-using Tsutskiridze.TradeBuddy.API.ExceptionHandlers;
+using Tsutskiridze.TradeBuddy.API.Exceptions;
 using Tsutskiridze.TradeBuddy.Application;
 
 namespace Tsutskiridze.TradeBuddy.API;
@@ -34,6 +34,9 @@ public static class DependencyInjection
                 jsonOptions.PropertyNameCaseInsensitive = true;
                 jsonOptions.WriteIndented = false;
                 jsonOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                jsonOptions.Converters.Add(
+                    new JsonStringEnumConverter(namingPolicy:JsonNamingPolicy.CamelCase,allowIntegerValues:false)
+                );
             });
 
         services.AddCors(options =>

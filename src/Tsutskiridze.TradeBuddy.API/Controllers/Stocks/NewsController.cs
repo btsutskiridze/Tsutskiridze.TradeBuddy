@@ -1,11 +1,8 @@
 ﻿using Mediator;
 using Microsoft.AspNetCore.Mvc;
+using Tsutskiridze.TradeBuddy.API.Contracts.Stocks;
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 using Tsutskiridze.TradeBuddy.Application.Features.News.Queries;
-using Tsutskiridze.TradeBuddy.Application.Features.News.Queries.Finnhub;
-using Tsutskiridze.TradeBuddy.Application.Features.News.Queries.Google;
-using Tsutskiridze.TradeBuddy.Application.Features.News.Queries.Reddit;
-using Tsutskiridze.TradeBuddy.Application.Features.News.Queries.Yahoo;
 
 namespace Tsutskiridze.TradeBuddy.API.Controllers.Stocks
 {
@@ -21,9 +18,16 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers.Stocks
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromRoute] string symbol, [FromQuery] int limit = 10)
+        public async Task<IActionResult> Get(
+            [FromRoute] string symbol,
+            [FromQuery] GetStockNewsRequest request,
+            CancellationToken ct
+        )
         {
-            var result = await _mediator.Send(new StockNewsQuery(symbol, limit));
+            var result = await _mediator.Send(
+                new GetStockNewsQuery(symbol, Limit: request.Limit),
+                ct
+            );
 
             return Ok(result);
         }
@@ -31,44 +35,68 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers.Stocks
         [HttpGet("reddit")]
         public async Task<IActionResult> GetReddit(
             [FromRoute] string symbol,
-            [FromQuery] int limit = 10,
-            [FromQuery] string sortType = "new")
+            [FromQuery] GetRedditStockNewsRequest request,
+            CancellationToken ct
+        )
         {
-            var sort = Enum.TryParse<RedditSortType>(sortType, true, out var sortTypeEnum)
-                ? sortTypeEnum
-                : RedditSortType.New;
+            var result = await _mediator.Send(
+                new GetStockNewsQuery(
+                    symbol,
+                    [NewsSource.Reddit],
+                    request.Limit,
+                    SortType: request.ToSortType()),
+                ct
+            );
 
-            var posts = await _mediator.Send(new RedditNewsQuery(symbol, sort, limit));
-
-            return Ok(posts);
+            return Ok(result);
         }
 
         [HttpGet("google")]
-        public async Task<IActionResult> GetGoogle([FromRoute] string symbol, [FromQuery] int limit = 10)
+        public async Task<IActionResult> GetGoogle(
+            [FromRoute] string symbol,
+            [FromQuery] GetStockNewsRequest request,
+            CancellationToken ct
+        )
         {
-            var news = await _mediator.Send(new GoogleNewsQuery(symbol, limit));
+            var result = await _mediator.Send(
+                new GetStockNewsQuery(symbol, [NewsSource.Google], request.Limit),
+                ct
+            );
 
-            return Ok(news);
+            return Ok(result);
         }
 
         [HttpGet("yahoo")]
-        public async Task<IActionResult> GetYahoo([FromRoute] string symbol, [FromQuery] int limit = 10)
+        public async Task<IActionResult> GetYahoo(
+            [FromRoute] string symbol,
+            [FromQuery] GetStockNewsRequest request,
+            CancellationToken ct
+        )
         {
-            var news = await _mediator.Send(new YahooNewsQuery(symbol, limit));
+            var result = await _mediator.Send(
+                new GetStockNewsQuery(symbol, [NewsSource.Yahoo], request.Limit),
+                ct
+            );
 
-            return Ok(news);
+            return Ok(result);
         }
 
         [HttpGet("finnhub")]
         public async Task<IActionResult> GetFinnhub(
             [FromRoute] string symbol,
-            [FromQuery] DateTime from,
-            [FromQuery] DateTime to,
-            [FromQuery] int limit = 10)
+            [FromQuery] GetFinnhubStockNewsRequest request,
+            CancellationToken cancellationToken)
         {
-            var news = await _mediator.Send(new FinnhubNewsQuery(symbol, from, to, limit));
+            var result = await _mediator.Send(
+                new GetStockNewsQuery(
+                    symbol,
+                    [NewsSource.Finnhub],
+                    request.Limit,
+                    request.From,
+                    request.To),
+                cancellationToken);
 
-            return Ok(news);
+            return Ok(result);
         }
     }
 }

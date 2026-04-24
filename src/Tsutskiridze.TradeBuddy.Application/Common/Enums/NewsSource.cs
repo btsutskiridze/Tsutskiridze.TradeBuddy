@@ -1,6 +1,6 @@
 ﻿namespace Tsutskiridze.TradeBuddy.Application.Common.Enums
 {
-    public enum NewsSourceType
+    public enum NewsSource
     {
         Google,
         Reddit,

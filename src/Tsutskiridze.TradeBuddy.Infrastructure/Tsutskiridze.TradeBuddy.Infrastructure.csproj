@@ -42,4 +42,8 @@
       </Protobuf>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="News\Abstractions\" />
+    </ItemGroup>
+
 </Project>

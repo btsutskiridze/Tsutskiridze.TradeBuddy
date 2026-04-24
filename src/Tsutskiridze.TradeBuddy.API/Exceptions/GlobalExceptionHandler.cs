@@ -6,7 +6,7 @@ using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 
-namespace Tsutskiridze.TradeBuddy.API.ExceptionHandlers;
+namespace Tsutskiridze.TradeBuddy.API.Exceptions;
 
 public class GlobalExceptionHandler : IExceptionHandler
 {

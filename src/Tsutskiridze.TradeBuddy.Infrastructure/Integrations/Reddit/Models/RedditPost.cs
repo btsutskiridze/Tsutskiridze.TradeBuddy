@@ -1,6 +1,6 @@
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.News
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit.Models
 {
-    public class RedditPostDto
+    public class RedditPost
     {
         public string Title { get; set; }
         public string Url { get; set; }

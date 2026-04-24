@@ -1,10 +1,9 @@
 using System.Text.Json;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
-using Tsutskiridze.TradeBuddy.Application.DTOs.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Helpers;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.News.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.News
 {
@@ -24,7 +23,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.News
             _logger = logger;
         }
 
-        public async Task<List<YahooNewsItemDto>?> GetNewsAsync(string symbol, int? limit = null)
+        public async Task<List<YahooNewsItem>?> GetNewsAsync(string symbol, int? limit = null)
         {
             if (!TryNormalizeSymbol(symbol, out var normalizedSymbol))
                 return null;
@@ -47,9 +46,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.News
             return news.Count > 0 ? news : null;
         }
 
-        private List<YahooNewsItemDto> ParseNewsFromJson(IReadOnlyList<JsonElement> payloadRoots, string symbol)
+        private List<YahooNewsItem> ParseNewsFromJson(IReadOnlyList<JsonElement> payloadRoots, string symbol)
         {
-            var result = new List<YahooNewsItemDto>();
+            var result = new List<YahooNewsItem>();
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var root in payloadRoots)
@@ -142,7 +141,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.News
                     if (!seen.Add(dedupeKey))
                         continue;
 
-                    result.Add(new YahooNewsItemDto
+                    result.Add(new YahooNewsItem
                     {
                         Title = title,
                         Url = clickThroughUrl,
@@ -155,9 +154,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.News
             return result;
         }
 
-        private static List<YahooNewsItemDto> ParseNewsFromHtml(HtmlDocument document)
+        private static List<YahooNewsItem> ParseNewsFromHtml(HtmlDocument document)
         {
-            var result = new List<YahooNewsItemDto>();
+            var result = new List<YahooNewsItem>();
             var newsNodes = document.DocumentNode.SelectNodes("//section[@data-testid='storyitem']");
             if (newsNodes is null)
                 return result;
@@ -191,7 +190,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.News
                                     StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                                 .LastOrDefault() ?? publishTime;
 
-                    result.Add(new YahooNewsItemDto
+                    result.Add(new YahooNewsItem
                     {
                         Title = title,
                         Url = url,
