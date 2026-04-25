@@ -27,6 +27,12 @@ public class StockAnalysisGenerator
         _logger = logger;
     }
 
+    
+    /*
+     *todo:
+     *Put analysis behind a command/query handler
+     *and let failures surface as typed exceptions or a proper result object. 
+     */
     public async Task<StockAnalysisOutcomeDto> AnalyzeAsync(string stock)
     {
         try

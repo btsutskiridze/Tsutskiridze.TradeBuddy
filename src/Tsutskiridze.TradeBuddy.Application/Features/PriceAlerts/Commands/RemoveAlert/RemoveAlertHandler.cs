@@ -37,6 +37,12 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
         _yahoo = yahoo;
     }
 
+    
+    /*
+     *todo:
+     * Remove the quote lookup from the delete path and use command.Price
+     * or the stored alert value in the response.
+     */
     public async ValueTask<RemoveAlertCommandResult> Handle(RemoveAlertCommand command, CancellationToken ct)
     {
         var chat = await GetActiveChat(command.ChatId, ct);

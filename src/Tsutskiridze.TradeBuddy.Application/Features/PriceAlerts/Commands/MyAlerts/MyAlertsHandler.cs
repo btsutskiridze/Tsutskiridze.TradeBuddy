@@ -36,6 +36,11 @@ public sealed class MyAlertsHandler : ICommandHandler<MyAlertsCommand, MyAlertsR
         _currency = currency;
     }
 
+    /*
+     *todo:
+     *Rename it to GetMyAlertsQuery
+     *and return structured data. 
+     */
     public async ValueTask<MyAlertsResult> Handle(MyAlertsCommand command, CancellationToken ct)
     {
         var chatId = await _chats.FirstOrDefaultAsync(new ActiveChatIdByTelegramId(command.ChatId), ct)

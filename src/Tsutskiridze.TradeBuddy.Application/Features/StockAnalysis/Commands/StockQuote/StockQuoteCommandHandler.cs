@@ -16,6 +16,12 @@ public class StockQuoteCommandHandler : ICommandHandler<StockQuoteCommand, Stock
     private readonly StockAnalysisGenerator _stockAnalysisGenerator;
     private readonly IMarketDataProvider _stockScraper;
 
+    
+    /*
+     *todo:
+     * Move quotas/rate limits to
+     * Redis, database, or a dedicated policy service.
+     */
     private static int _analysisCount = 0;
     private static DateTime _lastReset = DateTime.UtcNow.Date;
     private static DateTime _lastExecution = DateTime.MinValue;

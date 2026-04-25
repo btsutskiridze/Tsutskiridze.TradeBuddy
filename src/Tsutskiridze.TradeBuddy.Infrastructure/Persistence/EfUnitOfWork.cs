@@ -39,6 +39,15 @@ public class EfUnitOfWork : IUnitOfWork
                 "The data was changed by another process.",
                 ex);
         }
+        
+        /*
+         *todo:
+         * Introduce an outbox and stop calling SaveChangesAsync
+         * from domain-event handlers.
+         * Persist state and outbox in one transaction;
+         * publish asynchronously.
+         *
+         */
 
         foreach (var entity in entitiesWithEvents)
             entity.ClearDomainEvents();

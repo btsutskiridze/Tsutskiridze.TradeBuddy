@@ -12,6 +12,14 @@ public class Chat : Entity<Guid>, IAggregateRoot
     private Chat()
     {
     }
+    
+    /*
+     *todo:
+     *Introduce StockSymbol, Money,
+     *CurrencyCode, ActivationToken, TelegramChatId,
+     *and richer aggregate factories/methods.
+     * 
+     */
 
     public void Activate(long telegramChatId)
     {

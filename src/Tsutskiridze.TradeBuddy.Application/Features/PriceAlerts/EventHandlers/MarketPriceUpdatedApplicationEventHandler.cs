@@ -92,7 +92,6 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
 
         await _uow.SaveChangesAsync(ct);
         
-        //todo: finally add outbox
         await _notifier.DispatchAsync(notifications, ct);
 
         _log.LogInformation($"Processed market price update for {evt.Symbol}. Notifications sent: {notifications.Count}");

@@ -8,6 +8,13 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Chat> builder)
         {
+            /*
+             *todo:
+             *Add indexes and uniqueness rules for ActivationToken and TelegramChatId,
+             *plus required column constraints if the lifecycle requires them.
+             * 
+             */
+            
             builder.ToTable("chats");
 
             builder.HasKey(c => c.Id);
