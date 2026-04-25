@@ -29,7 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Tsutskiridze.TradeBuddy.Application\Tsutskiridze.TradeBuddy.Application.csproj" />
     <ProjectReference Include="..\..\src\Tsutskiridze.TradeBuddy.Infrastructure\Tsutskiridze.TradeBuddy.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\src\Tsutskiridze.TradeBuddy.Core\Tsutskiridze.TradeBuddy.Core.csproj" />
+    <ProjectReference Include="..\..\src\Tsutskiridze.TradeBuddy.Domain\Tsutskiridze.TradeBuddy.Domain.csproj" />
   </ItemGroup>
 
 </Project>

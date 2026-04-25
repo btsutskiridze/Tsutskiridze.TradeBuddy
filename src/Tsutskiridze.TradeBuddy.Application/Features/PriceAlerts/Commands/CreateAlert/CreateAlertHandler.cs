@@ -6,13 +6,13 @@ using Tsutskiridze.TradeBuddy.Application.Abstractions.Common.Data;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.Chats.Specifications;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Specifications;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;
-using Tsutskiridze.TradeBuddy.Core.Enums;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Specifications;
+using Tsutskiridze.TradeBuddy.Domain.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.CreateAlert;
 

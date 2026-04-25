@@ -1,8 +1,8 @@
 ﻿using SharedKernel;
 using SharedKernel.Events;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.PriceAlerts.Events;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Specifications;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Events;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Specifications;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.EventHandlers;
 

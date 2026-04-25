@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep;
 

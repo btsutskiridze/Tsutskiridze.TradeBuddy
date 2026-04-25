@@ -1,5 +1,4 @@
 ﻿using SharedKernel.Validations;
-using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.News.Queries;
 

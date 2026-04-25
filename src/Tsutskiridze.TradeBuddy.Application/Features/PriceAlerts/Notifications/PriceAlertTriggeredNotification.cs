@@ -1,5 +1,5 @@
 ﻿using SharedKernel;
-using Tsutskiridze.TradeBuddy.Core.Enums;
+using Tsutskiridze.TradeBuddy.Domain.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Notifications;
 

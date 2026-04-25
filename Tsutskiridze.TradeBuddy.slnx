@@ -25,7 +25,7 @@
         <Project Path="SharedKernel/SharedKernel.csproj" />
         <Project Path="src/Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" />
         <Project Path="src/Tsutskiridze.TradeBuddy.Application/Tsutskiridze.TradeBuddy.Application.csproj" />
-        <Project Path="src/Tsutskiridze.TradeBuddy.Core/Tsutskiridze.TradeBuddy.Core.csproj" />
+        <Project Path="src/Tsutskiridze.TradeBuddy.Domain/Tsutskiridze.TradeBuddy.Domain.csproj" />
         <Project Path="src/Tsutskiridze.TradeBuddy.Infrastructure/Tsutskiridze.TradeBuddy.Infrastructure.csproj" />
     </Folder>
     <Folder Name="/tests/">

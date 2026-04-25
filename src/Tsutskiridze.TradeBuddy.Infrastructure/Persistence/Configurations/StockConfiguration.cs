@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
 {

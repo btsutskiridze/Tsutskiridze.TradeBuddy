@@ -1,0 +1,11 @@
+﻿using SharedKernel.Specifications;
+
+namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
+
+public sealed class ChatByActivationTokenSpec : Specification<Chat>
+{
+    public ChatByActivationTokenSpec(string activationToken)
+    {
+        Query.Where(x => x.ActivationToken == activationToken);
+    }
+}

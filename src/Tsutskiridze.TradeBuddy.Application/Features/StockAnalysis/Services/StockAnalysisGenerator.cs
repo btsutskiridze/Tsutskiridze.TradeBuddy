@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
-using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services;

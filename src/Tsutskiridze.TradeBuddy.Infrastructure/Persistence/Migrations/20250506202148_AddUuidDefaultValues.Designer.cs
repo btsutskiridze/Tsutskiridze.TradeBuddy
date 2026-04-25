@@ -24,7 +24,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram.Chat", b =>
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.DBEntities.Telegram.Chat", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                     b.ToTable("chats", (string)null);
                 });
 
-            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram.PriceAlert", b =>
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.DBEntities.Telegram.PriceAlert", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -84,7 +84,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                     b.ToTable("price_alerts", (string)null);
                 });
 
-            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram.Stock", b =>
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.DBEntities.Telegram.Stock", b =>
                 {
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
@@ -119,16 +119,16 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                     b.ToTable("stocks", (string)null);
                 });
 
-            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram.PriceAlert", b =>
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.DBEntities.Telegram.PriceAlert", b =>
                 {
-                    b.HasOne("Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram.Chat", "Chat")
+                    b.HasOne("Tsutskiridze.TradeBuddy.Domain.DBEntities.Telegram.Chat", "Chat")
                         .WithMany("PriceAlerts")
                         .HasForeignKey("ChatID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_price_alerts_chats_chat_id");
 
-                    b.HasOne("Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram.Stock", "Stock")
+                    b.HasOne("Tsutskiridze.TradeBuddy.Domain.DBEntities.Telegram.Stock", "Stock")
                         .WithMany("PriceAlerts")
                         .HasForeignKey("StockID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -140,12 +140,12 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                     b.Navigation("Stock");
                 });
 
-            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram.Chat", b =>
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.DBEntities.Telegram.Chat", b =>
                 {
                     b.Navigation("PriceAlerts");
                 });
 
-            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Core.DBEntities.Telegram.Stock", b =>
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.DBEntities.Telegram.Stock", b =>
                 {
                     b.Navigation("PriceAlerts");
                 });

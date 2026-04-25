@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Tsutskiridze.TradeBuddy.Core.Aggregates.Stocks.Event;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Event;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 

@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y wget unzip \
 COPY ["Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj", "Tsutskiridze.TradeBuddy.API/"]
 COPY ["Tsutskiridze.TradeBuddy.Application/Tsutskiridze.TradeBuddy.Application.csproj", "Tsutskiridze.TradeBuddy.Application/"]
 COPY ["Tsutskiridze.TradeBuddy.Infrastructure/Tsutskiridze.TradeBuddy.Infrastructure.csproj", "Tsutskiridze.TradeBuddy.Infrastructure/"]
-COPY ["Tsutskiridze.TradeBuddy.Core/Tsutskiridze.TradeBuddy.Core.csproj", "Tsutskiridze.TradeBuddy.Core/"]
+COPY ["Tsutskiridze.TradeBuddy.Domain/Tsutskiridze.TradeBuddy.Domain.csproj", "Tsutskiridze.TradeBuddy.Domain/"]
 
 # 3. Restore NuGet packages. If csproj is unchanged, this layer remains cached.
 RUN dotnet restore "Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj"

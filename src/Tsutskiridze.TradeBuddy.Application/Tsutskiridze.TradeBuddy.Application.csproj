@@ -13,6 +13,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Core\Tsutskiridze.TradeBuddy.Core.csproj"/>
+        <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Domain\Tsutskiridze.TradeBuddy.Domain.csproj" />
     </ItemGroup>
 </Project>

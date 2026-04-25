@@ -2,7 +2,7 @@ using Mediator;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.CreateAlert;
-using Tsutskiridze.TradeBuddy.Core.Enums;
+using Tsutskiridze.TradeBuddy.Domain.Enums;
 
 namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Commands;
 

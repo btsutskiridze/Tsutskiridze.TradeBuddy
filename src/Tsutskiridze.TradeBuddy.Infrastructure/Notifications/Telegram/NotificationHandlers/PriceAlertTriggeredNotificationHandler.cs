@@ -2,7 +2,7 @@
 using SharedKernel;
 using Tsutskiridze.TradeBuddy.Application.Common.Localization;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Notifications;
-using Tsutskiridze.TradeBuddy.Core.Enums;
+using Tsutskiridze.TradeBuddy.Domain.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.NotificationHandlers;
 
