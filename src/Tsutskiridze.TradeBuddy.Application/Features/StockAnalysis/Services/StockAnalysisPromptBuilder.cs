@@ -1,5 +1,6 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
+using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Prompts;
 
@@ -54,7 +55,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("Failed to build stock analysis prompt", ex);
+                throw new ApplicationLayerException("Failed to build stock analysis prompt", inner: ex);
             }
         }
     }

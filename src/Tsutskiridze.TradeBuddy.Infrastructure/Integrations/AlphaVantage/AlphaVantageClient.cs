@@ -2,6 +2,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage.Models;
 
@@ -31,7 +32,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage
 
             var annualReport = report.ToDto();
 
-            return annualReport ?? throw new Exception("Failed to get stock annual report");
+            return annualReport ?? throw new InfrastructureException("Failed to get stock annual report");
         }
 
         public async Task<StockOverviewDto?> GetStockOverview(string symbol)
@@ -45,7 +46,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage
 
             var stockOverview = stockOverviewResponse.ToDto();
 
-            return stockOverview ?? throw new Exception("Failed to get stock overview");
+            return stockOverview ?? throw new InfrastructureException("Failed to get stock overview");
         }
 
         public async Task<List<StockDayPriceDto>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
@@ -59,7 +60,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage
 
             if (data?.Prices == null)
             {
-                throw new Exception("Failed to get stock prices");
+                throw new InfrastructureException("Failed to get stock prices");
             }
 
             var prices = data.Prices

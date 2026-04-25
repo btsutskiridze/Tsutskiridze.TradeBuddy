@@ -1,15 +1,17 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
+using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services;
 
 public class StockAnalysisGenerator
 {
-    private static readonly JsonSerializerSettings JsonSettings = new()
+    private static readonly JsonSerializerOptions JsonSerializerOpts = new()
     {
-        NullValueHandling = NullValueHandling.Ignore
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
     private readonly StockAnalysisPromptBuilder _promptBuilder;
@@ -57,7 +59,7 @@ public class StockAnalysisGenerator
 
         _logger.LogInformation("Fetching stock prompt for {Stock}", stock);
         var stockPrompt = await _promptBuilder.BuildAsync(stock);
-        var stockPromptJson = JsonConvert.SerializeObject(stockPrompt, JsonSettings);
+        var stockPromptJson = JsonSerializer.Serialize(stockPrompt, JsonSerializerOpts);
 
         _logger.LogInformation("Sending stock prompt to AI service");
         var analysis = await _aiClient.Ask<StockAnalysisReportDto>(stockPromptJson);

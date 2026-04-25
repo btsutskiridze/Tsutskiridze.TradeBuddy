@@ -1,6 +1,7 @@
-using Newtonsoft.Json;
+using System.Text.Json;
 using OpenAI.Chat;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
+using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI.Schema;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI
@@ -18,7 +19,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI
         }
 
         //todo: refactor this class as the ask isn't generic and is specific for stock analysis
-        public async Task<T?> Ask<T>(string prompt)
+        public async Task<T> Ask<T>(string prompt)
         {
             List<ChatMessage> messages =
             [
@@ -43,15 +44,10 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI
 
             ChatCompletion completion = await _client.CompleteChatAsync(messages, options);
 
-            var result = JsonConvert.DeserializeObject<T>(completion.Content[0].Text);
-
-            if (result == null)
-            {
-                throw new Exception("AI returned null");
-            }
+            var result = JsonSerializer.Deserialize<T>(completion.Content[0].Text)
+                         ?? throw new InfrastructureException("Failed to parse OpenAI response.");
 
             return result;
         }
     }
 }
-

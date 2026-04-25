@@ -1,7 +1,7 @@
+using System.Text.Json;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep.Models;
 
@@ -23,13 +23,14 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingP
             var response = await _client.GetAsync($"api/v3/quote/{symbol}?apikey={_options.ApiKey}");
             response.EnsureSuccessStatusCode();
 
-            var stockCurrentInfos = JsonConvert.DeserializeObject<List<FmpStockQuoteResponse>?>(
+            var stockCurrentInfos = JsonSerializer.Deserialize<List<FmpStockQuoteResponse>?>(
                 await response.Content.ReadAsStringAsync()
             );
 
-            var stockQuote = stockCurrentInfos?.FirstOrDefault()?.ToDto();
-
-            return stockQuote ?? throw new Exception("Failed to get stock quote");
+            var stockQuote = stockCurrentInfos?.FirstOrDefault()?.ToDto()
+                ?? throw new InfrastructureException("Failed to get stock quote");
+            
+            return stockQuote;
         }
     }
 }

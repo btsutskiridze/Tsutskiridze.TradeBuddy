@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
+using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
@@ -116,7 +117,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
 
                 if (string.IsNullOrEmpty(accessToken) || expiresIn == 0)
                 {
-                    throw new Exception("Error getting access token");
+                    throw new InfrastructureException("Error getting access token");
                 }
 
                 _accessToken = new AccessToken(
@@ -129,7 +130,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
             catch (Exception ex)
             {
                 _logger.LogError("Error getting access token: {message}", ex.Message);
-                throw new Exception("Error getting access token");
+                throw new InfrastructureException("Error getting access token", inner: ex);
             }
         }
     }

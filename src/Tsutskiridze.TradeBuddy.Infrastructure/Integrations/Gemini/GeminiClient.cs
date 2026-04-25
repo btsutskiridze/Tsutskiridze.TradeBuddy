@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
+using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Gemini
 {
@@ -19,7 +20,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Gemini
             _options = options.Value;
         }
 
-        public async Task<T?> Ask<T>(string prompt)
+        public async Task<T> Ask<T>(string prompt)
         {
             var request = new
             {
@@ -33,15 +34,16 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Gemini
             };
             string json = JsonSerializer.Serialize(request, _jsonSerializerOptions);
 
-
             var response = await _client.PostAsync(
                 $"https://generativelanguage.googleapis.com/v1beta/models/{_options.ModelID}:generateContent?key={_options.ApiKey}",
                 new StringContent(json, Encoding.UTF8, "application/json")
             );
 
             var responseJson = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<T>(responseJson, _jsonSerializerOptions)
+                         ?? throw new InfrastructureException("Failed to parse Gemini AI response");
 
-            return JsonSerializer.Deserialize<T>(responseJson, _jsonSerializerOptions);
+            return result;
         }
 
         public async Task<string> CountTokens(string prompt)
@@ -66,7 +68,5 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Gemini
 
             return await response.Content.ReadAsStringAsync();
         }
-
     }
 }
-

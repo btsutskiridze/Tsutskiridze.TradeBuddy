@@ -1,6 +1,7 @@
 using System.Net;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
+using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Web
@@ -42,7 +43,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Web
             var form = doc.DocumentNode.SelectSingleNode("//form[contains(@class, 'consent-form')]");
             if (form == null)
             {
-                throw new Exception("Consent form not found.");
+                throw new InfrastructureException("Consent form not found.");
             }
 
             var action = form.GetAttributeValue("action", string.Empty);
