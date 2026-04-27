@@ -1,6 +1,6 @@
 ﻿using Mediator;
 using Microsoft.Extensions.Logging;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services;
 

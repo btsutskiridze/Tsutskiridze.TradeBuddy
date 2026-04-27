@@ -52,9 +52,7 @@ public static class DependencyInjection
     {
         services.AddSingleton<IMarketDataTransportClient, YahooMarketDataTransportClient>();
         services.AddSingleton<IPricingMessageProcessor, PricingMessageProcessor>();
-
-        services.AddSingleton<SubscriptionManager>();
-        services.AddSingleton<ISubscriptionManager>(sp => sp.GetRequiredService<SubscriptionManager>());
+        services.AddSingleton<ISubscriptionManager, SubscriptionManager>();
 
         services.AddHostedService<StockPriceWebSocketListener>();
 

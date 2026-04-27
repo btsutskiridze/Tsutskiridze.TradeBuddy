@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Tsutskiridze.TradeBuddy.API;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram;
 using Tsutskiridze.TradeBuddy.Application;
+using Tsutskiridze.TradeBuddy.Domain;
 using Tsutskiridze.TradeBuddy.Infrastructure;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddApiServices(builder.Configuration)
     .AddTelegramPresentation()
+    .AddDomainServices()
     .AddApplicationServices()
     .AddInfrastructureServices(builder.Configuration);
 

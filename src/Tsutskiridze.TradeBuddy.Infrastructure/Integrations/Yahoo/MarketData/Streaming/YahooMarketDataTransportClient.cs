@@ -1,14 +1,16 @@
 using System.Net.WebSockets;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming.Abstractions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming
 {
-    public class YahooMarketDataTransportClient : IMarketDataTransportClient, IAsyncDisposable
+    public sealed class YahooMarketDataTransportClient : IMarketDataTransportClient
     {
         private readonly ILogger<YahooMarketDataTransportClient> _log;
         private ClientWebSocket? _ws;
+        private readonly SemaphoreSlim _lock = new(1, 1);
 
         public YahooMarketDataTransportClient(ILogger<YahooMarketDataTransportClient> log)
             => _log = log;
@@ -21,7 +23,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
             _ws?.Dispose();
             _ws = new ClientWebSocket
             {
-                Options = { KeepAliveInterval = TimeSpan.FromSeconds(20) } // optional ping
+                Options = { KeepAliveInterval = TimeSpan.FromSeconds(5) }
             };
 
             await _ws.ConnectAsync(new Uri("wss://streamer.finance.yahoo.com/?version=2"), ct);
@@ -31,7 +33,19 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
         public async Task SendAsync(string message, CancellationToken ct)
         {
             var bytes = Encoding.UTF8.GetBytes(message);
-            await _ws.SendAsync(bytes, WebSocketMessageType.Text, true, ct);
+
+            if (_ws is null)
+                throw new InfrastructureException("WebSocket is not connected.");
+            
+            await _lock.WaitAsync(ct);
+            try
+            {
+                await _ws.SendAsync(bytes, WebSocketMessageType.Text, true, ct);
+            }
+            finally
+            {
+                _lock.Release();
+            }
         }
 
         public async IAsyncEnumerable<string> ReceiveAsync(CancellationToken ct)
@@ -41,7 +55,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
 
             using var ms = new MemoryStream();
 
-            while (!ct.IsCancellationRequested && _ws.State == WebSocketState.Open)
+            while (!ct.IsCancellationRequested && _ws?.State == WebSocketState.Open)
             {
                 ms.SetLength(0);
                 WebSocketReceiveResult res;
@@ -68,7 +82,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
             try
             {
                 if (_ws.State == WebSocketState.Open)
-                    return new(_ws.CloseAsync(
+                    return new ValueTask(_ws.CloseAsync(
                         WebSocketCloseStatus.NormalClosure, "Bye", CancellationToken.None));
             }
             finally

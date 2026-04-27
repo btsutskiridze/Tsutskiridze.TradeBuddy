@@ -1,21 +1,21 @@
-using System.Collections.Immutable;
+using System.Collections.Concurrent;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Event;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming
 {
-    public class SubscriptionManager : ISubscriptionManager
+    public sealed class SubscriptionManager : ISubscriptionManager
     {
+        private readonly ConcurrentDictionary<string, byte> _watched = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _locks = new(StringComparer.OrdinalIgnoreCase);
+
         private readonly IServiceScopeFactory _scopes;
         private readonly IMarketDataTransportClient _transport;
         private readonly ILogger<SubscriptionManager> _log;
-        private ImmutableHashSet<string> _watched = ImmutableHashSet.Create<string>(StringComparer.OrdinalIgnoreCase);
-        private readonly SemaphoreSlim _lock = new(1, 1);
 
         public SubscriptionManager(
             IServiceScopeFactory scopes,
@@ -31,49 +31,86 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
         {
             using var scope = _scopes.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var stocks = await db.Stocks
-                           .AsNoTracking()
-                           .Where(s => s.IsWatched)
-                           .Select(s => s.Symbol)
-                           .ToListAsync(ct);
+            var symbols = await db.Stocks
+                .AsNoTracking()
+                .Where(s => s.IsWatched)
+                .Select(s => s.Symbol)
+                .ToListAsync(ct);
 
-            _watched = stocks.ToImmutableHashSet(StringComparer.OrdinalIgnoreCase);
+            foreach (var stock in symbols)
+            {
+                _watched.TryAdd(stock, 0);
+            }
 
-            if (_watched.Count == 0) return;
+            if (_watched.IsEmpty) return;
 
-            await _transport.SendAsync(JsonConvert.SerializeObject(new { subscribe = _watched }), ct);
+            var msg = JsonSerializer.Serialize(new { subscribe = symbols });
+
+            await _transport.SendAsync(msg, ct);
+
+            _log.LogInformation("Initial Yahoo subscriptions sent: {Msg}", msg);
         }
 
-        //todo: domain event handler in infrastructure layer is a smell
-        public async ValueTask Handle(StockWatchStatusChangedDomainEvent evt, CancellationToken ct)
+        public async Task SubscribeStockPriceAsync(string symbol, CancellationToken ct)
         {
-            var shouldSub = evt.IsWatched && !_watched.Contains(evt.Symbol);
-            var shouldUnsub = !evt.IsWatched && _watched.Contains(evt.Symbol);
+            var symbolLock = _locks.GetOrAdd(symbol, _ => new SemaphoreSlim(1, 1));
+            await symbolLock.WaitAsync(ct);
 
-            if (!shouldSub && !shouldUnsub) return;
-
-            await _lock.WaitAsync(ct);
             try
             {
-                _watched = shouldSub
-                    ? _watched.Add(evt.Symbol)
-                    : _watched.Remove(evt.Symbol);
+                if (!_watched.TryAdd(symbol, 0))
+                    return;
 
-                _log.LogInformation("All watched stocks: {Watched}", _watched);
+                var msg = JsonSerializer.Serialize(new
+                {
+                    subscribe = new[] { symbol }
+                });
 
-                var payload = new Dictionary<string, IEnumerable<string>>();
-                if (shouldSub) payload["subscribe"] = [evt.Symbol];
-                if (shouldUnsub) payload["unsubscribe"] = [evt.Symbol];
-
-                var msg = JsonConvert.SerializeObject(payload);
                 await _transport.SendAsync(msg, ct);
+
+                _log.LogInformation("All watched stocks: {Watched}", string.Join(", ", _watched.Keys));
                 _log.LogInformation("Subscriptions updated: {Msg}", msg);
+            }
+            catch
+            {
+                _watched.TryRemove(symbol, out _);
+                throw;
             }
             finally
             {
-                _lock.Release();
+                symbolLock.Release();
+            }
+        }
+
+        public async Task UnsubscribeStockPriceAsync(string symbol, CancellationToken ct)
+        {
+            var symbolLock = _locks.GetOrAdd(symbol, _ => new SemaphoreSlim(1, 1));
+            await symbolLock.WaitAsync(ct);
+
+            try
+            {
+                if (!_watched.TryRemove(symbol, out _))
+                    return;
+
+                var msg = JsonSerializer.Serialize(new
+                {
+                    unsubscribe = new[] { symbol }
+                });
+
+                await _transport.SendAsync(msg, ct);
+
+                _log.LogInformation("All watched stocks: {Watched}", string.Join(", ", _watched.Keys));
+                _log.LogInformation("Subscriptions updated: {Msg}", msg);
+            }
+            catch
+            {
+                _watched.TryAdd(symbol, 0);
+                throw;
+            }
+            finally
+            {
+                symbolLock.Release();
             }
         }
     }
 }
-

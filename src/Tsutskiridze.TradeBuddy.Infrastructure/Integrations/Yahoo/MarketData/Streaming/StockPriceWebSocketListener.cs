@@ -43,7 +43,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
                 catch (OperationCanceledException) when (ct.IsCancellationRequested) { }
                 catch (Exception ex)
                 {
-                    _log.LogError(ex, "Orchestrator error, reconnecting in 10s");
+                    _log.LogWarning(ex, "Orchestrator error, reconnecting in 10s");
                     await Task.Delay(TimeSpan.FromSeconds(10), ct);
                 }
             }

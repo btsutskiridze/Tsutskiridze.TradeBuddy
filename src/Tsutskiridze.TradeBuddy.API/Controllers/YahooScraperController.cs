@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 
 namespace Tsutskiridze.TradeBuddy.API.Controllers
 {

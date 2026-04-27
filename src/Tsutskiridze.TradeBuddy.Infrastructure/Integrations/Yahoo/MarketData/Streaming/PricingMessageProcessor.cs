@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
-using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Events;
+using Tsutskiridze.TradeBuddy.Application.Events;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming.Abstractions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming
@@ -38,7 +38,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
                 _log.LogDebug("Parsed update {Symbol} @ {Price}", update.Id, update.Price);
 
                 await mediator.Publish(
-                    new MarketPriceUpdatedEvent(update.Id, (decimal)update.Price), ct);
+                    new MarketPriceUpdatedApplicationEvent(update.Id, (decimal)update.Price), ct);
             }
             catch (ConcurrencyConflictException ex)
             {
@@ -46,7 +46,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "Failed to parse pricing message");
+                _log.LogWarning(ex, "Failed to parse pricing message");
             }
         }
     }
