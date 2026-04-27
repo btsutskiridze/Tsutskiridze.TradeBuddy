@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
-using SharedKernel;
+using SharedKernel.Data;
 using SharedKernel.Events;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
-using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Events;
+using Tsutskiridze.TradeBuddy.Application.Events;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Notifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
@@ -10,15 +10,17 @@ using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Specifications;
+using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.EventHandlers;
+namespace Tsutskiridze.TradeBuddy.Application.EventHandlers.Stocks;
 
-public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEventHandler<MarketPriceUpdatedEvent>
+public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEventHandler<MarketPriceUpdatedApplicationEvent>
 {
     private readonly IUnitOfWork _uow;
     private readonly IReadRepository<Chat> _chats;
     private readonly IRepository<Stock> _stocks;
     private readonly IRepository<PriceAlert> _alerts;
+    private readonly AlertWatchingDomainService _alertWatchingSvc;
     private readonly INotificationDispatcher _notifier;
     private readonly ILogger<MarketPriceUpdatedApplicationEventHandler> _log;
 
@@ -32,7 +34,9 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
         IRepository<Stock> stocks,
         IRepository<PriceAlert> alerts,
         ILogger<MarketPriceUpdatedApplicationEventHandler> log,
-        INotificationDispatcher notifier)
+        INotificationDispatcher notifier,
+        AlertWatchingDomainService alertWatchingSvc
+    )
     {
         _uow = uow;
         _chats = chats;
@@ -40,9 +44,10 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
         _alerts = alerts;
         _log = log;
         _notifier = notifier;
+        _alertWatchingSvc = alertWatchingSvc;
     }
 
-    public async ValueTask Handle(MarketPriceUpdatedEvent evt, CancellationToken ct)
+    public async ValueTask Handle(MarketPriceUpdatedApplicationEvent evt, CancellationToken ct)
     {
         var stock = await _stocks.FirstOrDefaultAsync(new StockBySymbolSpec(evt.Symbol), ct);
         if (stock is null)
@@ -90,10 +95,13 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
                 MaxNotifications));
         }
 
+        _alertWatchingSvc.EnsureStockWatchState(stock, activeAlerts.Any(x => x.IsActive));
+
         await _uow.SaveChangesAsync(ct);
-        
+
         await _notifier.DispatchAsync(notifications, ct);
 
-        _log.LogInformation($"Processed market price update for {evt.Symbol}. Notifications sent: {notifications.Count}");
+        _log.LogInformation(
+            $"Processed market price update for {evt.Symbol}. Notifications sent: {notifications.Count}");
     }
 }

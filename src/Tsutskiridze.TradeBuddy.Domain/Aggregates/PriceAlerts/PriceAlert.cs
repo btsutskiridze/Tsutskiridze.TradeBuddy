@@ -1,5 +1,4 @@
 using SharedKernel;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Events;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
@@ -58,7 +57,7 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
 
         IsActive = true;
         AlertCount = 0;
-        RaiseDomainEvent(new PriceAlertActivatedDomainEvent(StockId));
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void Deactivate()
@@ -67,7 +66,7 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
             return;
 
         IsActive = false;
-        RaiseDomainEvent(new PriceAlertDeactivatedDomainEvent(StockId));
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public PriceAlertProcessingResult? ProcessMarketPrice(
@@ -114,7 +113,7 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
     }
 
     private bool IsRateLimited(DateTime nowUtc, TimeSpan window)
-        => UpdatedAt.HasValue && UpdatedAt.Value >= nowUtc.Subtract(window);
+        => AlertCount != 0 && UpdatedAt.HasValue && UpdatedAt.Value >= nowUtc.Subtract(window);
 
     public sealed record PriceAlertProcessingResult(
         Guid ChatId,

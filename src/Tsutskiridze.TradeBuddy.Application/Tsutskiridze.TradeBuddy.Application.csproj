@@ -15,4 +15,8 @@
     <ItemGroup>
         <ProjectReference Include="..\Tsutskiridze.TradeBuddy.Domain\Tsutskiridze.TradeBuddy.Domain.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Abstractions\Common\" />
+    </ItemGroup>
 </Project>

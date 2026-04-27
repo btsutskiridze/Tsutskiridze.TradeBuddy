@@ -11,4 +11,8 @@
       <ProjectReference Include="..\..\SharedKernel\SharedKernel.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Aggregates\PriceAlerts\Events\" />
+    </ItemGroup>
+
 </Project>

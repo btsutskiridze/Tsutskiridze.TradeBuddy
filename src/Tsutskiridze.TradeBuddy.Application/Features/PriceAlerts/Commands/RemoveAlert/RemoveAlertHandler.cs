@@ -1,15 +1,21 @@
-﻿using Mediator;
+﻿using System.Data;
+using Mediator;
 using SharedKernel;
+using SharedKernel.Data;
 using SharedKernel.Validations;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Application.Common.Localization;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Enums;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Specifications;
+using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.RemoveAlert;
@@ -25,19 +31,19 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
     private readonly IRepository<Stock> _stocks;
     private readonly IReadRepository<Chat> _chats;
     private readonly IRepository<PriceAlert> _alerts;
-    private readonly IMarketDataProvider _yahoo;
+    private readonly AlertWatchingDomainService _alertWatchingSvc;
 
     public RemoveAlertHandler(IUnitOfWork uow, IRepository<Stock> stocks, IReadRepository<Chat> chats,
-        IRepository<PriceAlert> alerts, IMarketDataProvider yahoo)
+        IRepository<PriceAlert> alerts, AlertWatchingDomainService alertWatchingSvc)
     {
         _uow = uow;
         _stocks = stocks;
         _chats = chats;
         _alerts = alerts;
-        _yahoo = yahoo;
+        _alertWatchingSvc = alertWatchingSvc;
     }
 
-    
+
     /*
      *todo:
      * Remove the quote lookup from the delete path and use command.Price
@@ -46,22 +52,18 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
     public async ValueTask<RemoveAlertCommandResult> Handle(RemoveAlertCommand command, CancellationToken ct)
     {
         var chat = await GetActiveChat(command.ChatId, ct);
-        var stockQuote = await GetValidatedStockQuote(command.Symbol);
         var stock = await GetStock(command.Symbol, ct);
-        var alert = await GetPriceAlert(chat.Id, stock.Id, command.Direction, command.Price, ct);
+        var alert = await GetAlert(chat.Id, stock.Id, command.Direction, command.Price, ct);
+        var hasOtherActiveAlertsForStock =
+            await _alerts.AnyAsync(new ActiveAlertsByStockIdExceptAlertSpec(stock.Id, alert.Id), ct);
 
-        alert.Deactivate();
+        _alertWatchingSvc.DeactivateAlert(alert, stock, hasOtherActiveAlertsForStock);
+        
         await _uow.SaveChangesAsync(ct);
-
+        
         return new RemoveAlertCommandResult(
-            $"Alert for *{command.Symbol}* with direction *{command.Direction.ToString().ToLower()}* and price *{stockQuote.Price}* has been removed."
+            $"Alert for *{command.Symbol}* with direction *{command.Direction.ToString().ToLower()}* and price *{command.Price}* has been removed."
         );
-    }
-
-    private async Task<StockQuoteDto> GetValidatedStockQuote(string symbol)
-    {
-        return await _yahoo.GetStockQuote(symbol)
-               ?? throw new ValidationException("Stock symbol not found");
     }
 
     private async Task<Chat> GetActiveChat(long chatId, CancellationToken ct)
@@ -80,7 +82,7 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
         return stock ?? throw new ResourceNotFoundException("Stock not found.");
     }
 
-    private async ValueTask<PriceAlert> GetPriceAlert(Guid chatId, Guid stockId, PriceDirection direction,
+    private async ValueTask<PriceAlert> GetAlert(Guid chatId, Guid stockId, PriceDirection direction,
         decimal price, CancellationToken ct)
     {
         var existingAlert = await _alerts.FirstOrDefaultAsync(

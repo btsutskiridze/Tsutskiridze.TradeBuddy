@@ -1,17 +1,21 @@
 ﻿using System.Globalization;
+using System.Net;
 using Mediator;
-using SharedKernel;
+using SharedKernel.Data;
 using SharedKernel.Validations;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Common.Data;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Providers;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Persistence;
+using Tsutskiridze.TradeBuddy.Application.Enums;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Specifications;
+using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.CreateAlert;
@@ -27,73 +31,57 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
     private readonly IRepository<Stock> _stocks;
     private readonly IReadRepository<Chat> _chats;
     private readonly IRepository<PriceAlert> _alerts;
-    private readonly IMarketDataProvider _yahoo;
-    private readonly IDbExceptionClassifier _excClassifier;
+    private readonly IMarketDataProvider _market;
+    private readonly IDbExceptionClassifier _persistenceExceptionClassifier;
+    private readonly AlertWatchingDomainService _alertWatchingSvc;
 
 
     public CreateAlertHandler(
         IUnitOfWork uow,
-        IMarketDataProvider yahoo,
+        IMarketDataProvider market,
         IRepository<Stock> stocks,
         IReadRepository<Chat> chats,
         IRepository<PriceAlert> alerts,
-        IDbExceptionClassifier excClassifier)
+        IDbExceptionClassifier excClassifier,
+        AlertWatchingDomainService alertWatchingSvc)
     {
         _uow = uow;
-        _yahoo = yahoo;
+        _market = market;
         _stocks = stocks;
         _chats = chats;
         _alerts = alerts;
-        _excClassifier = excClassifier;
+        _persistenceExceptionClassifier = excClassifier;
+        _alertWatchingSvc = alertWatchingSvc;
     }
-
+    
+    //todo: add resilience
     public async ValueTask<CreateAlertResult> Handle(CreateAlertCommand command, CancellationToken ct)
     {
         var chat = await GetActiveChat(command.ChatId, ct);
         var stockQuote = await GetValidatedStockQuote(command.Symbol);
+        
         var stock = await GetOrCreateStock(command.Symbol, stockQuote.Name, stockQuote.Currency, ct);
-        var existingAlert = await GetPriceAlert(chat.Id, stock.Id, command.Direction, command.Price, ct);
-
-        if (existingAlert is null)
-        {
-            var alert = new PriceAlert(
-                Guid.NewGuid(),
-                chat.Id,
-                stock.Id,
-                command.Price,
-                command.Direction,
-                DateTime.UtcNow);
-
-            alert.Activate();
-
-            await _alerts.AddAsync(alert, ct);
-        }
-        else
-            existingAlert.Activate();
+        var alert = await GetOrCreateAlert(chat.Id, stock.Id, command.Direction, command.Price, ct);
+        
+        _alertWatchingSvc.ActivateAlert(alert, stock);
 
         try
         {
             await _uow.SaveChangesAsync(ct);
         }
-        catch (Exception ex) when (_excClassifier.IsUniqueConstraintViolation(ex, out var constraintName))
+        catch (Exception ex) when (
+            _persistenceExceptionClassifier.TryClassify(ex, out var error))
         {
-            if (constraintName.Contains("UX_price_alerts"))
-            {
-                throw new ValidationException("Alert already exists.");
-            }
-
-            if (constraintName.Contains("UX_stocks_symbol"))
-            {
-                throw new ApplicationLayerException(
-                    "The system was updating stock data. Please try your command again.");
-            }
+            var newEx = MapPersistenceError(error, ex);
+            if (newEx != ex)
+                throw newEx;
 
             throw;
         }
 
         var culture = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
             .FirstOrDefault(c => new RegionInfo(c.Name).ISOCurrencySymbol == stockQuote.Currency);
-        
+
         // todo: return result details and not the actual messages
         var currencySymbol = culture != null ? new RegionInfo(culture.Name).CurrencySymbol : stockQuote.Currency;
         var text = $"✅ Price alert set for {command.Symbol} {command.Direction} {currencySymbol}{command.Price}";
@@ -101,20 +89,36 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
         return new CreateAlertResult(text);
     }
 
-    private async ValueTask<PriceAlert?> GetPriceAlert(Guid chatId, Guid stockId, PriceDirection direction,
+    private async Task<PriceAlert> GetOrCreateAlert(Guid chatId, Guid stockId, PriceDirection direction,
         decimal price, CancellationToken ct)
     {
-        var existingAlert = await _alerts.FirstOrDefaultAsync(
+        var alert = await _alerts.FirstOrDefaultAsync(
             new DuplicateAlertSpec(chatId, stockId, direction, price),
             ct
         );
 
-        return existingAlert;
+        if (alert != null)
+        {
+            return alert;
+        }
+
+        alert = new PriceAlert(
+            Guid.NewGuid(),
+            chatId,
+            stockId,
+            price,
+            direction,
+            DateTime.UtcNow
+        );
+
+        await _alerts.AddAsync(alert, ct);
+
+        return alert;
     }
 
     private async Task<StockQuoteDto> GetValidatedStockQuote(string symbol)
     {
-        return await _yahoo.GetStockQuote(symbol)
+        return await _market.GetStockQuote(symbol)
                ?? throw new ValidationException("Stock symbol not found");
     }
 
@@ -130,12 +134,36 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
 
     private async Task<Stock> GetOrCreateStock(string symbol, string name, string currency, CancellationToken ct)
     {
-        var stock = await _stocks.FirstOrDefaultAsync(new StockBySymbolSpec(symbol), ct);
-        if (stock is not null) return stock;
+        var normalizedSymbol = symbol.Trim().ToUpperInvariant();
 
-        stock = new Stock(symbol, currency, name);
+        var stock = await _stocks.FirstOrDefaultAsync(new StockBySymbolSpec(normalizedSymbol), ct);
+        if (stock is not null)
+            return stock;
+
+        stock = new Stock(normalizedSymbol, currency, name);
         await _stocks.AddAsync(stock, ct);
-
         return stock;
+    }
+
+    private static Exception MapPersistenceError(
+        PersistenceErrorDto error,
+        Exception exception)
+    {
+        return error.Code switch
+        {
+            PersistenceErrorCode.DuplicatePriceAlert
+                => new ApplicationLayerException(
+                    "Alert already exists.",
+                    (int)HttpStatusCode.Conflict,
+                    exception),
+
+            PersistenceErrorCode.DuplicateStockSymbol
+                => new ApplicationLayerException(
+                    "Stock was created by another request. Please try again.",
+                    (int)HttpStatusCode.Conflict,
+                    exception),
+
+            _ => exception
+        };
     }
 }

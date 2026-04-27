@@ -1,5 +1,5 @@
 ﻿using SharedKernel;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Event;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Events;
 
 namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
 
@@ -15,7 +15,7 @@ public class Stock : Entity<Guid>, IAggregateRoot
         ArgumentException.ThrowIfNullOrEmpty(symbol);
         ArgumentException.ThrowIfNullOrEmpty(currency);
 
-        Symbol = symbol;
+        Symbol = NormalizeSymbol(symbol);
         Currency = currency;
         Name = string.IsNullOrEmpty(name) ? symbol : name;
     }
@@ -30,7 +30,7 @@ public class Stock : Entity<Guid>, IAggregateRoot
         
         IsWatched = true;
         RaiseDomainEvent(
-            new StockWatchStatusChangedDomainEvent(Symbol, IsWatched)
+            new StockWatchedDomainEvent(Symbol)
         );
     }
     
@@ -40,7 +40,17 @@ public class Stock : Entity<Guid>, IAggregateRoot
         
         IsWatched = false;
         RaiseDomainEvent(
-            new StockWatchStatusChangedDomainEvent(Symbol, IsWatched)
+            new StockUnwatchedDomainEvent(Symbol)
         );
+    }
+    
+    private static string NormalizeSymbol(string symbol)
+    {
+        if (string.IsNullOrWhiteSpace(symbol))
+        {
+            throw new DomainException("Stock symbol is required.");
+        }
+
+        return symbol.Trim().ToUpperInvariant();
     }
 }

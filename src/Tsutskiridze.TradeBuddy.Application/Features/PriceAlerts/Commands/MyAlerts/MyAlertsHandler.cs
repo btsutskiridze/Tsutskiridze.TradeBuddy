@@ -2,6 +2,7 @@
 using System.Text;
 using Mediator;
 using SharedKernel;
+using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Common.Localization;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
