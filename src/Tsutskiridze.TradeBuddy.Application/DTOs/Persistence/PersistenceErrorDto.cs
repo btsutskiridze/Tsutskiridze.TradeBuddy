@@ -1,4 +1,4 @@
-﻿using Tsutskiridze.TradeBuddy.Application.Enums;
+﻿using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.DTOs.Persistence;
 
