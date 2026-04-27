@@ -1,6 +1,6 @@
 using SharedKernel.Specifications;
 
-namespace SharedKernel;
+namespace SharedKernel.Data;
 
 public interface IReadRepository<TEntity>
     where TEntity : Entity<Guid>, IAggregateRoot

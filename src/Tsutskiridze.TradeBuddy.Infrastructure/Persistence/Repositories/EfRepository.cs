@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using SharedKernel;
+using SharedKernel.Data;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
