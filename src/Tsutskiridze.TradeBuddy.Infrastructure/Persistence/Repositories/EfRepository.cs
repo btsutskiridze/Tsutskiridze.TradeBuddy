@@ -4,6 +4,7 @@ using SharedKernel;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
+//todo: refactor and move those into shared kernel later
 public class EfRepository<TEntity> : EfReadRepository<TEntity>, IRepository<TEntity>
     where TEntity : Entity<Guid>, IAggregateRoot
 {
