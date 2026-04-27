@@ -1,0 +1,72 @@
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
+using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Persistence;
+using Tsutskiridze.TradeBuddy.Application.Enums;
+
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
+
+public sealed class PostgresDbExceptionClassifier : IDbExceptionClassifier
+{
+    public bool IsUniqueConstraintViolation(Exception ex, out string constraintName)
+    {
+        constraintName = string.Empty;
+
+        if (ex.InnerException is PostgresException pg &&
+            pg.SqlState == PostgresErrorCodes.UniqueViolation)
+        {
+            constraintName = pg.ConstraintName ?? string.Empty;
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TryClassify(Exception exception, out PersistenceErrorDto error)
+    {
+        error = PersistenceErrorDto.None;
+
+        if (exception is not DbUpdateException dbUpdateException)
+        {
+            return false;
+        }
+        
+        if (dbUpdateException.InnerException is not PostgresException postgresException)
+        {
+            return false;
+        }
+
+        if (postgresException.SqlState != PostgresErrorCodes.UniqueViolation)
+        {
+            return false;
+        }
+
+        error = postgresException.ConstraintName switch
+        {
+            PostgresConstraintNames.PriceAlertsUniqueBusinessKey
+                => new PersistenceErrorDto(
+                    PersistenceErrorCode.DuplicatePriceAlert
+                ),
+
+            PostgresConstraintNames.StocksSymbol
+                => new PersistenceErrorDto(
+                    PersistenceErrorCode.DuplicateStockSymbol
+                ),
+            _
+                => PersistenceErrorDto.None
+        };
+
+        return error.Code != PersistenceErrorCode.None;
+    }
+
+    public bool IsForeignKeyViolation(Exception exception)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool IsDeadlock(Exception exception)
+    {
+        throw new NotImplementedException();
+    }
+}

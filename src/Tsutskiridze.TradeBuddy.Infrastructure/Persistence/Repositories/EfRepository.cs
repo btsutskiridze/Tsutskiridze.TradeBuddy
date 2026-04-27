@@ -47,7 +47,7 @@ public class EfRepository<TEntity> : EfReadRepository<TEntity>, IRepository<TEnt
         return await GetByIdAsync(id, ct);
     }
 
-    private async Task LockByIdAsync(Guid id, CancellationToken ct)
+    public async Task LockByIdAsync(Guid id, CancellationToken ct)
     {
         var entityType = Db.Model.FindEntityType(typeof(TEntity));
 
