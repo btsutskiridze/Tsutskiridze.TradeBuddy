@@ -3,7 +3,7 @@ using SharedKernel.Data;
 using SharedKernel.Events;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
 using Tsutskiridze.TradeBuddy.Application.Events;
-using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Notifications;
+using Tsutskiridze.TradeBuddy.Application.Notifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;

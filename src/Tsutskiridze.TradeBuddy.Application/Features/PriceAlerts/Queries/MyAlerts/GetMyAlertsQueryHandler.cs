@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Text;
 using Mediator;
-using SharedKernel;
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Common.Localization;
@@ -12,20 +11,20 @@ using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Specifications;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.MyAlerts;
+namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Queries.MyAlerts;
 
 public sealed record MyAlertsCommand(long ChatId) : ICommand<MyAlertsResult>;
 
 public sealed record MyAlertsResult(string Message);
 
-public sealed class MyAlertsHandler : ICommandHandler<MyAlertsCommand, MyAlertsResult>
+public sealed class GetMyAlertsQueryHandler : ICommandHandler<MyAlertsCommand, MyAlertsResult>
 {
     private readonly IReadRepository<Chat> _chats;
     private readonly IReadRepository<Stock> _stocks;
     private readonly IReadRepository<PriceAlert> _alerts;
     private readonly ICurrencySymbolProvider _currency;
 
-    public MyAlertsHandler(
+    public GetMyAlertsQueryHandler(
         IReadRepository<Chat> chats,
         IReadRepository<Stock> stocks,
         IReadRepository<PriceAlert> alerts,
@@ -37,11 +36,6 @@ public sealed class MyAlertsHandler : ICommandHandler<MyAlertsCommand, MyAlertsR
         _currency = currency;
     }
 
-    /*
-     *todo:
-     *Rename it to GetMyAlertsQuery
-     *and return structured data. 
-     */
     public async ValueTask<MyAlertsResult> Handle(MyAlertsCommand command, CancellationToken ct)
     {
         var chatId = await _chats.FirstOrDefaultAsync(new ActiveChatIdByTelegramId(command.ChatId), ct)

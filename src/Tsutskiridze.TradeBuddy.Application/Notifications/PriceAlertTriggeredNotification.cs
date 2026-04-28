@@ -1,7 +1,7 @@
 ﻿using SharedKernel;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Notifications;
+namespace Tsutskiridze.TradeBuddy.Application.Notifications;
 
 public sealed record PriceAlertTriggeredNotification(
     long ChatId,

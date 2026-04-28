@@ -1,8 +1,8 @@
 using SharedKernel.Validations;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.MyAlerts;
+namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Queries.MyAlerts;
 
-public sealed class MyAlertsValidator : IValidator<MyAlertsCommand>
+public sealed class GetMyAlertsQueryValidator : IValidator<MyAlertsCommand>
 {
     public ValueTask<ValidationResult> ValidateAsync(MyAlertsCommand obj, CancellationToken cancellationToken)
     {

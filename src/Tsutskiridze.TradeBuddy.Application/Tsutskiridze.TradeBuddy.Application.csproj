@@ -18,5 +18,6 @@
 
     <ItemGroup>
       <Folder Include="Abstractions\Common\" />
+      <Folder Include="Features\PriceAlerts\Queries\" />
     </ItemGroup>
 </Project>
