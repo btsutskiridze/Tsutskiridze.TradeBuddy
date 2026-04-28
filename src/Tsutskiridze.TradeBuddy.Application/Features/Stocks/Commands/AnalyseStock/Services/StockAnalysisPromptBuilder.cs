@@ -2,9 +2,9 @@
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
-using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Prompts;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Prompts;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services
+namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Services
 {
     public class StockAnalysisPromptBuilder
     {
@@ -31,15 +31,15 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services
 
                 var stock = new StockAnalysisInputDto
                 {
-                    Name = quote.Result.Name,
+                    Name = quote.Result?.Name ?? "Unknown",
                     Symbol = symbol,
-                    Currency = quote.Result.Currency,
-                    ReturnOnEquityTTM = stockOverview.Result.ReturnOnEquityTTM,
-                    PriceToSalesRatioTTM = stockOverview.Result.PriceToSalesRatioTTM,
-                    QuarterlyRevenueGrowthYOY = stockOverview.Result.QuarterlyRevenueGrowthYOY,
-                    PriceAvg50 = stockOverview.Result.PriceAvg50,
-                    PriceAvg200 = stockOverview.Result.PriceAvg200,
-                    SharesOutstanding = stockOverview.Result.SharesOutstanding,
+                    Currency = quote.Result?.Currency ?? "Unknown",
+                    ReturnOnEquityTTM = stockOverview.Result?.ReturnOnEquityTTM ?? "Unknown",
+                    PriceToSalesRatioTTM = stockOverview.Result?.PriceToSalesRatioTTM ?? "Unknown",
+                    QuarterlyRevenueGrowthYOY = stockOverview.Result?.QuarterlyRevenueGrowthYOY ?? "Unknown",
+                    PriceAvg50 = stockOverview.Result?.PriceAvg50 ?? "Unknown",
+                    PriceAvg200 = stockOverview.Result?.PriceAvg200 ?? "Unknown",
+                    SharesOutstanding = stockOverview.Result?.SharesOutstanding ?? "Unknown",
                     Quote = quote.Result,
                     PrevDays = prevDayPrices.Result,
                     AnnualReport = annualReport.Result,

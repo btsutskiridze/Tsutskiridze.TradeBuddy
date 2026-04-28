@@ -5,6 +5,7 @@ using Scalar.AspNetCore;
 using SharedKernel.Validations.Mediator;
 using Tsutskiridze.TradeBuddy.API.Exceptions;
 using Tsutskiridze.TradeBuddy.Application;
+using Tsutskiridze.TradeBuddy.Application.Behaviors;
 
 namespace Tsutskiridze.TradeBuddy.API;
 
@@ -19,7 +20,7 @@ public static class DependencyInjection
             {
                 options.ServiceLifetime = ServiceLifetime.Scoped;
                 
-                options.PipelineBehaviors = [typeof(ValidatorBehavior<,>)];
+                options.PipelineBehaviors = [typeof(RateLimiterBehavior<,>), typeof(ValidatorBehavior<,>)];
             })
             .AddMediatorValidators(typeof(AssemblyReference).Assembly);
 
@@ -57,7 +58,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static WebApplication UseScalarUI(this WebApplication app)
+    public static WebApplication UseScalarUi(this WebApplication app)
     {
         app.MapOpenApi();
         app.MapScalarApiReference(options => options

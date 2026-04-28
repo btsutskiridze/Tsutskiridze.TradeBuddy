@@ -42,7 +42,7 @@ app.MapControllers();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseScalarUI();
+    app.UseScalarUi();
 }
 
 app.Run();

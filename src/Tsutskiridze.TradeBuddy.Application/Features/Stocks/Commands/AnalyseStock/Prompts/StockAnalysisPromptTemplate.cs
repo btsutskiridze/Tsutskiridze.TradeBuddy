@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Prompts
+﻿namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Prompts
 {
     public static class StockAnalysisPromptTemplate
     {

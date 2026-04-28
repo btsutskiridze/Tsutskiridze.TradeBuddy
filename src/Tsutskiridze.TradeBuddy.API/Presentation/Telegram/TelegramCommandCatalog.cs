@@ -18,7 +18,7 @@ public static class TelegramCommandCatalog
     public static readonly TelegramCommandDefinition MyAlerts =
         new("/list", "List all your active alerts");
 
-    public static readonly TelegramCommandDefinition StockQuote =
+    public static readonly TelegramCommandDefinition AnalyseStock =
         new("/price", "Get current price and analysis. e.g: /price NVDA");
 
     public static readonly TelegramCommandDefinition RemoveAlert =
@@ -30,7 +30,7 @@ public static class TelegramCommandCatalog
         Activate,
         Alert,
         MyAlerts,
-        StockQuote,
+        AnalyseStock,
         RemoveAlert
     ];
 }

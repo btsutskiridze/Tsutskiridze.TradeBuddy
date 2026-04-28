@@ -1,13 +1,6 @@
-﻿using System.Data;
-using Mediator;
-using SharedKernel;
+﻿using Mediator;
 using SharedKernel.Data;
-using SharedKernel.Validations;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
-using Tsutskiridze.TradeBuddy.Application.Common.Localization;
-using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;

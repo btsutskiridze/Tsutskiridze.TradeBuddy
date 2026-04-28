@@ -16,6 +16,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.RateLimiting;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure;
 
@@ -28,6 +29,7 @@ public static class DependencyInjection
         services
             .AddPersistence(configuration)
             .AddCommonServices()
+            .AddRateLimiter(configuration)
             .AddIntegrations(configuration)
             .AddMarketDataServices()
             .AddNewsServices();

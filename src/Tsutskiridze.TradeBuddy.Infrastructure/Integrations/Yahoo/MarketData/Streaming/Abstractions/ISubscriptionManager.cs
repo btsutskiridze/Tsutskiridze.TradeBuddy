@@ -1,6 +1,3 @@
-using Mediator;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Events;
-
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming.Abstractions
 {
     public interface ISubscriptionManager

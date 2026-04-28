@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
 using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services;
+namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Services;
 
 public class StockAnalysisGenerator
 {

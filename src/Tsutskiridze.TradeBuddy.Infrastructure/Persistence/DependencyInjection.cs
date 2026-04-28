@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SharedKernel;
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 

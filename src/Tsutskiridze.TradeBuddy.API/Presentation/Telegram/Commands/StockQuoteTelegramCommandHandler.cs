@@ -15,8 +15,8 @@ public class StockQuoteTelegramCommandHandler : ITelegramCommandHandler
         _mediator = mediator;
     }
 
-    public string Command => TelegramCommandCatalog.StockQuote.Command;
-    public string Description => TelegramCommandCatalog.StockQuote.Description;
+    public string Command => TelegramCommandCatalog.AnalyseStock.Command;
+    public string Description => TelegramCommandCatalog.AnalyseStock.Description;
 
     public async Task<TelegramCommandDispatchResponse> Handle(TelegramCommandDispatchRequest dispatchRequest, CancellationToken ct)
     {
@@ -30,14 +30,9 @@ public class StockQuoteTelegramCommandHandler : ITelegramCommandHandler
 
         var result = await _mediator.Send(new AnalyseStockCommand(dispatchRequest.ChatId, symbol), ct);
 
-        var priorMessages = new List<TelegramOutgoingMessage>();
-        if (!string.IsNullOrWhiteSpace(result.AnalysisMessage))
-            priorMessages.Add(new TelegramOutgoingMessage(dispatchRequest.ChatId, result.AnalysisMessage));
-
         return TelegramCommandDispatchResponse.TextReply(
             dispatchRequest.ChatId, 
-            result.SummaryMessage, 
-            priorMessages: priorMessages
+            result.Message 
         );
     }
 }

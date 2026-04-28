@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Services;
 
 namespace Tsutskiridze.TradeBuddy.API.Controllers.Stocks
 {
