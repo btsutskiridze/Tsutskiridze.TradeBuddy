@@ -4,8 +4,8 @@ using Mediator;
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Common.Localization;
+using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
@@ -38,7 +38,7 @@ public sealed class GetMyAlertsQueryHandler : ICommandHandler<MyAlertsCommand, M
 
     public async ValueTask<MyAlertsResult> Handle(MyAlertsCommand command, CancellationToken ct)
     {
-        var chatId = await _chats.FirstOrDefaultAsync(new ActiveChatIdByTelegramId(command.ChatId), ct)
+        var chatId = await _chats.FirstOrDefaultAsync(new ActiveChatIdByTelegramIdSpec(command.ChatId), ct)
                      ?? throw new ResourceNotFoundException("Chat isn't Activated.");
 
         var alerts = await _alerts.ListAsync(new ActiveAlertsByChatIdSpec(chatId), ct);

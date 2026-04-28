@@ -3,6 +3,7 @@ using SharedKernel.Data;
 using SharedKernel.Events;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
 using Tsutskiridze.TradeBuddy.Application.Events;
+using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Notifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
@@ -62,7 +63,7 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
             .Distinct()
             .ToList();
 
-        var chats = (await _chats.ListAsync(new ActivatedChatsByIdsSpec(chatIds), ct))
+        var chats = (await _chats.ListAsync(new ActiveChatsByIdsSpec(chatIds), ct))
             .ToDictionary(x => x.Id, x => x.TelegramChatId!.Value);
 
         var notifications = new List<PriceAlertTriggeredNotification>();

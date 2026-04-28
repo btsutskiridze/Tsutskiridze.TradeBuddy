@@ -9,8 +9,7 @@ using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
 using Tsutskiridze.TradeBuddy.Application.DTOs.Persistence;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
+using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
@@ -29,7 +28,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
 {
     private readonly IUnitOfWork _uow;
     private readonly IRepository<Stock> _stocks;
-    private readonly IReadRepository<Chat> _chats;
+    private readonly IActiveChatProvider _activeChatProvider;
     private readonly IRepository<PriceAlert> _alerts;
     private readonly IMarketDataProvider _market;
     private readonly IDbExceptionClassifier _persistenceExceptionClassifier;
@@ -40,7 +39,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
         IUnitOfWork uow,
         IMarketDataProvider market,
         IRepository<Stock> stocks,
-        IReadRepository<Chat> chats,
+        IActiveChatProvider activeChatProvider,
         IRepository<PriceAlert> alerts,
         IDbExceptionClassifier excClassifier,
         AlertWatchingDomainService alertWatchingSvc)
@@ -48,21 +47,21 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
         _uow = uow;
         _market = market;
         _stocks = stocks;
-        _chats = chats;
+        _activeChatProvider = activeChatProvider;
         _alerts = alerts;
         _persistenceExceptionClassifier = excClassifier;
         _alertWatchingSvc = alertWatchingSvc;
     }
-    
+
     //todo: add resilience
     public async ValueTask<CreateAlertResult> Handle(CreateAlertCommand command, CancellationToken ct)
     {
-        var chat = await GetActiveChat(command.ChatId, ct);
+        var chatId = await _activeChatProvider.GetIdAsync(command.ChatId, ct);
         var stockQuote = await GetValidatedStockQuote(command.Symbol);
-        
+
         var stock = await GetOrCreateStock(command.Symbol, stockQuote.Name, stockQuote.Currency, ct);
-        var alert = await GetOrCreateAlert(chat.Id, stock.Id, command.Direction, command.Price, ct);
-        
+        var alert = await GetOrCreateAlert(chatId, stock.Id, command.Direction, command.Price, ct);
+
         _alertWatchingSvc.ActivateAlert(alert, stock);
 
         try
@@ -120,16 +119,6 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
     {
         return await _market.GetStockQuote(symbol)
                ?? throw new ValidationException("Stock symbol not found");
-    }
-
-    private async Task<Chat> GetActiveChat(long chatId, CancellationToken ct)
-    {
-        var chat = await _chats.FirstOrDefaultAsync(new ChatByTelegramIdSpec(chatId), ct);
-        if (chat is null)
-            throw new ResourceNotFoundException("Chat isn't activated.");
-
-        chat.EnsureActivated();
-        return chat;
     }
 
     private async Task<Stock> GetOrCreateStock(string symbol, string name, string currency, CancellationToken ct)

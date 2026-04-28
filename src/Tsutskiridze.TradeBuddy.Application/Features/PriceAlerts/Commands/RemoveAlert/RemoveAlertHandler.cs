@@ -1,8 +1,8 @@
 ﻿using Mediator;
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
@@ -54,7 +54,7 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
 
     private async Task<Chat> GetActiveChat(long chatId, CancellationToken ct)
     {
-        var chat = await _chats.FirstOrDefaultAsync(new ChatByTelegramIdSpec(chatId), ct);
+        var chat = await _chats.FirstOrDefaultAsync(new ActiveChatByTelegramIdSpec(chatId), ct);
         if (chat is null)
             throw new ResourceNotFoundException("Chat isn't activated.");
 
