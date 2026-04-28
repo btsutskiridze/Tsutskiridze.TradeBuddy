@@ -1,7 +1,7 @@
 using Mediator;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
-using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Commands.StockQuote;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Commands;
@@ -28,7 +28,7 @@ public class StockQuoteTelegramCommandHandler : ITelegramCommandHandler
         if (string.IsNullOrWhiteSpace(symbol))
             throw new TelegramPresentationException("Usage: /price <symbol>");
 
-        var result = await _mediator.Send(new StockQuoteCommand(dispatchRequest.ChatId, symbol), ct);
+        var result = await _mediator.Send(new AnalyseStockCommand(dispatchRequest.ChatId, symbol), ct);
 
         var priorMessages = new List<TelegramOutgoingMessage>();
         if (!string.IsNullOrWhiteSpace(result.AnalysisMessage))

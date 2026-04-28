@@ -1,6 +1,6 @@
 ﻿using SharedKernel.Validations;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.News.Queries;
+namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Queries.GetStockNews;
 
 public sealed class GetStockNewsQueryValidator : IValidator<GetStockNewsQuery>
 {

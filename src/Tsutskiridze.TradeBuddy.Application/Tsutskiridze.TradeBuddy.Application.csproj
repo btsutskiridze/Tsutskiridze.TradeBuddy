@@ -19,5 +19,7 @@
     <ItemGroup>
       <Folder Include="Abstractions\Common\" />
       <Folder Include="Features\PriceAlerts\Queries\" />
+      <Folder Include="Features\StockAnalysis\Commands\" />
+      <Folder Include="Features\Stocks\Commands\" />
     </ItemGroup>
 </Project>

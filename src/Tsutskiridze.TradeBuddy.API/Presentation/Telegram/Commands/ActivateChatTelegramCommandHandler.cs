@@ -2,6 +2,7 @@ using Mediator;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands;
+using Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands.ActivateChat;
 
 namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Commands;
 

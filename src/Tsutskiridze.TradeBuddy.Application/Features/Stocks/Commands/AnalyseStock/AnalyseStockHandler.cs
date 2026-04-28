@@ -4,18 +4,17 @@ using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
 using Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Services;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Commands.StockQuote;
+namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock;
 
-public sealed record StockQuoteCommand(long ChatId, string Symbol) : ICommand<StockQuoteResult>;
+public sealed record AnalyseStockCommand(long ChatId, string Symbol) : ICommand<AnalyseStockResult>;
 
-public sealed record StockQuoteResult(string SummaryMessage, string? AnalysisMessage);
+public sealed record AnalyseStockResult(string SummaryMessage, string? AnalysisMessage);
 
-public class StockQuoteCommandHandler : ICommandHandler<StockQuoteCommand, StockQuoteResult>
+public class AnalyseStockHandler : ICommandHandler<AnalyseStockCommand, AnalyseStockResult>
 {
-    private readonly ILogger<StockQuoteCommandHandler> _logger;
+    private readonly ILogger<AnalyseStockHandler> _logger;
     private readonly StockAnalysisGenerator _stockAnalysisGenerator;
     private readonly IMarketDataProvider _stockScraper;
-
     
     /*
      *todo:
@@ -30,8 +29,8 @@ public class StockQuoteCommandHandler : ICommandHandler<StockQuoteCommand, Stock
     private const int MaxAnalysisCount = 100;
     private const int DelayBetweenAnalysesSeconds = 5;
 
-    public StockQuoteCommandHandler(
-        ILogger<StockQuoteCommandHandler> logger,
+    public AnalyseStockHandler(
+        ILogger<AnalyseStockHandler> logger,
         StockAnalysisGenerator stockAnalysisGenerator,
         IMarketDataProvider stockScraper)
     {
@@ -40,7 +39,7 @@ public class StockQuoteCommandHandler : ICommandHandler<StockQuoteCommand, Stock
         _stockScraper = stockScraper;
     }
 
-    public async ValueTask<StockQuoteResult> Handle(StockQuoteCommand command, CancellationToken ct)
+    public async ValueTask<AnalyseStockResult> Handle(AnalyseStockCommand command, CancellationToken ct)
     {
         var symbol = command.Symbol.Trim();
 
@@ -61,7 +60,7 @@ public class StockQuoteCommandHandler : ICommandHandler<StockQuoteCommand, Stock
 
             if (_analysisCount >= MaxAnalysisCount)
             {
-                return new StockQuoteResult(
+                return new AnalyseStockResult(
                     $"You've reached the daily limit of {MaxAnalysisCount} stock analyses. Please try again tomorrow.",
                     null);
             }
@@ -73,7 +72,7 @@ public class StockQuoteCommandHandler : ICommandHandler<StockQuoteCommand, Stock
             {
                 var wait = cooldown - elapsedSinceLastExecution;
 
-                return new StockQuoteResult(
+                return new AnalyseStockResult(
                     $"Next stock analysis is available in {wait.Seconds} second(s).",
                     null);
             }
@@ -97,13 +96,13 @@ public class StockQuoteCommandHandler : ICommandHandler<StockQuoteCommand, Stock
                 await RefundAnalysisCount();
                 reservationMade = false;
 
-                return new StockQuoteResult("Invalid stock symbol. Please provide a valid stock symbol.", null);
+                return new AnalyseStockResult("Invalid stock symbol. Please provide a valid stock symbol.", null);
             }
 
             var analysis = await _stockAnalysisGenerator.GenerateAsync(symbol);
             var analysisMessage = CreateAnalysisMessage(analysis);
 
-            return new StockQuoteResult(
+            return new AnalyseStockResult(
                 "Number of analyses left: " + analysesLeftAfterReservation,
                 analysisMessage);
         }
@@ -113,7 +112,7 @@ public class StockQuoteCommandHandler : ICommandHandler<StockQuoteCommand, Stock
                 await RefundAnalysisCount();
 
             _logger.LogError(ex, "Error handling stock command");
-            return new StockQuoteResult("Failed to analyze stock.", null);
+            return new AnalyseStockResult("Failed to analyze stock.", null);
         }
     }
 

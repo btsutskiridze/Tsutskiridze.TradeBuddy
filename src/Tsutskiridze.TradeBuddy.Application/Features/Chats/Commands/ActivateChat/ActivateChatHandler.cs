@@ -1,11 +1,10 @@
 ﻿using Mediator;
-using SharedKernel;
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands;
+namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands.ActivateChat;
 
 public sealed record ActivateChatCommand(long ChatId, string Token) : ICommand<ActivateChatResult>;
 

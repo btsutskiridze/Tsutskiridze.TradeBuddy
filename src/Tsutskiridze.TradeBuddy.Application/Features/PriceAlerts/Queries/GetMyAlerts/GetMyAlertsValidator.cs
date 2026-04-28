@@ -1,6 +1,6 @@
 using SharedKernel.Validations;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Queries.MyAlerts;
+namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Queries.GetMyAlerts;
 
 public sealed class GetMyAlertsQueryValidator : IValidator<MyAlertsCommand>
 {

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Tsutskiridze.TradeBuddy.API.Contracts.Stocks;
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
-using Tsutskiridze.TradeBuddy.Application.Features.News.Queries;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Queries.GetStockNews;
 
 namespace Tsutskiridze.TradeBuddy.API.Controllers.Stocks
 {

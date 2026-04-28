@@ -1,10 +1,10 @@
 using SharedKernel.Validations;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.StockAnalysis.Commands.StockQuote;
+namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock;
 
-public sealed class StockQuoteCommandValidator : IValidator<StockQuoteCommand>
+public sealed class AnalyseStockValidator : IValidator<AnalyseStockCommand>
 {
-    public ValueTask<ValidationResult> ValidateAsync(StockQuoteCommand obj, CancellationToken cancellationToken)
+    public ValueTask<ValidationResult> ValidateAsync(AnalyseStockCommand obj, CancellationToken cancellationToken)
     {
         List<ValidationError> errors = [];
 

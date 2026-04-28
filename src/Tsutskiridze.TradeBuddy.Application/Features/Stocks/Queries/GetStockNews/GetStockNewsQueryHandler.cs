@@ -3,7 +3,7 @@ using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 using Tsutskiridze.TradeBuddy.Application.DTOs.News;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.News.Queries;
+namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Queries.GetStockNews;
 
 public sealed record GetStockNewsQuery(
     string Symbol,

@@ -1,6 +1,6 @@
 using SharedKernel.Validations;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands;
+namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands.ActivateChat;
 
 public sealed class ActivateChatValidator : IValidator<ActivateChatCommand>
 {

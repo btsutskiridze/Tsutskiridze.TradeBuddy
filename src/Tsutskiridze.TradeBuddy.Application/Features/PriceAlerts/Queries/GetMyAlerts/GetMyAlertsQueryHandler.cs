@@ -11,7 +11,7 @@ using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Specifications;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Queries.MyAlerts;
+namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Queries.GetMyAlerts;
 
 public sealed record MyAlertsCommand(long ChatId) : ICommand<MyAlertsResult>;
 
