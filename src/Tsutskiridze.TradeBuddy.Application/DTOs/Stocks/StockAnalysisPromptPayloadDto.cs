@@ -1,4 +1,4 @@
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis
+namespace Tsutskiridze.TradeBuddy.Application.DTOs.Stocks
 {
     public class StockAnalysisPromptPayloadDto
     {

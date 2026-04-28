@@ -1,7 +1,7 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
-using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Stocks;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Prompts;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Services

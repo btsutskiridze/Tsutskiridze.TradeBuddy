@@ -1,8 +1,8 @@
 using Mediator;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Stocks;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock;
-using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Commands;
 
@@ -32,7 +32,18 @@ public class StockQuoteTelegramCommandHandler : ITelegramCommandHandler
 
         return TelegramCommandDispatchResponse.TextReply(
             dispatchRequest.ChatId, 
-            result.Message 
+            CreateAnalysisMessage(result)
         );
+    }
+    
+    private static string CreateAnalysisMessage(AnalyseStockResult analysis)
+    {
+        return $"🚨 Stock Alert: {analysis.Symbol} 🚨\n" +
+               $"- 📈 Current Price: {analysis.price}\n" +
+               $"- 📊 50-day Avg: {analysis.bench.avg50} | Year High: {analysis.bench.yearHigh}\n" +
+               $"- 🔔 Trading Volume: {analysis.volAnalysis}\n" +
+               $"- 📰 Overall News: {analysis.newsOverall.conf} Positive\n" +
+               $"- 🤖 AI Analysis: {analysis.ai.rec} ({analysis.ai.conf} Confidence)\n" +
+               $"- ⏱️ Analysis Duration: {analysis.ExecutionTime:0.00}s";
     }
 }

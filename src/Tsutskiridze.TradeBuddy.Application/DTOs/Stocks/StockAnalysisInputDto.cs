@@ -1,7 +1,7 @@
 using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
 using Tsutskiridze.TradeBuddy.Application.DTOs.News;
 
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis
+namespace Tsutskiridze.TradeBuddy.Application.DTOs.Stocks
 {
     public class StockAnalysisInputDto : StockOverviewDto
     {

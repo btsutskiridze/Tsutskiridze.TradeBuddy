@@ -2,9 +2,9 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis
+namespace Tsutskiridze.TradeBuddy.Application.DTOs.Stocks
 {
-    public class StockAnalysisReportDto
+    public class AnalyseStockResult
     {
         [Required]
         public string Symbol { get; set; }

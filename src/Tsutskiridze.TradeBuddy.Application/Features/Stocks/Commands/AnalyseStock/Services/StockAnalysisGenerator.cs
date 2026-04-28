@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
-using Tsutskiridze.TradeBuddy.Application.DTOs.StockAnalysis;
+using Tsutskiridze.TradeBuddy.Application.DTOs.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Services;
 
@@ -27,38 +27,7 @@ public class StockAnalysisGenerator
         _logger = logger;
     }
 
-    
-    /*
-     *todo:
-     *Put analysis behind a command/query handler
-     *and let failures surface as typed exceptions or a proper result object. 
-     */
-    public async Task<StockAnalysisOutcomeDto> AnalyzeAsync(string stock)
-    {
-        try
-        {
-            _logger.LogInformation("Generating AI stock analysis for {Stock}", stock);
-            var analysis = await GenerateAsync(stock);
-
-            return new StockAnalysisOutcomeDto
-            {
-                Symbol = stock,
-                Report = analysis
-            };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error processing stock analysis for {Stock}", stock);
-
-            return new StockAnalysisOutcomeDto
-            {
-                Symbol = stock,
-                Report = null
-            };
-        }
-    }
-
-    public async Task<StockAnalysisReportDto> GenerateAsync(string stock)
+    public async Task<AnalyseStockResult> GenerateAsync(string stock)
     {
         var startedAt = DateTime.UtcNow;
 
@@ -67,7 +36,7 @@ public class StockAnalysisGenerator
         var stockPromptJson = JsonSerializer.Serialize(stockPrompt, JsonSerializerOpts);
 
         _logger.LogInformation("Sending stock prompt to AI service");
-        var analysis = await _aiClient.Ask<StockAnalysisReportDto>(stockPromptJson);
+        var analysis = await _aiClient.Ask<AnalyseStockResult>(stockPromptJson);
 
         analysis.ExecutionTime = (DateTime.UtcNow - startedAt).TotalSeconds;
         _logger.LogInformation("StockAnalysis completed in {ElapsedSeconds}s", analysis.ExecutionTime);

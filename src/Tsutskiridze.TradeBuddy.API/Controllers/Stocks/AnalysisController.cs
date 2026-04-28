@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Services;
+﻿using Mediator;
+using Microsoft.AspNetCore.Mvc;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock;
 
 namespace Tsutskiridze.TradeBuddy.API.Controllers.Stocks
 {
@@ -7,23 +8,18 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers.Stocks
     [Route("api/stocks/{symbol}/analysis")]
     public class AnalysisController : ControllerBase
     {
-        private readonly StockAnalysisGenerator _stockAnalysisGenerator;
+        private readonly IMediator _mediator;
 
-        public AnalysisController(StockAnalysisGenerator stockAnalysisGenerator)
+        public AnalysisController(IMediator mediator)
         {
-            _stockAnalysisGenerator = stockAnalysisGenerator;
+            _mediator = mediator;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Analyze([FromRoute] string symbol)
+        public async Task<IActionResult> Analyze([FromRoute] string symbol, [FromQuery] long chatId)
         {
-            var result = await _stockAnalysisGenerator.AnalyzeAsync(symbol);
-
-            if (result == null)
-            {
-                return BadRequest("Stock analysis returned null");
-            }
-
+            var result = await _mediator.Send(new AnalyseStockCommand(chatId, symbol));
+            
             return Ok(result);
         }
     }
