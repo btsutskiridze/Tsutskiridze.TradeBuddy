@@ -2,7 +2,7 @@
 using Tsutskiridze.TradeBuddy.API.Contracts.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 
-namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
+namespace Tsutskiridze.TradeBuddy.API.Telegram.Contracts;
 
 public sealed class TelegramCommandDispatchResponse
 {

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Abstractions;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Commands;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
+using Tsutskiridze.TradeBuddy.API.Telegram.Abstractions;
+using Tsutskiridze.TradeBuddy.API.Telegram.Commands;
+using Tsutskiridze.TradeBuddy.API.Telegram.Errors;
 
-namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram;
+namespace Tsutskiridze.TradeBuddy.API.Telegram;
 
 public static class DependencyInjection
 {

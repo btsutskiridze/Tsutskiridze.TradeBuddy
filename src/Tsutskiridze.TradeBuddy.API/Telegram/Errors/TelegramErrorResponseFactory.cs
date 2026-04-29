@@ -2,10 +2,10 @@
 using SharedKernel;
 using SharedKernel.Validations;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Abstractions;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
+using Tsutskiridze.TradeBuddy.API.Telegram.Abstractions;
+using Tsutskiridze.TradeBuddy.API.Telegram.Contracts;
 
-namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
+namespace Tsutskiridze.TradeBuddy.API.Telegram.Errors;
 
 public class TelegramErrorResponseFactory : ITelegramErrorResponseFactory
 {

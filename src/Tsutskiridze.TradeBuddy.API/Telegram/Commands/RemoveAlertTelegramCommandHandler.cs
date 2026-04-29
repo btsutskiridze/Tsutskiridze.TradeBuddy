@@ -1,11 +1,11 @@
 ﻿using Mediator;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
+using Tsutskiridze.TradeBuddy.API.Telegram.Contracts;
+using Tsutskiridze.TradeBuddy.API.Telegram.Errors;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.RemoveAlert;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
 
-namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Commands;
+namespace Tsutskiridze.TradeBuddy.API.Telegram.Commands;
 
 public class RemoveAlertTelegramCommandHandler : ITelegramCommandHandler
 {

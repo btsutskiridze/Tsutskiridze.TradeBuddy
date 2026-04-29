@@ -1,7 +1,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram
+namespace Tsutskiridze.TradeBuddy.API.Telegram
 {
     public class TelegramCommandRegistrar : IHostedService
     {

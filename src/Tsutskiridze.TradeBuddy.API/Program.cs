@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Tsutskiridze.TradeBuddy.API;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram;
+using Tsutskiridze.TradeBuddy.API.Telegram;
 using Tsutskiridze.TradeBuddy.Application;
 using Tsutskiridze.TradeBuddy.Domain;
 using Tsutskiridze.TradeBuddy.Infrastructure;

@@ -1,10 +1,10 @@
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Abstractions;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Commands;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
+using Tsutskiridze.TradeBuddy.API.Telegram.Abstractions;
+using Tsutskiridze.TradeBuddy.API.Telegram.Commands;
+using Tsutskiridze.TradeBuddy.API.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 
-namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram;
+namespace Tsutskiridze.TradeBuddy.API.Telegram;
 
 public class TelegramCommandDispatcher : ITelegramCommandDispatcher
 {

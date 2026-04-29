@@ -1,11 +1,11 @@
-using Mediator;
 using System.Text;
+using Mediator;
 using SharedKernel.Localization;
 using Telegram.Bot.Types.Enums;
-using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
+using Tsutskiridze.TradeBuddy.API.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Queries.GetMyAlerts;
 
-namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Commands;
+namespace Tsutskiridze.TradeBuddy.API.Telegram.Commands;
 
 public class MyAlertsTelegramCommandHandler : ITelegramCommandHandler
 {

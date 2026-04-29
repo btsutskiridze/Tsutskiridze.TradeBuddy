@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
+namespace Tsutskiridze.TradeBuddy.API.Telegram.Errors;
 
 public class TelegramPresentationException:BaseException
 {

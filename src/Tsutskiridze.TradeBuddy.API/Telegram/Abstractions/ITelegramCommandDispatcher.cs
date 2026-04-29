@@ -1,6 +1,6 @@
-﻿using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
+﻿using Tsutskiridze.TradeBuddy.API.Telegram.Contracts;
 
-namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Abstractions;
+namespace Tsutskiridze.TradeBuddy.API.Telegram.Abstractions;
 
 public interface ITelegramCommandDispatcher
 {
