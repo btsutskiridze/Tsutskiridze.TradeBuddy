@@ -1,12 +1,10 @@
-﻿using System.Globalization;
-using System.Net;
+﻿using System.Net;
 using Mediator;
 using SharedKernel.Data;
 using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
-using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
@@ -21,7 +19,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.Crea
 public record CreateAlertCommand(long ChatId, string Symbol, PriceDirection Direction, decimal Price)
     : ICommand<CreateAlertResult>;
 
-public sealed record CreateAlertResult(string Message);
+public sealed record CreateAlertResult(string Symbol, string CurrencyCode, PriceDirection Direction, decimal Price);
 
 public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAlertResult>
 {
@@ -77,14 +75,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
             throw;
         }
 
-        var culture = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
-            .FirstOrDefault(c => new RegionInfo(c.Name).ISOCurrencySymbol == stockQuote.Currency);
-
-        // todo: return result details and not the actual messages
-        var currencySymbol = culture != null ? new RegionInfo(culture.Name).CurrencySymbol : stockQuote.Currency;
-        var text = $"✅ Price alert set for {command.Symbol} {command.Direction} {currencySymbol}{command.Price}";
-
-        return new CreateAlertResult(text);
+        return new CreateAlertResult(stock.Symbol, stock.Currency, alert.Direction, alert.Price);
     }
 
     private async Task<PriceAlert> GetOrCreateAlert(Guid chatId, Guid stockId, PriceDirection direction,

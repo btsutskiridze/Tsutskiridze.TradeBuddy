@@ -6,11 +6,9 @@ using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands.ActivateChat;
 
-public sealed record ActivateChatCommand(long ChatId, string Token) : ICommand<ActivateChatResult>;
+public sealed record ActivateChatCommand(long ChatId, string Token) : ICommand;
 
-public sealed record ActivateChatResult(string Message);
-
-public sealed class ActivateChatHandler : ICommandHandler<ActivateChatCommand, ActivateChatResult>
+public sealed class ActivateChatHandler : ICommandHandler<ActivateChatCommand>
 {
     private readonly IUnitOfWork _uow;
     private readonly IRepository<Chat> _repo;
@@ -21,7 +19,7 @@ public sealed class ActivateChatHandler : ICommandHandler<ActivateChatCommand, A
         _repo = repo;
     }
 
-    public async ValueTask<ActivateChatResult> Handle(ActivateChatCommand command,
+    public async ValueTask<Unit> Handle(ActivateChatCommand command,
         CancellationToken cancellationToken)
     {
         var chat = await _repo.FirstOrDefaultAsync(new ChatByActivationTokenSpec(command.Token), cancellationToken)
@@ -30,6 +28,6 @@ public sealed class ActivateChatHandler : ICommandHandler<ActivateChatCommand, A
         chat.Activate(command.ChatId);
         await _uow.SaveChangesAsync(cancellationToken);
 
-        return new ActivateChatResult("StockBuddy Activated Successfully");
+        return Unit.Value;
     }
 }

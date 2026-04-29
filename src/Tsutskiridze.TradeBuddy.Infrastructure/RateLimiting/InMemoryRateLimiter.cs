@@ -1,7 +1,6 @@
 ﻿using System.Threading.RateLimiting;
 using Microsoft.Extensions.Options;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.RateLimiting;
-using Tsutskiridze.TradeBuddy.Application.DTOs;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.RateLimiting;
 

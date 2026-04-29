@@ -2,8 +2,6 @@
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
-using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
@@ -16,7 +14,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.Remo
 public sealed record RemoveAlertCommand(long ChatId, string Symbol, PriceDirection Direction, decimal Price)
     : ICommand<RemoveAlertCommandResult>;
 
-public sealed record RemoveAlertCommandResult(string Message);
+public sealed record RemoveAlertCommandResult(string Symbol, PriceDirection Direction, decimal Price);
 
 public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, RemoveAlertCommandResult>
 {
@@ -51,9 +49,7 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
         
         await _uow.SaveChangesAsync(ct);
         
-        return new RemoveAlertCommandResult(
-            $"Alert for *{command.Symbol}* with direction *{command.Direction.ToString().ToLower()}* and price *{command.Price}* has been removed."
-        );
+        return new RemoveAlertCommandResult(stock.Symbol, alert.Direction, alert.Price);
     }
     
     private async Task<Stock> GetStock(string symbol, CancellationToken ct)

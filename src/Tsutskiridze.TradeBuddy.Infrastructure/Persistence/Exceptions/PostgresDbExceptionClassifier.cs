@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
-using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
 

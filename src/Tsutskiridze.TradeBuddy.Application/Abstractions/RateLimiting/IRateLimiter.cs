@@ -1,6 +1,4 @@
-﻿using Tsutskiridze.TradeBuddy.Application.DTOs;
-
-namespace Tsutskiridze.TradeBuddy.Application.Abstractions.RateLimiting;
+﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.RateLimiting;
 
 public interface IRateLimiter
 {

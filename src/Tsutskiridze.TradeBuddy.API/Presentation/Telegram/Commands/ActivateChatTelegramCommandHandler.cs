@@ -26,8 +26,8 @@ public class ActivateChatTelegramCommandHandler : ITelegramCommandHandler
         if (string.IsNullOrWhiteSpace(token))
             throw new TelegramPresentationException("Usage: /activate <token>");
 
-        var result = await _mediator.Send(new ActivateChatCommand(dispatchRequest.ChatId, token), ct);
+        await _mediator.Send(new ActivateChatCommand(dispatchRequest.ChatId, token), ct);
 
-        return TelegramCommandDispatchResponse.TextReply(dispatchRequest.ChatId, result.Message);
+        return TelegramCommandDispatchResponse.TextReply(dispatchRequest.ChatId, "StockBuddy Activated Successfully");
     }
 }

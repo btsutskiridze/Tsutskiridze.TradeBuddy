@@ -37,13 +37,6 @@ public class TelegramCommandDispatcher : ITelegramCommandDispatcher
 
         try
         {
-            /*
-             *todo: 
-             *Return structured DTOs/results from Application;
-             *format text only in API/Telegram presenters.
-             * 
-             */
-            
             var result = await handler.Handle(dispatchRequest, ct);
             
             if (result.HasPriorMessages)

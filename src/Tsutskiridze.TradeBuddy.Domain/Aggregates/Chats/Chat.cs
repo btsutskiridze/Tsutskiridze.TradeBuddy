@@ -20,7 +20,6 @@ public class Chat : Entity<Guid>, IAggregateRoot
      *and richer aggregate factories/methods.
      * 
      */
-
     public void Activate(long telegramChatId)
     {
         if (TelegramChatId.HasValue)

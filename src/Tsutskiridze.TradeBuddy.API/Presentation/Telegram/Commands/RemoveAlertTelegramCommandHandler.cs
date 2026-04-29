@@ -1,4 +1,5 @@
 ﻿using Mediator;
+using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.RemoveAlert;
@@ -31,6 +32,12 @@ public class RemoveAlertTelegramCommandHandler : ITelegramCommandHandler
 
         var result = await _mediator.Send(new RemoveAlertCommand(dispatchRequest.ChatId, symbol, direction, price), ct);
         
-        return TelegramCommandDispatchResponse.TextReply(dispatchRequest.ChatId, result.Message);
+        return TelegramCommandDispatchResponse.TextReply(dispatchRequest.ChatId, CreateMessage(result), ParseMode.Markdown);
+    }
+
+    private static string CreateMessage(RemoveAlertCommandResult result)
+    {
+        return
+            $"Alert for *{result.Symbol}* with direction *{result.Direction.ToString().ToLowerInvariant()}* and price *{result.Price}* has been removed.";
     }
 }
