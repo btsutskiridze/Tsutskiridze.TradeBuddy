@@ -7,7 +7,6 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstracti
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Web
 {
     
-    //todo: yahoo has sperated folders and many locations. plan to reorganize all that
     public class YahooCookieBypassService : IYahooCookieBypassService
     {
         /// <summary>
