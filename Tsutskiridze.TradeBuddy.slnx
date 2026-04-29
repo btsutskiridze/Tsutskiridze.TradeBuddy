@@ -21,7 +21,7 @@
         <File Path="AGENTS.md" />
     </Folder>
     <Folder Name="/src/">
-        <Project Path="SharedKernel/SharedKernel.csproj" />
+        <Project Path="src/SharedKernel/SharedKernel.csproj" />
         <Project Path="src/Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" />
         <Project Path="src/Tsutskiridze.TradeBuddy.Application/Tsutskiridze.TradeBuddy.Application.csproj" />
         <Project Path="src/Tsutskiridze.TradeBuddy.Domain/Tsutskiridze.TradeBuddy.Domain.csproj" />
