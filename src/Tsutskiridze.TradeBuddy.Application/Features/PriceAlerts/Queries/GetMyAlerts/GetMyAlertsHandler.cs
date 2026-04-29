@@ -47,7 +47,7 @@ public sealed class GetMyAlertsHandler : IQueryHandler<MyAlertsQuery, MyAlertsRe
             .Select(x =>
             {
                 var stock = stocks[x.StockId];
-                return new MyAlertItem(stock.Symbol, x.Direction, stock.Currency, x.Price);
+                return new MyAlertItem(stock.Symbol, x.Trigger.Direction, stock.Currency, x.Trigger.Price);
             })
             .ToList();
 

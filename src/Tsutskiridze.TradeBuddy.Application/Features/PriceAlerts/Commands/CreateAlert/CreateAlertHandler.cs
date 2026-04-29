@@ -10,6 +10,7 @@ using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.ValueObjects;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
@@ -75,7 +76,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
             throw;
         }
 
-        return new CreateAlertResult(stock.Symbol, stock.Currency, alert.Direction, alert.Price);
+        return new CreateAlertResult(stock.Symbol, stock.Currency, alert.Trigger.Direction, alert.Trigger.Price);
     }
 
     private async Task<PriceAlert> GetOrCreateAlert(Guid chatId, Guid stockId, PriceDirection direction,
@@ -95,8 +96,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
             Guid.NewGuid(),
             chatId,
             stockId,
-            price,
-            direction,
+            AlertTrigger.Create(direction, price),
             DateTime.UtcNow
         );
 

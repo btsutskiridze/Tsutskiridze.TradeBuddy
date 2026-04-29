@@ -13,7 +13,7 @@ public sealed class AlertWatchingDomainService
 
         if (alert.IsActive)
         {
-            stock.Watch();
+            stock.StartPriceMonitoring();
         }
     }
 
@@ -24,7 +24,7 @@ public sealed class AlertWatchingDomainService
 
         if (!hasOtherActiveAlertsForStock)
         {
-            stock.UnWatch();
+            stock.StopPriceMonitoring();
         }
     }
 
@@ -32,11 +32,11 @@ public sealed class AlertWatchingDomainService
     {
         if (hasAnyActiveAlertsForStock)
         {
-            stock.Watch();
+            stock.StartPriceMonitoring();
         }
         else
         {
-            stock.UnWatch();
+            stock.StopPriceMonitoring();
         }
     }
 

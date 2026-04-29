@@ -49,7 +49,7 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
         
         await _uow.SaveChangesAsync(ct);
         
-        return new RemoveAlertCommandResult(stock.Symbol, alert.Direction, alert.Price);
+        return new RemoveAlertCommandResult(stock.Symbol, alert.Trigger.Direction, alert.Trigger.Price);
     }
     
     private async Task<Stock> GetStock(string symbol, CancellationToken ct)

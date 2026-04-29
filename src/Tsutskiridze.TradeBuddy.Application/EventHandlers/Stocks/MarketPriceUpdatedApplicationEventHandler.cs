@@ -9,12 +9,14 @@ using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Notifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.ValueObjects;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
 
 namespace Tsutskiridze.TradeBuddy.Application.EventHandlers.Stocks;
 
-public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEventHandler<MarketPriceUpdatedApplicationEvent>
+public sealed class
+    MarketPriceUpdatedApplicationEventHandler : IApplicationEventHandler<MarketPriceUpdatedApplicationEvent>
 {
     private readonly IUnitOfWork _uow;
     private readonly IReadRepository<Chat> _chats;
@@ -24,9 +26,10 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
     private readonly INotificationDispatcher _notifier;
     private readonly ILogger<MarketPriceUpdatedApplicationEventHandler> _log;
 
-    private static readonly TimeSpan AlertWindow = TimeSpan.FromSeconds(10);
-    private const int MaxNotifications = 5;
-
+    private static readonly NotificationPolicy AlertNotificationPolicy = new(
+        TimeSpan.FromSeconds(10),
+        5
+    );
 
     public MarketPriceUpdatedApplicationEventHandler(
         IUnitOfWork uow,
@@ -65,6 +68,7 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
         var chats = (await _chats.ListAsync(new ActiveChatsByIdsSpec(chatIds), ct))
             .ToDictionary(x => x.Id, x => x.TelegramChatId!.Value);
 
+
         var notifications = new List<PriceAlertTriggeredNotification>();
 
         foreach (var alert in activeAlerts)
@@ -76,10 +80,9 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
                 continue;
 
             var result = alert.ProcessMarketPrice(
-                evt.Price,
-                DateTime.UtcNow,
-                AlertWindow,
-                MaxNotifications);
+                new PriceTick(evt.Price, DateTime.UtcNow), 
+                AlertNotificationPolicy
+            );
 
             if (result is null)
                 continue;
@@ -92,7 +95,8 @@ public sealed class MarketPriceUpdatedApplicationEventHandler : IApplicationEven
                 result.AlertPrice,
                 result.Direction,
                 result.WasDeactivated,
-                MaxNotifications));
+                AlertNotificationPolicy.MaxNotifications
+            ));
         }
 
         _alertWatchingSvc.EnsureStockWatchState(stock, activeAlerts.Any(x => x.IsActive));

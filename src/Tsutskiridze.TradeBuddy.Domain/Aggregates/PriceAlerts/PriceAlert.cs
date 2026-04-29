@@ -1,4 +1,5 @@
 using SharedKernel;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.ValueObjects;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
@@ -7,10 +8,7 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
 {
     public Guid ChatId { get; private init; }
     public Guid StockId { get; private init; }
-
-    public decimal Price { get; private init; }
-    public PriceDirection Direction { get; private init; }
-
+    public AlertTrigger Trigger { get; private init; }
     public int AlertCount { get; private set; }
     public DateTime CreatedAt { get; private init; }
     public DateTime? UpdatedAt { get; private set; }
@@ -21,35 +19,23 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
         Guid id,
         Guid chatId,
         Guid stockId,
-        decimal price,
-        PriceDirection direction,
+        AlertTrigger trigger,
         DateTime nowUtc) : base(id)
     {
         if (Guid.Empty == id) throw new DomainException("Invalid id");
         if (Guid.Empty == chatId) throw new DomainException("Invalid chatId");
         if (stockId == Guid.Empty) throw new DomainException("Invalid stockId");
-        if (price < 0) throw new DomainException("Invalid price");
 
         ChatId = chatId;
         StockId = stockId;
-        Price = price;
-        Direction = direction;
+        Trigger = trigger;
         CreatedAt = nowUtc;
     }
 
     private PriceAlert()
     {
     }
-
-    public void RecordNotification()
-    {
-        if (!IsActive)
-            throw new DomainException("Alert is Inactive");
-
-        AlertCount++;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
+    
     public void Activate()
     {
         if (IsActive)
@@ -70,49 +56,49 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
     }
 
     public PriceAlertProcessingResult? ProcessMarketPrice(
-        decimal currentPrice,
-        DateTime nowUtc,
-        TimeSpan window,
-        int maxNotifications
+        PriceTick priceTick, 
+        NotificationPolicy policy
     )
     {
         if (!IsActive)
             return null;
 
-        if (!IsTriggered(currentPrice))
+        if (!Trigger.IsTriggeredBy(priceTick.Price))
             return null;
 
-        if (IsRateLimited(nowUtc, window))
+        if (IsCoolingDown(priceTick.Timestamp, policy.CooldownWindow))
             return null;
 
-        AlertCount++;
-        UpdatedAt = nowUtc;
+        TriggerNotification(priceTick.Timestamp);
 
-        var wasDeactivated = false;
-        if (AlertCount >= maxNotifications)
-        {
-            Deactivate();
-            wasDeactivated = true;
-        }
+        var wasDeactivated = DeactivateAfterNotificationLimit(policy);
 
         return new PriceAlertProcessingResult(
             ChatId,
             StockId,
-            Price,
-            currentPrice,
-            Direction,
+            Trigger.Price,
+            priceTick.Price,
+            Trigger.Direction,
             wasDeactivated
         );
     }
 
-    private bool IsTriggered(decimal currentPrice)
+    private bool DeactivateAfterNotificationLimit(NotificationPolicy policy)
     {
-        return Direction == PriceDirection.Above
-            ? currentPrice >= Price
-            : currentPrice <= Price;
+        if (AlertCount < policy.MaxNotifications)
+            return false;
+        
+        Deactivate();
+        return true;
     }
 
-    private bool IsRateLimited(DateTime nowUtc, TimeSpan window)
+    private void TriggerNotification(DateTime nowUtc)
+    {
+        AlertCount++;
+        UpdatedAt = nowUtc;
+    }
+
+    private bool IsCoolingDown(DateTime nowUtc, TimeSpan window)
         => AlertCount != 0 && UpdatedAt.HasValue && UpdatedAt.Value >= nowUtc.Subtract(window);
 
     public sealed record PriceAlertProcessingResult(

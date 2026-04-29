@@ -20,14 +20,19 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
             builder.Property(pa => pa.StockId)
                 .IsRequired();
 
-            builder.Property(pa => pa.Price)
-                .IsRequired()
-                .HasPrecision(18, 4);
+            builder.OwnsOne(pa => pa.Trigger, trigger =>
+            {
+                trigger.Property(x => x.Direction)
+                    .HasColumnName("direction")
+                    .HasConversion<string>()
+                    .HasMaxLength(20)
+                    .IsRequired();
 
-            builder.Property(pa => pa.Direction)
-                .IsRequired()
-                .HasConversion<string>()
-                .HasMaxLength(20);
+                trigger.Property(x => x.Price)
+                    .HasColumnName("price")
+                    .HasPrecision(18, 4)
+                    .IsRequired();
+            });
 
             builder.Property(pa => pa.AlertCount)
                 .IsRequired()
@@ -35,33 +40,30 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
 
             builder.Property(pa => pa.CreatedAt)
                 .IsRequired();
-            
+
             builder.Property<uint>("xmin")
                 .HasColumnName("xmin")
                 .HasColumnType("xid")
                 .ValueGeneratedOnAddOrUpdate()
                 .IsConcurrencyToken();
-            
+
             builder.HasOne<Stock>()
                 .WithMany()
                 .HasForeignKey(pa => pa.StockId)
                 .OnDelete(DeleteBehavior.Restrict);
-            
+
             builder.HasOne<Chat>()
                 .WithMany()
                 .HasForeignKey(pa => pa.ChatId)
                 .OnDelete(DeleteBehavior.Cascade);
-            
-            builder.HasIndex(pa => new
-                {
-                    pa.ChatId,
-                    pa.StockId,
-                    pa.Direction,
-                    pa.Price
-                })
+
+            builder.HasIndex(
+                    "chat_id",
+                    "stock_id",
+                    "direction",
+                    "price")
                 .IsUnique()
                 .HasDatabaseName("UX_price_alerts_chat_stock_direction_price");
-
         }
     }
 }

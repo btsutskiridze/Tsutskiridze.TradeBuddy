@@ -24,7 +24,7 @@ public class Stock : Entity<Guid>, IAggregateRoot
     {
     }
 
-    public void Watch()
+    public void StartPriceMonitoring()
     {
         if (IsWatched) return;
         
@@ -34,7 +34,7 @@ public class Stock : Entity<Guid>, IAggregateRoot
         );
     }
     
-    public void UnWatch()
+    public void StopPriceMonitoring()
     {
         if (!IsWatched) return;
         

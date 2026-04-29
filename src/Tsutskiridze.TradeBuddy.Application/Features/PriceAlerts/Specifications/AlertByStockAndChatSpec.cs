@@ -14,7 +14,7 @@ public sealed class AlertByStockAndChatSpec : Specification<PriceAlert>
     {
         Query.Where(x =>
             x.ChatId == chatId && x.StockId == stockId
-                               && x.Price == price && x.Direction == direction
+                               && x.Trigger.Price == price && x.Trigger.Direction == direction
         );
     }
 }
