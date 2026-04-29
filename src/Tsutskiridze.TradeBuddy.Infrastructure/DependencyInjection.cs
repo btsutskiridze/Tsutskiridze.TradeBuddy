@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 using Tsutskiridze.TradeBuddy.Infrastructure.Adapters.MarketData;
 using Tsutskiridze.TradeBuddy.Infrastructure.Adapters.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.Adapters.Notifications;
@@ -16,7 +15,6 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
-using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure;
 
@@ -28,7 +26,7 @@ public static class DependencyInjection
     {
         services
             .AddPersistence(configuration)
-            .AddCommonServices()
+            .AddNotifications()
             .AddRateLimiter(configuration)
             .AddIntegrations(configuration)
             .AddMarketDataServices()
@@ -37,10 +35,9 @@ public static class DependencyInjection
         return services;
     }
     
-    private static IServiceCollection AddCommonServices(this IServiceCollection services)
+    private static IServiceCollection AddNotifications(this IServiceCollection services)
     {
         services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
-        services.AddSingleton<IDbExceptionClassifier, PostgresDbExceptionClassifier>();
 
         return services;
     }

@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SharedKernel.Data;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
+using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
@@ -24,6 +26,8 @@ public static class DependencyInjection
         services.AddScoped(typeof(IReadRepository<>), typeof(EfReadRepository<>));
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+        services.AddSingleton<IDbExceptionClassifier, PostgresDbExceptionClassifier>();
+        
 
         return services;
     }
