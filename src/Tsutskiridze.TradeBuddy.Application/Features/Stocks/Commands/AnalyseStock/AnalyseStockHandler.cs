@@ -3,7 +3,8 @@ using Microsoft.Extensions.Logging;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.RateLimiting;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Stocks;
+using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Models;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Services;
 using Tsutskiridze.TradeBuddy.Application.RateLimiting;
 
@@ -17,6 +18,7 @@ public sealed record AnalyseStockCommand(long ChatId, string Symbol) : ICommand<
 
 public class AnalyseStockHandler : ICommandHandler<AnalyseStockCommand, AnalyseStockResult>
 {
+    private readonly IActiveChatProvider _activeChatProvider;
     private readonly ILogger<AnalyseStockHandler> _logger;
     private readonly StockAnalysisGenerator _stockAnalysisGenerator;
     private readonly IMarketDataProvider _stockScraper;
@@ -24,15 +26,17 @@ public class AnalyseStockHandler : ICommandHandler<AnalyseStockCommand, AnalyseS
     public AnalyseStockHandler(
         ILogger<AnalyseStockHandler> logger,
         StockAnalysisGenerator stockAnalysisGenerator,
-        IMarketDataProvider stockScraper)
+        IMarketDataProvider stockScraper, IActiveChatProvider activeChatProvider)
     {
         _logger = logger;
         _stockAnalysisGenerator = stockAnalysisGenerator;
         _stockScraper = stockScraper;
+        _activeChatProvider = activeChatProvider;
     }
 
     public async ValueTask<AnalyseStockResult> Handle(AnalyseStockCommand command, CancellationToken ct)
     {
+        await _activeChatProvider.ExistsAsync(command.ChatId, ct);
         
         var symbol = command.Symbol.Trim().ToUpperInvariant();
         _logger.LogDebug("Received stock command for symbol {StockSymbol}", symbol);

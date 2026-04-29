@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.Stocks
+namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Models
 {
     public class AnalyseStockResult
     {
@@ -27,7 +27,7 @@ namespace Tsutskiridze.TradeBuddy.Application.DTOs.Stocks
 
         [Required]
         [Description("AI recommendation and confidence")]
-        public StockAiRecommendationDto ai { get; set; }
+        public StockAiRecommendation ai { get; set; }
 
         [Required]
         [Description("Key reasons (60-70 chars each)")]
@@ -35,7 +35,7 @@ namespace Tsutskiridze.TradeBuddy.Application.DTOs.Stocks
 
         [Required]
         [Description("Aggregate news sentiment")]
-        public StockOverallNewsAnalysisDto newsOverall { get; set; }
+        public StockOverallNewsAnalysis newsOverall { get; set; }
 
         [JsonIgnore]
         public double ExecutionTime { get; set; }
@@ -71,7 +71,7 @@ namespace Tsutskiridze.TradeBuddy.Application.DTOs.Stocks
         public string exp { get; set; }
     }
 
-    public class StockAiRecommendationDto
+    public class StockAiRecommendation
     {
         [Required]
         [Description("BUY | SELL | HOLD")]
@@ -86,7 +86,7 @@ namespace Tsutskiridze.TradeBuddy.Application.DTOs.Stocks
         public string exp { get; set; }
     }
 
-    public class StockOverallNewsAnalysisDto
+    public class StockOverallNewsAnalysis
     {
         [Required]
         [Description("Overall sentiment")]

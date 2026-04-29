@@ -1,6 +1,6 @@
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.MarketData
+namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models
 {
-    public class AnnualReportDto
+    public class AnnualReport
     {
         public string FiscalDateEnding { get; set; }
         public string ReportedCurrency { get; set; }

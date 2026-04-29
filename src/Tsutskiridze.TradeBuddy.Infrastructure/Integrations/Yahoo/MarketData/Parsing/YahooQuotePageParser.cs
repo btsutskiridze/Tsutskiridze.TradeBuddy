@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Helpers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Models;
@@ -18,9 +18,9 @@ public class YahooQuotePageParser : IYahooQuotePageParser
         _jsonNavigator.FindFirstQuoteObject(pageContext.PayloadRoots, pageContext.Symbol) is not null ||
         YahooHtmlValueReader.IsQuoteTitleMatch(pageContext.Document, pageContext.Symbol, out _);
 
-    public StockQuoteDto? Parse(YahooPageContext pageContext)
+    public StockQuote? Parse(YahooPageContext pageContext)
     {
-        var quote = new StockQuoteDto
+        var quote = new StockQuote
         {
             Symbol = pageContext.Symbol
         };
@@ -41,7 +41,7 @@ public class YahooQuotePageParser : IYahooQuotePageParser
         return quote;
     }
 
-    private bool ApplyQuoteFromJson(IReadOnlyList<JsonElement> payloadRoots, string symbol, StockQuoteDto quote)
+    private bool ApplyQuoteFromJson(IReadOnlyList<JsonElement> payloadRoots, string symbol, StockQuote quote)
     {
         JsonElement? quoteJson = null;
         JsonElement? summaryDetailJson = null;
@@ -130,7 +130,7 @@ public class YahooQuotePageParser : IYahooQuotePageParser
         return quoteJson is not null;
     }
 
-    private static void ApplyQuoteFromHtmlFallback(HtmlAgilityPack.HtmlDocument document, StockQuoteDto quote)
+    private static void ApplyQuoteFromHtmlFallback(HtmlAgilityPack.HtmlDocument document, StockQuote quote)
     {
         if (string.IsNullOrWhiteSpace(quote.Name) && YahooHtmlValueReader.IsQuoteTitleMatch(document, quote.Symbol, out var titleText))
             quote.Name = titleText;

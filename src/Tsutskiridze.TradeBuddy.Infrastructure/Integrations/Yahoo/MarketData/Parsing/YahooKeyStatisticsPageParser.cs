@@ -1,4 +1,4 @@
-using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Helpers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Models;
@@ -13,15 +13,15 @@ public class YahooKeyStatisticsPageParser : IYahooKeyStatisticsPageParser
         _jsonNavigator = jsonNavigator;
     }
 
-    public StockOverviewDto Parse(YahooPageContext pageContext)
+    public StockOverview Parse(YahooPageContext pageContext)
     {
-        var overview = new StockOverviewDto();
+        var overview = new StockOverview();
         ApplyOverviewFromJson(pageContext.PayloadRoots, overview);
         ApplyOverviewFromHtmlFallback(pageContext.Document, overview);
         return overview;
     }
 
-    private void ApplyOverviewFromJson(IReadOnlyList<System.Text.Json.JsonElement> payloadRoots, StockOverviewDto overview)
+    private void ApplyOverviewFromJson(IReadOnlyList<System.Text.Json.JsonElement> payloadRoots, StockOverview overview)
     {
         var defaultKeyStatistics = _jsonNavigator.FindFirstObject(payloadRoots, "defaultKeyStatistics");
         var financialData = _jsonNavigator.FindFirstObject(payloadRoots, "financialData");
@@ -43,7 +43,7 @@ public class YahooKeyStatisticsPageParser : IYahooKeyStatisticsPageParser
         }
     }
 
-    private static void ApplyOverviewFromHtmlFallback(HtmlAgilityPack.HtmlDocument document, StockOverviewDto overview)
+    private static void ApplyOverviewFromHtmlFallback(HtmlAgilityPack.HtmlDocument document, StockOverview overview)
     {
         overview.ReturnOnEquityTTM = YahooValueFormatter.PreferExisting(
             overview.ReturnOnEquityTTM,

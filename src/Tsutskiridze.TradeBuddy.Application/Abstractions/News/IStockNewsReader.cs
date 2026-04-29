@@ -5,7 +5,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 
 public interface IStockNewsReader
 {
-    Task<StockNewsDto> GetNewsAsync(
+    Task<StockNews> GetNewsAsync(
         string symbol,
         IReadOnlyCollection<NewsSource>? sources = null,
         int? limit = null,

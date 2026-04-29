@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Persistence;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
 
@@ -22,9 +21,9 @@ public sealed class PostgresDbExceptionClassifier : IDbExceptionClassifier
         return false;
     }
 
-    public bool TryClassify(Exception exception, out PersistenceErrorDto error)
+    public bool TryClassify(Exception exception, out PersistenceError error)
     {
-        error = PersistenceErrorDto.None;
+        error = PersistenceError.None;
 
         if (exception is not DbUpdateException dbUpdateException)
         {
@@ -44,16 +43,16 @@ public sealed class PostgresDbExceptionClassifier : IDbExceptionClassifier
         error = postgresException.ConstraintName switch
         {
             PostgresConstraintNames.PriceAlertsUniqueBusinessKey
-                => new PersistenceErrorDto(
+                => new PersistenceError(
                     PersistenceErrorCode.DuplicatePriceAlert
                 ),
 
             PostgresConstraintNames.StocksSymbol
-                => new PersistenceErrorDto(
+                => new PersistenceError(
                     PersistenceErrorCode.DuplicateStockSymbol
                 ),
             _
-                => PersistenceErrorDto.None
+                => PersistenceError.None
         };
 
         return error.Code != PersistenceErrorCode.None;

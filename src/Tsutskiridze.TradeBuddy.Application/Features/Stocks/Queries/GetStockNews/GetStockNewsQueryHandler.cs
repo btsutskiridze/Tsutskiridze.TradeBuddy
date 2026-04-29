@@ -11,9 +11,9 @@ public sealed record GetStockNewsQuery(
     int? Limit = null,
     DateTime? From = null,
     DateTime? To = null,
-    SortType SortType = SortType.New) : IQuery<StockNewsDto>;
+    SortType SortType = SortType.New) : IQuery<StockNews>;
 
-public sealed class GetStockNewsQueryHandler : IQueryHandler<GetStockNewsQuery, StockNewsDto>
+public sealed class GetStockNewsQueryHandler : IQueryHandler<GetStockNewsQuery, StockNews>
 {
     private readonly IStockNewsReader _newsReader;
 
@@ -22,7 +22,7 @@ public sealed class GetStockNewsQueryHandler : IQueryHandler<GetStockNewsQuery, 
         _newsReader = newsReader;
     }
 
-    public async ValueTask<StockNewsDto> Handle(GetStockNewsQuery query, CancellationToken cancellationToken)
+    public async ValueTask<StockNews> Handle(GetStockNewsQuery query, CancellationToken cancellationToken)
     {
         return await _newsReader.GetNewsAsync(
             query.Symbol,

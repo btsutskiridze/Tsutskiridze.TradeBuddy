@@ -1,15 +1,15 @@
-﻿using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage.Mapping;
 
 public static class MappingExtensions
 {
-    public static AnnualReportDto? ToDto(this AlphaVantageAnnualReportResponse? source)
+    public static AnnualReport? ToDto(this AlphaVantageAnnualReportResponse? source)
     {
         if (source is null ) return null;
 
-        return new AnnualReportDto
+        return new AnnualReport
         {
             FiscalDateEnding = source.FiscalDateEnding,
             ReportedCurrency = source.ReportedCurrency,
@@ -22,11 +22,11 @@ public static class MappingExtensions
         };
     }
 
-    public static StockOverviewDto? ToDto(this AlphaVantageStockOverviewResponse? source)
+    public static StockOverview? ToDto(this AlphaVantageStockOverviewResponse? source)
     {
         if (source is null ) return null;
 
-        return new StockOverviewDto
+        return new StockOverview
         {
             ReturnOnEquityTTM = source.ReturnOnEquityTTM,
             PriceToSalesRatioTTM = source.PriceToSalesRatioTTM,

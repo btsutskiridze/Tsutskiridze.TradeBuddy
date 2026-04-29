@@ -1,7 +1,7 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Stocks;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Models;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Prompts;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Services
@@ -17,7 +17,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseSt
             _scraper = scraper;
         }
 
-        public async Task<StockAnalysisPromptPayloadDto> BuildAsync(string symbol)
+        public async Task<StockAnalysisPrompt> BuildAsync(string symbol)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseSt
 
                 await Task.WhenAll(quote, stockOverview, prevDayPrices, annualReport, allNews);
 
-                var stock = new StockAnalysisInputDto
+                var stock = new StockAnalysisPromptDetails
                 {
                     Name = quote.Result?.Name ?? "Unknown",
                     Symbol = symbol,
@@ -46,7 +46,7 @@ namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseSt
                     News = allNews.Result
                 };
 
-                return new StockAnalysisPromptPayloadDto
+                return new StockAnalysisPrompt
                 {
                     AnalysisRequest = StockAnalysisPromptTemplate.AnalysisRequest,
                     InvestmentHorizon = StockAnalysisPromptTemplate.InvestmentHorizon,

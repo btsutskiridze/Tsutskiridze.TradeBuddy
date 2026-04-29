@@ -6,11 +6,11 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit.Mappings;
 
 public static class MappingExtensions
 {
-    public static StockNewsDto.StockNewsItem ToDto(this RedditPost source)
+    public static StockNews.StockNewsItem ToDto(this RedditPost source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        return new StockNewsDto.StockNewsItem
+        return new StockNews.StockNewsItem
         {
             Title = source.Title,
             Summary = source.Body,

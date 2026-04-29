@@ -6,11 +6,11 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.News.Mapping
 
 public static class MappingExtensions
 {
-    public static StockNewsDto.StockNewsItem ToDto(this YahooNewsItem source)
+    public static StockNews.StockNewsItem ToDto(this YahooNewsItem source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        return new StockNewsDto.StockNewsItem
+        return new StockNews.StockNewsItem
         {
             Title = source.Title,
             Summary = source.Summary,

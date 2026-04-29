@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Helpers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Models;
@@ -19,11 +19,11 @@ public class YahooFinancialsPageParser : IYahooFinancialsPageParser
         _logger = logger;
     }
 
-    public AnnualReportDto? Parse(YahooPageContext pageContext)
+    public AnnualReport? Parse(YahooPageContext pageContext)
     {
         try
         {
-            var report = new AnnualReportDto();
+            var report = new AnnualReport();
 
             ApplyAnnualReportFromJson(pageContext.PayloadRoots, report);
             ApplyAnnualReportFromHtmlFallback(pageContext.Document, report);
@@ -40,7 +40,7 @@ public class YahooFinancialsPageParser : IYahooFinancialsPageParser
         }
     }
 
-    private void ApplyAnnualReportFromJson(IReadOnlyList<JsonElement> payloadRoots, AnnualReportDto report)
+    private void ApplyAnnualReportFromJson(IReadOnlyList<JsonElement> payloadRoots, AnnualReport report)
     {
         var revenue = ReadLatestAnnualMetric(payloadRoots, "annualTotalRevenue");
         var costOfRevenue = ReadLatestAnnualMetric(payloadRoots, "annualReconciledCostOfRevenue", "annualCostOfRevenue");
@@ -79,7 +79,7 @@ public class YahooFinancialsPageParser : IYahooFinancialsPageParser
             report.DepreciationAndAmortization = depreciation.Value.Value;
     }
 
-    private static void ApplyAnnualReportFromHtmlFallback(HtmlAgilityPack.HtmlDocument document, AnnualReportDto report)
+    private static void ApplyAnnualReportFromHtmlFallback(HtmlAgilityPack.HtmlDocument document, AnnualReport report)
     {
         if (string.IsNullOrWhiteSpace(report.ReportedCurrency))
         {

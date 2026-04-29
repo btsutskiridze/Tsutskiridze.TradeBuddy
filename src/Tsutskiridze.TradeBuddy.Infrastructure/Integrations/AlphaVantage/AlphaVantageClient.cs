@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage.Models;
@@ -18,7 +18,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage
             _options = options.Value;
         }
 
-        public async Task<AnnualReportDto?> GetStockLastAnnualReport(string symbol)
+        public async Task<AnnualReport?> GetStockLastAnnualReport(string symbol)
         {
             var response = await _client.GetAsync($"query?function=INCOME_STATEMENT&symbol={symbol}&apikey={_options.ApiKey}");
             response.EnsureSuccessStatusCode();
@@ -34,7 +34,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage
             return annualReport ?? throw new InfrastructureException("Failed to get stock annual report");
         }
 
-        public async Task<StockOverviewDto?> GetStockOverview(string symbol)
+        public async Task<StockOverview?> GetStockOverview(string symbol)
         {
             var response = await _client.GetAsync($"query?function=OVERVIEW&symbol={symbol}&apikey={_options.ApiKey}");
             response.EnsureSuccessStatusCode();
@@ -48,7 +48,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage
             return stockOverview ?? throw new InfrastructureException("Failed to get stock overview");
         }
 
-        public async Task<List<StockDayPriceDto>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
+        public async Task<List<StockDayPrice>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
         {
             var response = await _client.GetAsync($"query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={_options.ApiKey}");
             response.EnsureSuccessStatusCode();
@@ -64,7 +64,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage
 
             var prices = data.Prices
                 .Take(days ?? data.Prices.Count)
-                .Select(x => new StockDayPriceDto
+                .Select(x => new StockDayPrice
                 {
                     Date = DateTime.Parse(x.Key).ToString("yyyy-MM-dd"),
                     Open = x.Value.Open,

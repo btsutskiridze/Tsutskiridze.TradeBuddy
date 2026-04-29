@@ -34,7 +34,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.News
             _googleProvider = googleProvider;
         }
 
-        public async Task<StockNewsDto> GetNewsAsync(
+        public async Task<StockNews> GetNewsAsync(
             string symbol,
             IReadOnlyCollection<NewsSource>? sources = null,
             int? limit = null,
@@ -81,7 +81,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.News
                 );
             }
 
-            var items = new List<StockNewsDto.StockNewsItem>();
+            var items = new List<StockNews.StockNewsItem>();
 
             if (redditTask.Result is not null)
                 items.AddRange(redditTask.Result.Select(x => x.ToDto()));
@@ -92,7 +92,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.News
             if (finnhubTask.Result is not null)
                 items.AddRange(finnhubTask.Result.Select(x => x.ToDto()));
 
-            return new StockNewsDto()
+            return new StockNews()
             {
                 Items = items
             };

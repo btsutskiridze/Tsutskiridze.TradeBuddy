@@ -1,8 +1,8 @@
 using Mediator;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Stocks;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Models;
 
 namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Commands;
 

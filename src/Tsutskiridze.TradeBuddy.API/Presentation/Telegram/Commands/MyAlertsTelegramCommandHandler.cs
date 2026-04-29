@@ -18,7 +18,7 @@ public class MyAlertsTelegramCommandHandler : ITelegramCommandHandler
     public string Description => TelegramCommandCatalog.MyAlerts.Description;
     public async Task<TelegramCommandDispatchResponse> Handle(TelegramCommandDispatchRequest dispatchRequest, CancellationToken ct)
     {
-        var result = await _mediator.Send(new MyAlertsCommand(dispatchRequest.ChatId), ct);
+        var result = await _mediator.Send(new MyAlertsQuery(dispatchRequest.ChatId), ct);
         
         return TelegramCommandDispatchResponse.TextReply(dispatchRequest.ChatId, result.Message, ParseMode.Markdown);
     }

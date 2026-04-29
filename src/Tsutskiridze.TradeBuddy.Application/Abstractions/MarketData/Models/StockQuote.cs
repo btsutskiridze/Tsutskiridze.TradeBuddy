@@ -1,9 +1,9 @@
 
 using System.Text.Json.Serialization;
 
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.MarketData
+namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models
 {
-    public class StockQuoteDto
+    public class StockQuote
     {
         [JsonIgnore]
         public string Symbol { get; set; }

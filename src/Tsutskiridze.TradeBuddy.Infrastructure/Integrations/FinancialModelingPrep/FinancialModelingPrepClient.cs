@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.Options;
-using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep.Models;
@@ -18,7 +18,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingP
             _options = options.Value;
         }
 
-        public async Task<StockQuoteDto?> GetStockQuote(string symbol)
+        public async Task<StockQuote?> GetStockQuote(string symbol)
         {
             var response = await _client.GetAsync($"api/v3/quote/{symbol}?apikey={_options.ApiKey}");
             response.EnsureSuccessStatusCode();

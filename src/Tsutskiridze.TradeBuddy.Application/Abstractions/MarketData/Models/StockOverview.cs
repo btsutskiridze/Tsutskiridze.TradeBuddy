@@ -1,6 +1,6 @@
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.MarketData
+namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models
 {
-    public class StockOverviewDto
+    public class StockOverview
     {
         public string ReturnOnEquityTTM { get; set; }
         public string PriceToSalesRatioTTM { get; set; }

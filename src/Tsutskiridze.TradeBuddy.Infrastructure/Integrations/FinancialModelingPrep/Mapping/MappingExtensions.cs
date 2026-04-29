@@ -1,15 +1,15 @@
-﻿using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep.Mapping;
 
 public static class MappingExtensions
 {
-    public static StockQuoteDto ToDto(this FmpStockQuoteResponse source)
+    public static StockQuote ToDto(this FmpStockQuoteResponse source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        return new StockQuoteDto
+        return new StockQuote
         {
             Symbol = source.Symbol,
             Name = source.Name,

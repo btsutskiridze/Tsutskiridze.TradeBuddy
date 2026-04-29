@@ -1,6 +1,6 @@
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.MarketData
+namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models
 {
-    public class StockDayPriceDto
+    public class StockDayPrice
     {
         public string Date { get; set; }
         public string Open { get; set; }

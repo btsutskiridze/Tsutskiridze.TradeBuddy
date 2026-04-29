@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.DTOs;
+﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.RateLimiting;
 
 
 public sealed record RateLimitResult(

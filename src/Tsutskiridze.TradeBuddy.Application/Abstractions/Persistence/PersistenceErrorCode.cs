@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Common.Enums;
+﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 
 public enum PersistenceErrorCode
 {

@@ -4,11 +4,10 @@ using Mediator;
 using SharedKernel.Data;
 using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
-using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
-using Tsutskiridze.TradeBuddy.Application.DTOs.Persistence;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
@@ -115,7 +114,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
         return alert;
     }
 
-    private async Task<StockQuoteDto> GetValidatedStockQuote(string symbol)
+    private async Task<StockQuote> GetValidatedStockQuote(string symbol)
     {
         return await _market.GetStockQuote(symbol)
                ?? throw new ValidationException("Stock symbol not found");
@@ -135,7 +134,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
     }
 
     private static Exception MapPersistenceError(
-        PersistenceErrorDto error,
+        PersistenceError error,
         Exception exception)
     {
         return error.Code switch

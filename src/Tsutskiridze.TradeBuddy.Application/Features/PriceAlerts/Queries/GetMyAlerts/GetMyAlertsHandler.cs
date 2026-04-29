@@ -4,6 +4,7 @@ using Mediator;
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Common.Localization;
+using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
@@ -13,34 +14,32 @@ using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Specifications;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Queries.GetMyAlerts;
 
-public sealed record MyAlertsCommand(long ChatId) : ICommand<MyAlertsResult>;
+public sealed record MyAlertsQuery(long ChatId) : IQuery<MyAlertsResult>;
 
 public sealed record MyAlertsResult(string Message);
 
-public sealed class GetMyAlertsQueryHandler : ICommandHandler<MyAlertsCommand, MyAlertsResult>
+public sealed class GetMyAlertsHandler : IQueryHandler<MyAlertsQuery, MyAlertsResult>
 {
-    private readonly IReadRepository<Chat> _chats;
+    private readonly IActiveChatProvider _activeChatProvider;
     private readonly IReadRepository<Stock> _stocks;
     private readonly IReadRepository<PriceAlert> _alerts;
     private readonly ICurrencySymbolProvider _currency;
 
-    public GetMyAlertsQueryHandler(
-        IReadRepository<Chat> chats,
+    public GetMyAlertsHandler(
         IReadRepository<Stock> stocks,
         IReadRepository<PriceAlert> alerts,
-        ICurrencySymbolProvider currency)
+        ICurrencySymbolProvider currency, 
+        IActiveChatProvider activeChatProvider)
     {
-        _chats = chats;
         _stocks = stocks;
         _alerts = alerts;
         _currency = currency;
+        _activeChatProvider = activeChatProvider;
     }
 
-    public async ValueTask<MyAlertsResult> Handle(MyAlertsCommand command, CancellationToken ct)
+    public async ValueTask<MyAlertsResult> Handle(MyAlertsQuery query, CancellationToken ct)
     {
-        var chatId = await _chats.FirstOrDefaultAsync(new ActiveChatIdByTelegramIdSpec(command.ChatId), ct)
-                     ?? throw new ResourceNotFoundException("Chat isn't Activated.");
-
+        var chatId = await _activeChatProvider.GetIdAsync(query.ChatId, ct);
         var alerts = await _alerts.ListAsync(new ActiveAlertsByChatIdSpec(chatId), ct);
         if (alerts.Count == 0) throw new ApplicationLayerException("You have no alerts set.");
 

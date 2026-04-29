@@ -6,11 +6,11 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub.Mappings;
 
 public static class MappingExtensions
 {
-    public static StockNewsDto.StockNewsItem ToDto(this FinnhubNewsItem source)
+    public static StockNews.StockNewsItem ToDto(this FinnhubNewsItem source)
     {
         if (source is null) throw new ArgumentNullException(nameof(source));
 
-        return new StockNewsDto.StockNewsItem
+        return new StockNews.StockNewsItem
         {
             Title = source.Title,
             Summary = source.Summary,

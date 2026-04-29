@@ -1,5 +1,5 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
-using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Parsing.Abstractions;
 
@@ -39,14 +39,14 @@ public class MarketDataProvider : IMarketDataProvider
         return _quotePageParser.StockSymbolExists(pageContext);
     }
 
-    public async Task<List<StockDayPriceDto>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
+    public async Task<List<StockDayPrice>> GetStockPrevDaysClosePrices(string symbol, int? days = null)
     {
         if (!TryNormalizeSymbol(symbol, out var normalizedSymbol))
-            return new List<StockDayPriceDto>();
+            return new List<StockDayPrice>();
 
         var pageContext = await _pageLoader.LoadHistoryPageAsync(normalizedSymbol);
         if (pageContext is null)
-            return new List<StockDayPriceDto>();
+            return new List<StockDayPrice>();
 
         var prices = _historyPageParser.Parse(pageContext);
 
@@ -56,7 +56,7 @@ public class MarketDataProvider : IMarketDataProvider
         return prices;
     }
 
-    public async Task<StockOverviewDto?> GetStockOverview(string symbol)
+    public async Task<StockOverview?> GetStockOverview(string symbol)
     {
         if (!TryNormalizeSymbol(symbol, out var normalizedSymbol))
             return null;
@@ -68,7 +68,7 @@ public class MarketDataProvider : IMarketDataProvider
         return _keyStatisticsPageParser.Parse(pageContext);
     }
 
-    public async Task<AnnualReportDto?> GetStockLastAnnualReport(string symbol)
+    public async Task<AnnualReport?> GetStockLastAnnualReport(string symbol)
     {
         if (!TryNormalizeSymbol(symbol, out var normalizedSymbol))
             return null;
@@ -80,7 +80,7 @@ public class MarketDataProvider : IMarketDataProvider
         return _financialsPageParser.Parse(pageContext);
     }
 
-    public async Task<StockQuoteDto?> GetStockQuote(string symbol)
+    public async Task<StockQuote?> GetStockQuote(string symbol)
     {
         if (!TryNormalizeSymbol(symbol, out var normalizedSymbol))
             return null;

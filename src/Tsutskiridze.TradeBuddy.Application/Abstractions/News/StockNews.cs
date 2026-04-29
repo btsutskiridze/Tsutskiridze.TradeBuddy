@@ -2,7 +2,7 @@ using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Application.DTOs.News
 {
-    public class StockNewsDto
+    public class StockNews
     {
         public IReadOnlyCollection<StockNewsItem> Items { get; set; }
 

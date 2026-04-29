@@ -1,6 +1,7 @@
 ﻿using Mediator;
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
@@ -21,25 +22,28 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
 {
     private readonly IUnitOfWork _uow;
     private readonly IRepository<Stock> _stocks;
-    private readonly IReadRepository<Chat> _chats;
+    private readonly IActiveChatProvider _activeChatProvider;
     private readonly IRepository<PriceAlert> _alerts;
     private readonly AlertWatchingDomainService _alertWatchingSvc;
 
-    public RemoveAlertHandler(IUnitOfWork uow, IRepository<Stock> stocks, IReadRepository<Chat> chats,
-        IRepository<PriceAlert> alerts, AlertWatchingDomainService alertWatchingSvc)
+    public RemoveAlertHandler(IUnitOfWork uow, 
+        IRepository<Stock> stocks,
+        IRepository<PriceAlert> alerts, 
+        AlertWatchingDomainService alertWatchingSvc, 
+        IActiveChatProvider activeChatProvider)
     {
         _uow = uow;
         _stocks = stocks;
-        _chats = chats;
         _alerts = alerts;
         _alertWatchingSvc = alertWatchingSvc;
+        _activeChatProvider = activeChatProvider;
     }
     
     public async ValueTask<RemoveAlertCommandResult> Handle(RemoveAlertCommand command, CancellationToken ct)
     {
-        var chat = await GetActiveChat(command.ChatId, ct);
+        var chatId = await _activeChatProvider.GetIdAsync(command.ChatId, ct);
         var stock = await GetStock(command.Symbol, ct);
-        var alert = await GetAlert(chat.Id, stock.Id, command.Direction, command.Price, ct);
+        var alert = await GetAlert(chatId, stock.Id, command.Direction, command.Price, ct);
         var hasOtherActiveAlertsForStock =
             await _alerts.AnyAsync(new ActiveAlertsByStockIdExceptAlertSpec(stock.Id, alert.Id), ct);
 
@@ -51,17 +55,7 @@ public sealed class RemoveAlertHandler : ICommandHandler<RemoveAlertCommand, Rem
             $"Alert for *{command.Symbol}* with direction *{command.Direction.ToString().ToLower()}* and price *{command.Price}* has been removed."
         );
     }
-
-    private async Task<Chat> GetActiveChat(long chatId, CancellationToken ct)
-    {
-        var chat = await _chats.FirstOrDefaultAsync(new ActiveChatByTelegramIdSpec(chatId), ct);
-        if (chat is null)
-            throw new ResourceNotFoundException("Chat isn't activated.");
-
-        chat.EnsureActivated();
-        return chat;
-    }
-
+    
     private async Task<Stock> GetStock(string symbol, CancellationToken ct)
     {
         var stock = await _stocks.FirstOrDefaultAsync(new StockBySymbolSpec(symbol), ct);

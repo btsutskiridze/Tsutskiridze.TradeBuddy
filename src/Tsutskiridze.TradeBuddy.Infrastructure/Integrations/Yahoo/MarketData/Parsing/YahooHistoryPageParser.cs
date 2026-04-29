@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Tsutskiridze.TradeBuddy.Application.DTOs.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Helpers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Models;
@@ -19,13 +19,13 @@ public class YahooHistoryPageParser : IYahooHistoryPageParser
         _logger = logger;
     }
 
-    public List<StockDayPriceDto> Parse(YahooPageContext pageContext)
+    public List<StockDayPrice> Parse(YahooPageContext pageContext)
     {
         var prices = ParseHistoryFromJson(pageContext.PayloadRoots, pageContext.Symbol);
         return prices.Count > 0 ? prices : ParseHistoryFromHtml(pageContext.Document);
     }
 
-    private List<StockDayPriceDto> ParseHistoryFromJson(IReadOnlyList<JsonElement> payloadRoots, string symbol)
+    private List<StockDayPrice> ParseHistoryFromJson(IReadOnlyList<JsonElement> payloadRoots, string symbol)
     {
         foreach (var root in payloadRoots)
         {
@@ -39,10 +39,10 @@ public class YahooHistoryPageParser : IYahooHistoryPageParser
             }
         }
 
-        return new List<StockDayPriceDto>();
+        return new List<StockDayPrice>();
     }
 
-    private List<(DateTime Date, StockDayPriceDto Row)> ParseHistoryFromRoot(JsonElement root, string symbol)
+    private List<(DateTime Date, StockDayPrice Row)> ParseHistoryFromRoot(JsonElement root, string symbol)
     {
         foreach (var current in _jsonNavigator.Traverse(root))
         {
@@ -80,7 +80,7 @@ public class YahooHistoryPageParser : IYahooHistoryPageParser
                 continue;
             }
 
-            var rows = new List<(DateTime Date, StockDayPriceDto Row)>();
+            var rows = new List<(DateTime Date, StockDayPrice Row)>();
             var count = timestampNode.GetArrayLength();
 
             for (var index = 0; index < count; index++)
@@ -99,7 +99,7 @@ public class YahooHistoryPageParser : IYahooHistoryPageParser
                     continue;
 
                 var date = DateTimeOffset.FromUnixTimeSeconds(timestamp.Value).UtcDateTime.Date;
-                rows.Add((date, new StockDayPriceDto
+                rows.Add((date, new StockDayPrice
                 {
                     Date = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                     Open = YahooValueFormatter.FormatNumber(open),
@@ -114,12 +114,12 @@ public class YahooHistoryPageParser : IYahooHistoryPageParser
                 return rows;
         }
 
-        return new List<(DateTime Date, StockDayPriceDto Row)>();
+        return new List<(DateTime Date, StockDayPrice Row)>();
     }
 
-    private List<StockDayPriceDto> ParseHistoryFromHtml(HtmlAgilityPack.HtmlDocument document)
+    private List<StockDayPrice> ParseHistoryFromHtml(HtmlAgilityPack.HtmlDocument document)
     {
-        var prices = new List<StockDayPriceDto>();
+        var prices = new List<StockDayPrice>();
         var tableNode = document.DocumentNode.SelectSingleNode(
             "//table[.//th[normalize-space()='Date'] and .//th[normalize-space()='Open'] and .//th[normalize-space()='Volume']]");
 
@@ -145,7 +145,7 @@ public class YahooHistoryPageParser : IYahooHistoryPageParser
                 if (!DateTime.TryParse(rawDate, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
                     continue;
 
-                prices.Add(new StockDayPriceDto
+                prices.Add(new StockDayPrice
                 {
                     Date = parsedDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                     Open = YahooHtmlValueReader.Clean(cells[1].InnerText),
