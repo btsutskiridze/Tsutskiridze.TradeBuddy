@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Common\Localization\" />
       <Folder Include="Features\PriceAlerts\Queries\" />
       <Folder Include="Features\Stocks\Commands\" />
     </ItemGroup>

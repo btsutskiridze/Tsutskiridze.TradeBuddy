@@ -1,6 +1,6 @@
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 
-namespace Tsutskiridze.TradeBuddy.Application.DTOs.News
+namespace Tsutskiridze.TradeBuddy.Application.Abstractions.News
 {
     public class StockNews
     {

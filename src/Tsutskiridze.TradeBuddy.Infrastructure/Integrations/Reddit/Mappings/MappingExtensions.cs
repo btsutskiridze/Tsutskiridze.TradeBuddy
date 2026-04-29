@@ -1,5 +1,5 @@
+using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
-using Tsutskiridze.TradeBuddy.Application.DTOs.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit.Mappings;

@@ -1,7 +1,7 @@
 using Mediator;
+using SharedKernel.Localization;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Errors;
-using Tsutskiridze.TradeBuddy.Application.Common.Localization;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.CreateAlert;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
 
@@ -10,12 +10,9 @@ namespace Tsutskiridze.TradeBuddy.API.Presentation.Telegram.Commands;
 public class CreateAlertTelegramCommandHandler : ITelegramCommandHandler
 {
     private readonly IMediator _mediator;
-    private readonly ICurrencySymbolProvider _currencySymbolProvider;
-
-    public CreateAlertTelegramCommandHandler(IMediator mediator, ICurrencySymbolProvider currencySymbolProvider)
+    public CreateAlertTelegramCommandHandler(IMediator mediator)
     {
         _mediator = mediator;
-        _currencySymbolProvider = currencySymbolProvider;
     }
 
     public string Command => TelegramCommandCatalog.Alert.Command;
@@ -40,7 +37,7 @@ public class CreateAlertTelegramCommandHandler : ITelegramCommandHandler
 
     private string CreateMessage(CreateAlertResult result)
     {
-        var currencySymbol = _currencySymbolProvider.GetSymbol(result.CurrencyCode) ?? result.CurrencyCode;
+        var currencySymbol = CurrencySymbolLookup.GetSymbol(result.CurrencyCode) ?? result.CurrencyCode;
 
         return $"✅ Price alert set for {result.Symbol} {result.Direction} {currencySymbol}{result.Price}";
     }

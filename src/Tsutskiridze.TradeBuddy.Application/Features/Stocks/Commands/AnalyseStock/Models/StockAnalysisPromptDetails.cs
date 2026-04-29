@@ -1,5 +1,5 @@
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
-using Tsutskiridze.TradeBuddy.Application.DTOs.News;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Models
 {

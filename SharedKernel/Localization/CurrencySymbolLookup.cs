@@ -1,10 +1,10 @@
 using System.Globalization;
 
-namespace Tsutskiridze.TradeBuddy.Application.Common.Localization
+namespace SharedKernel.Localization
 {
-    public class CurrencySymbolProvider : ICurrencySymbolProvider
+    public static class CurrencySymbolLookup
     {
-        public string? GetSymbol(string currencyCode)
+        public static string? GetSymbol(string currencyCode)
         {
             try
             {

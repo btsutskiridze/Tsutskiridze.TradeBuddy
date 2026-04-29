@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SharedKernel;
-using Tsutskiridze.TradeBuddy.Application.Common.Localization;
+using SharedKernel.Localization;
 using Tsutskiridze.TradeBuddy.Application.Notifications;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
 
@@ -9,20 +9,18 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Notifica
 public sealed class PriceAlertTriggeredNotificationHandler : IBaseNotificationHandler<PriceAlertTriggeredNotification>
 {
     private readonly ITelegramSender _sender;
-    private readonly ICurrencySymbolProvider _currency;
     private readonly ILogger<PriceAlertTriggeredNotificationHandler> _logger;
 
-    public PriceAlertTriggeredNotificationHandler(ITelegramSender sender, ICurrencySymbolProvider currency,
+    public PriceAlertTriggeredNotificationHandler(ITelegramSender sender,
         ILogger<PriceAlertTriggeredNotificationHandler> logger)
     {
         _sender = sender;
-        _currency = currency;
         _logger = logger;
     }
 
     public async ValueTask Handle(PriceAlertTriggeredNotification notification, CancellationToken ct)
     {
-        var currencySymbol = _currency.GetSymbol(notification.CurrencyCode) ?? notification.CurrencyCode;
+        var currencySymbol = CurrencySymbolLookup.GetSymbol(notification.CurrencyCode) ?? notification.CurrencyCode;
         var directionEmoji = notification.Direction == PriceDirection.Above ? "🚀" : "📉";
         var directionText = notification.Direction == PriceDirection.Above ? "Above" : "Below";
 
