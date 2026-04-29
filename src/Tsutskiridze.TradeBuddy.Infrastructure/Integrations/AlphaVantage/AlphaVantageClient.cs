@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
-using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage.Models;
 

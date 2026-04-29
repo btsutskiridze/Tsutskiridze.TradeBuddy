@@ -2,7 +2,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
-using Tsutskiridze.TradeBuddy.Infrastructure.Common.Messaging;
+using Tsutskiridze.TradeBuddy.Infrastructure.Adapters.MarketData;
+using Tsutskiridze.TradeBuddy.Infrastructure.Adapters.News;
+using Tsutskiridze.TradeBuddy.Infrastructure.Adapters.Notifications;
+using Tsutskiridze.TradeBuddy.Infrastructure.Adapters.RateLimiting;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub;
@@ -10,13 +13,10 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Gemini;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.GoogleNews;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo;
-using Tsutskiridze.TradeBuddy.Infrastructure.MarketData;
-using Tsutskiridze.TradeBuddy.Infrastructure.News;
-using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
-using Tsutskiridze.TradeBuddy.Infrastructure.RateLimiting;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure;
 

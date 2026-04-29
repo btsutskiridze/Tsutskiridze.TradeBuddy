@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.News;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.News;
 
 public static class DependencyInjection
 {

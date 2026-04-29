@@ -1,6 +1,6 @@
 using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
-using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub.Mappings;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub.Models;
@@ -12,7 +12,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.News.Mappings;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.News.Models;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.News
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.News
 {
     public sealed class StockNewsReader : IStockNewsReader
     {

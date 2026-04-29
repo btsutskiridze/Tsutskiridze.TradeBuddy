@@ -1,6 +1,6 @@
 ﻿using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.API.Contracts.Telegram;
-using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.API.Telegram.Contracts;
 

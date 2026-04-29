@@ -3,7 +3,7 @@ using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Parsing.Abstractions;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.MarketData;
 
 public class MarketDataProvider : IMarketDataProvider
 {

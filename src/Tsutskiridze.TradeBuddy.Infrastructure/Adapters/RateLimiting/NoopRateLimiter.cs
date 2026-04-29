@@ -1,6 +1,6 @@
 ﻿using System.Threading.RateLimiting;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.RateLimiting;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.RateLimiting;
 
 public sealed class NoopRateLimiter : RateLimiter
 {

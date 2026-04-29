@@ -2,7 +2,7 @@ using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.API.Telegram.Abstractions;
 using Tsutskiridze.TradeBuddy.API.Telegram.Commands;
 using Tsutskiridze.TradeBuddy.API.Telegram.Contracts;
-using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.API.Telegram;
 

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using OpenAI.Chat;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
-using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI.Schema;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI

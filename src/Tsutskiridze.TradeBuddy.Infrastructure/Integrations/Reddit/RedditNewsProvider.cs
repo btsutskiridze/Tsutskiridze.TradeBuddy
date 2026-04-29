@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
-using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit

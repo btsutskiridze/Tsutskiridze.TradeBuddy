@@ -1,7 +1,7 @@
 using System.Net;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
-using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Web

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.MarketData;
 
 public static class DependencyInjection
 {

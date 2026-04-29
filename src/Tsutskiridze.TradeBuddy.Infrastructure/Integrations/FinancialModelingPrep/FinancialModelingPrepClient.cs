@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
-using Tsutskiridze.TradeBuddy.Infrastructure.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep.Mapping;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep.Models;
 

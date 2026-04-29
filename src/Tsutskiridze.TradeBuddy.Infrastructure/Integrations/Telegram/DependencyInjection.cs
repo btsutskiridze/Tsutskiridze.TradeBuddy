@@ -2,9 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
-using Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Config;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram.Config;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 
 public static class DependencyInjection
 {

@@ -3,8 +3,9 @@ using SharedKernel;
 using SharedKernel.Localization;
 using Tsutskiridze.TradeBuddy.Application.Notifications;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.NotificationHandlers;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.Notifications.NotificationHandlers;
 
 public sealed class PriceAlertTriggeredNotificationHandler : IBaseNotificationHandler<PriceAlertTriggeredNotification>
 {

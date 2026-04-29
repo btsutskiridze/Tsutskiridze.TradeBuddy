@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 
 public class TelegramSender : ITelegramSender
 {

@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Infrastructure.Notifications.Telegram.Config
+﻿namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram.Config
 {
     public class TelegramBotOptions
     {

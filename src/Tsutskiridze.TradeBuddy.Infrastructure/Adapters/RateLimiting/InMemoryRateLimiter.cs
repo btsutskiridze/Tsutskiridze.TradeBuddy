@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.RateLimiting;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.RateLimiting;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.RateLimiting;
 
 public sealed class InMemoryRateLimiter : IRateLimiter, IAsyncDisposable
 {

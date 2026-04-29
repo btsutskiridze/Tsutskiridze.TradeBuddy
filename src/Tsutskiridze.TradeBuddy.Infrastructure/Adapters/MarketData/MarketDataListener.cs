@@ -1,7 +1,7 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming.Abstractions;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.MarketData;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.MarketData;
 
 public class MarketDataListener : IMarketDataListener
 {

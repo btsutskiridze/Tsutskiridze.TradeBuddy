@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.RateLimiting;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.RateLimiting;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.RateLimiting;
 
 public static class DependencyInjection
 {
