@@ -1,6 +1,7 @@
 ﻿using SharedKernel.Specifications;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
 
-namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
+namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Specifications;
 
 public sealed class OtherAlertsByStockIdSpec : Specification<PriceAlert>
 {

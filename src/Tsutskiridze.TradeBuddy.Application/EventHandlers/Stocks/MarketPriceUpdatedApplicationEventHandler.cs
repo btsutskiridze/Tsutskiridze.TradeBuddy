@@ -4,12 +4,12 @@ using SharedKernel.Events;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
 using Tsutskiridze.TradeBuddy.Application.Events;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
+using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Specifications;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Notifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
 
 namespace Tsutskiridze.TradeBuddy.Application.EventHandlers.Stocks;

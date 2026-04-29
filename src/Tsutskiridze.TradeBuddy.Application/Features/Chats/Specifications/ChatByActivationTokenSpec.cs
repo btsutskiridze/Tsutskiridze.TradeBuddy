@@ -1,6 +1,7 @@
 ﻿using SharedKernel.Specifications;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 
-namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Specifications;
+namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
 
 public sealed class ChatByActivationTokenSpec : Specification<Chat>
 {

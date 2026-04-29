@@ -1,7 +1,8 @@
 ﻿using SharedKernel.Specifications;
+using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
 
-namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.Specifications;
+namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Specifications;
 
 public sealed class AlertByStockAndChatSpec : Specification<PriceAlert>
 {
