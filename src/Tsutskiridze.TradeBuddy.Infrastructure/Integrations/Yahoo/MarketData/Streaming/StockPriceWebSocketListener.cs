@@ -8,18 +8,18 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
     {
         private readonly IMarketDataTransportClient _transport;
         private readonly ISubscriptionManager _subs;
-        private readonly IPricingMessageProcessor _parser;
+        private readonly IPricingMessageProcessor _processor;
         private readonly ILogger<StockPriceWebSocketListener> _log;
 
         public StockPriceWebSocketListener(
             IMarketDataTransportClient transport,
             ISubscriptionManager subs,
-            IPricingMessageProcessor parser,
+            IPricingMessageProcessor processor,
             ILogger<StockPriceWebSocketListener> log)
         {
             _transport = transport;
             _subs = subs;
-            _parser = parser;
+            _processor = processor;
             _log = log;
         }
 
@@ -37,7 +37,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
 
                     await foreach (var msg in _transport.ReceiveAsync(ct))
                     {
-                        await _parser.ProcessAsync(msg, ct);
+                        await _processor.ProcessAsync(msg, ct);
                     }
                 }
                 catch (OperationCanceledException) when (ct.IsCancellationRequested) { }

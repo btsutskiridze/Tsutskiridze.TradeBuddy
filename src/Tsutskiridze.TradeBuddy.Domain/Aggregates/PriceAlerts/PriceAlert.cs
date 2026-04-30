@@ -57,7 +57,7 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
 
     public PriceAlertProcessingResult? ProcessMarketPrice(
         PriceTick priceTick, 
-        NotificationPolicy policy
+        AlertTriggerPolicy policy
     )
     {
         if (!IsActive)
@@ -83,7 +83,7 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
         );
     }
 
-    private bool DeactivateAfterNotificationLimit(NotificationPolicy policy)
+    private bool DeactivateAfterNotificationLimit(AlertTriggerPolicy policy)
     {
         if (AlertCount < policy.MaxNotifications)
             return false;

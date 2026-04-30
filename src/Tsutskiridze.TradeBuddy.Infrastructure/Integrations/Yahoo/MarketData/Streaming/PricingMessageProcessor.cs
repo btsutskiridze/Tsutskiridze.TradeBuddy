@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
-using Tsutskiridze.TradeBuddy.Application.Events;
+using Tsutskiridze.TradeBuddy.Application.Features.MarketData.Commands.ProcessMarketPriceTick;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming.Abstractions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming
@@ -37,8 +37,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
                 var update = PricingData.Parser.ParseFrom(Convert.FromBase64String(base64Message));
                 _log.LogDebug("Parsed update {Symbol} @ {Price}", update.Id, update.Price);
 
-                await mediator.Publish(
-                    new MarketPriceUpdatedApplicationEvent(update.Id, (decimal)update.Price), ct);
+                await mediator.Send(
+                    new ProcessMarketPriceTickCommand(update.Id, (decimal)update.Price, DateTime.UtcNow), ct
+                );
             }
             catch (ConcurrencyConflictException ex)
             {

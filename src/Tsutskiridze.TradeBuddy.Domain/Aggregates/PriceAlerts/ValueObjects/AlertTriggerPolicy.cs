@@ -2,12 +2,12 @@
 
 namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.ValueObjects;
 
-public sealed record NotificationPolicy : ValueObject
+public sealed record AlertTriggerPolicy : ValueObject
 {
     public TimeSpan CooldownWindow { get; }
     public int MaxNotifications { get; }
     
-    public NotificationPolicy(TimeSpan cooldownWindow, int maxNotifications)
+    public AlertTriggerPolicy(TimeSpan cooldownWindow, int maxNotifications)
     {
         if (cooldownWindow <= TimeSpan.Zero)
             throw new DomainException("Cooldown window must be positive.");
