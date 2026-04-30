@@ -8,16 +8,31 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Chat> builder)
         {
-            /*
-             *todo:
-             *Add indexes and uniqueness rules for ActivationToken and TelegramChatId,
-             *plus required column constraints if the lifecycle requires them.
-             * 
-             */
-            
             builder.ToTable("chats");
 
             builder.HasKey(c => c.Id);
+            builder.Property(c => c.ActivationToken)
+                .IsRequired()
+                .HasMaxLength(200);
+            builder.Property(c => c.PrivateName)
+                .IsRequired()
+                .HasMaxLength(100);
+            builder.Property(c => c.TelegramChatId)
+                .IsRequired(false);
+            
+            builder.Property<uint>("xmin")
+                .HasColumnName("xmin")
+                .HasColumnType("xid")
+                .ValueGeneratedOnAddOrUpdate()
+                .IsConcurrencyToken();
+            
+            builder.HasIndex(c => c.ActivationToken)
+                .IsUnique()
+                .HasDatabaseName("UX_chats_activation_token");
+            
+            builder.HasIndex(c => c.TelegramChatId)
+                .IsUnique()
+                .HasDatabaseName("UX_chats_telegram_chat_id");
         }
     }
 }

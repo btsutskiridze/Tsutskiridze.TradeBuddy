@@ -57,13 +57,14 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
                 .HasForeignKey(pa => pa.ChatId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(
-                    "chat_id",
-                    "stock_id",
-                    "direction",
-                    "price")
-                .IsUnique()
-                .HasDatabaseName("UX_price_alerts_chat_stock_direction_price");
+            // builder.HasIndex(
+            //         nameof(PriceAlert.ChatId),
+            //         nameof(PriceAlert.StockId),
+            //         nameof(PriceAlert.Trigger.Direction),
+            //         nameof(PriceAlert.Trigger.Price)
+            //     )
+            //     .IsUnique()
+            //     .HasDatabaseName("UX_price_alerts_chat_stock_direction_price");
         }
     }
 }

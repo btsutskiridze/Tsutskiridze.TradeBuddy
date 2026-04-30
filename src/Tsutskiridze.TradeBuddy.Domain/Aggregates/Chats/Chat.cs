@@ -6,8 +6,8 @@ namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
 public class Chat : Entity<Guid>, IAggregateRoot
 {
     public long? TelegramChatId { get; private set; }
-    public string? PrivateName { get; private set; }
-    public string? ActivationToken { get; private set; }
+    public string PrivateName { get; private set; }
+    public string ActivationToken { get; private set; }
 
     private Chat()
     {
