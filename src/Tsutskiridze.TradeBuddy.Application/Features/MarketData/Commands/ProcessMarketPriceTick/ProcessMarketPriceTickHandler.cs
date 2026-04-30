@@ -6,11 +6,11 @@ using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Notifications;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.ValueObjects;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
+using Tsutskiridze.TradeBuddy.Domain.Chats;
+using Tsutskiridze.TradeBuddy.Domain.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Domain.PriceAlerts.ValueObjects;
+using Tsutskiridze.TradeBuddy.Domain.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.MarketData.Commands.ProcessMarketPriceTick;
 

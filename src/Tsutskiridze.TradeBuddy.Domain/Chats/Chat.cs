@@ -1,7 +1,7 @@
 ﻿using SharedKernel;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Events;
+using Tsutskiridze.TradeBuddy.Domain.Chats.Events;
 
-namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
+namespace Tsutskiridze.TradeBuddy.Domain.Chats;
 
 public class Chat : Entity<Guid>, IAggregateRoot
 {

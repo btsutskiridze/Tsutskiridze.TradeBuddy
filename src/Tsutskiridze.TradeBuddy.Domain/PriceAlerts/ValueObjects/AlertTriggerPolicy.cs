@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.ValueObjects;
+namespace Tsutskiridze.TradeBuddy.Domain.PriceAlerts.ValueObjects;
 
 public sealed record AlertTriggerPolicy : ValueObject
 {

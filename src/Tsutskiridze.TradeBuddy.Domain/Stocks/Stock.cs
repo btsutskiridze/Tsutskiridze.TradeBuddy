@@ -1,7 +1,7 @@
 ﻿using SharedKernel;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Events;
+using Tsutskiridze.TradeBuddy.Domain.Stocks.Events;
 
-namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
+namespace Tsutskiridze.TradeBuddy.Domain.Stocks;
 
 public class Stock : Entity<Guid>, IAggregateRoot
 {

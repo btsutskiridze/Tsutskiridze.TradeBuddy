@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
+using Tsutskiridze.TradeBuddy.Domain.Chats;
+using Tsutskiridze.TradeBuddy.Domain.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Domain.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence
 {

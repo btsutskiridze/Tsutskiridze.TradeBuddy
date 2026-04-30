@@ -1,7 +1,7 @@
 ﻿using SharedKernel;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
 
-namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.ValueObjects;
+namespace Tsutskiridze.TradeBuddy.Domain.PriceAlerts.ValueObjects;
 
 public record AlertTrigger: ValueObject
 {

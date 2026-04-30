@@ -1,8 +1,8 @@
 using SharedKernel;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.ValueObjects;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
+using Tsutskiridze.TradeBuddy.Domain.PriceAlerts.ValueObjects;
 
-namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
+namespace Tsutskiridze.TradeBuddy.Domain.PriceAlerts;
 
 public class PriceAlert : Entity<Guid>, IAggregateRoot
 {

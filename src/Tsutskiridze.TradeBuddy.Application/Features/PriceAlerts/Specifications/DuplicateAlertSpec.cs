@@ -1,6 +1,6 @@
 ﻿using SharedKernel.Specifications;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
+using Tsutskiridze.TradeBuddy.Domain.PriceAlerts;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Specifications;
 

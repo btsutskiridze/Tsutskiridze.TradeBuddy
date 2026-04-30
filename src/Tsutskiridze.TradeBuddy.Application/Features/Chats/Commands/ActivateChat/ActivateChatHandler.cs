@@ -2,7 +2,7 @@
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
+using Tsutskiridze.TradeBuddy.Domain.Chats;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Commands.ActivateChat;
 

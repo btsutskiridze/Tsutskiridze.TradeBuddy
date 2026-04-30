@@ -1,5 +1,5 @@
 ﻿using SharedKernel.Specifications;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
+using Tsutskiridze.TradeBuddy.Domain.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
 

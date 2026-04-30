@@ -1,5 +1,5 @@
 ﻿using SharedKernel;
 
-namespace Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Events;
+namespace Tsutskiridze.TradeBuddy.Domain.Chats.Events;
 
 public sealed record ChatActivatedDomainEvent(Guid ChatId, long TelegramChatId) : DomainEvent;

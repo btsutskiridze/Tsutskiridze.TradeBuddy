@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
+using Tsutskiridze.TradeBuddy.Domain.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Domain.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Domain.AlertWatching;
 

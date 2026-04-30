@@ -1,4 +1,4 @@
-﻿using Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats;
+﻿using Tsutskiridze.TradeBuddy.Domain.Chats;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 

@@ -4,10 +4,10 @@ using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks;
 using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
 using Tsutskiridze.TradeBuddy.Domain.Enums;
+using Tsutskiridze.TradeBuddy.Domain.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Domain.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.RemoveAlert;
 

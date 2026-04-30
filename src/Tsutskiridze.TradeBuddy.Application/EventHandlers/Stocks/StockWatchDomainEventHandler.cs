@@ -1,6 +1,6 @@
 ﻿using SharedKernel.Events;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
-using Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Events;
+using Tsutskiridze.TradeBuddy.Domain.Stocks.Events;
 
 namespace Tsutskiridze.TradeBuddy.Application.EventHandlers.Stocks;
 
