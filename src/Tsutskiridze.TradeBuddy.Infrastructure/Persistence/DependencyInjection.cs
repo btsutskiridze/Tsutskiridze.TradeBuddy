@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
@@ -30,5 +31,14 @@ public static class DependencyInjection
         
 
         return services;
+    }
+    
+    public static async Task ApplyDatabaseMigrationsAsync(this IHost host)
+    {
+        using var scope = host.Services.CreateScope();
+
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        await db.Database.MigrateAsync();
     }
 }

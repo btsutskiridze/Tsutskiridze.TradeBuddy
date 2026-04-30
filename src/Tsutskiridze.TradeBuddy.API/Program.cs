@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Tsutskiridze.TradeBuddy.API;
 using Tsutskiridze.TradeBuddy.API.Telegram;
 using Tsutskiridze.TradeBuddy.Application;
@@ -17,10 +16,9 @@ builder.Services
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+if (app.Environment.IsDevelopment())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    await app.ApplyDatabaseMigrationsAsync();
 }
 
 app.UseExceptionHandler();

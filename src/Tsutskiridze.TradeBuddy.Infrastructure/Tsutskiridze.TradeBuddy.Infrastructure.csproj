@@ -43,9 +43,4 @@
         <Generator>MSBuild:Compile</Generator>
       </Protobuf>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Adapters\" />
-    </ItemGroup>
-
 </Project>
