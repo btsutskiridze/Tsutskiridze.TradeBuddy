@@ -39,6 +39,6 @@ public class CreateAlertTelegramCommandHandler : ITelegramCommandHandler
     {
         var currencySymbol = CurrencySymbolLookup.GetSymbol(result.CurrencyCode) ?? result.CurrencyCode;
 
-        return $"✅ Price alert set for {result.Symbol} {result.Direction} {currencySymbol}{result.Price}";
+        return $"✅ Price alert set for {result.Symbol} {result.Direction} {currencySymbol}{result.Price:N}";
     }
 }
