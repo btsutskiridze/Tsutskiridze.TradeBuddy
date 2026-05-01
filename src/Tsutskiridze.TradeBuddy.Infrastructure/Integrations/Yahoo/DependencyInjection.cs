@@ -5,6 +5,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstracti
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Helpers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Loading;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Web;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Parsing;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Parsing.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming;
@@ -21,7 +22,8 @@ public static class DependencyInjection
 
         services.AddCommonServices()
             .AddParsingServices()
-            .AddStreamingServices();
+            .AddStreamingServices()
+            .AddApiServices();
 
         services.AddTransient<IYahooNewsProvider, YahooNewsProvider>();
 
@@ -35,6 +37,13 @@ public static class DependencyInjection
         services.AddHttpClient<IYahooPageLoader, YahooPageLoader>(ConfigureYahooClient);
         services.AddTransient<IYahooCookieBypassService, YahooCookieBypassService>();
 
+        return services;
+    }
+    
+    private static IServiceCollection AddApiServices(this IServiceCollection services)
+    {
+        services.AddHttpClient<IYahooHistoryApiProvider, YahooHistoryApiProvider>(ConfigureYahooApiClient);
+        
         return services;
     }
 
@@ -58,6 +67,16 @@ public static class DependencyInjection
 
         return services;
     }
+    
+    private static readonly Action<IServiceProvider, HttpClient> ConfigureYahooApiClient = (serviceProvider, client) =>
+    {
+        var options = serviceProvider.GetRequiredService<IOptions<YahooOptions>>().Value;
+        client.BaseAddress = new Uri(options.Query2ApiUrl);
+        client.DefaultRequestHeaders.Add("User-Agent",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+        client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
+        client.DefaultRequestHeaders.Add("Accept", "application/json");
+    };
 
     private static readonly Action<IServiceProvider, HttpClient> ConfigureYahooClient = (serviceProvider, client) =>
     {

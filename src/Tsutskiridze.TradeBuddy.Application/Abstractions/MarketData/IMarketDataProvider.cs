@@ -9,5 +9,6 @@ namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData
         Task<StockOverview?> GetStockOverview(string symbol);
         Task<AnnualReport?> GetStockLastAnnualReport(string symbol);
         Task<StockQuote?> GetStockQuote(string symbol);
+        Task<IReadOnlyList<MarketCandle>> GetDailyCandles(string symbol, DateOnly from, DateOnly to, CancellationToken ct);
     }
 }

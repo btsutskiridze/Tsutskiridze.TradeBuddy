@@ -8,10 +8,14 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
     public class YahooScraperController : ControllerBase
     {
         private readonly IMarketDataProvider _marketDataProvider;
+        private readonly ITechnicalIndicatorCalculator _technicalIndicatorCalculator;
 
-        public YahooScraperController(IMarketDataProvider marketDataProvider)
+        public YahooScraperController(
+            IMarketDataProvider marketDataProvider,
+            ITechnicalIndicatorCalculator technicalIndicatorCalculator)
         {
             _marketDataProvider = marketDataProvider;
+            _technicalIndicatorCalculator = technicalIndicatorCalculator;
         }
 
         [HttpGet("{symbol}/exists")]
@@ -77,6 +81,50 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
 
             var quote = await _marketDataProvider.GetStockQuote(symbol);
             return Ok(quote);
+        }
+
+        [HttpGet("{symbol}/daily-candles")]
+        public async Task<IActionResult> GetDailyCandles(
+            string symbol,
+            [FromQuery] DateOnly from,
+            [FromQuery] DateOnly to,
+            CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(symbol))
+            {
+                return BadRequest("Stock symbol is required.");
+            }
+
+            if (from > to)
+            {
+                return BadRequest("'from' date cannot be greater than 'to' date.");
+            }
+
+            var candles = await _marketDataProvider.GetDailyCandles(symbol, from, to, ct);
+            return Ok(candles);
+        }
+
+        [HttpGet("{symbol}/daily-strategy-candles")]
+        public async Task<IActionResult> GetDailyStrategyCandles(
+            string symbol,
+            [FromQuery] DateOnly from,
+            [FromQuery] DateOnly to,
+            CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(symbol))
+            {
+                return BadRequest("Stock symbol is required.");
+            }
+
+            if (from > to)
+            {
+                return BadRequest("'from' date cannot be greater than 'to' date.");
+            }
+
+            var candles = await _marketDataProvider.GetDailyCandles(symbol, from, to, ct);
+            var strategyCandles = _technicalIndicatorCalculator.BuildDailyStrategyCandles(candles);
+
+            return Ok(strategyCandles);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Parsing.Abstractions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.MarketData;
@@ -12,19 +13,22 @@ public class MarketDataProvider : IMarketDataProvider
     private readonly IYahooHistoryPageParser _historyPageParser;
     private readonly IYahooKeyStatisticsPageParser _keyStatisticsPageParser;
     private readonly IYahooFinancialsPageParser _financialsPageParser;
+    private readonly IYahooHistoryApiProvider _historyApiProvider;
     
     public MarketDataProvider(
         IYahooPageLoader pageLoader,
         IYahooQuotePageParser quotePageParser,
         IYahooHistoryPageParser historyPageParser,
         IYahooKeyStatisticsPageParser keyStatisticsPageParser,
-        IYahooFinancialsPageParser financialsPageParser)
+        IYahooFinancialsPageParser financialsPageParser, 
+        IYahooHistoryApiProvider historyApiProvider)
     {
         _pageLoader = pageLoader;
         _quotePageParser = quotePageParser;
         _historyPageParser = historyPageParser;
         _keyStatisticsPageParser = keyStatisticsPageParser;
         _financialsPageParser = financialsPageParser;
+        _historyApiProvider = historyApiProvider;
     }
 
     public async Task<bool> StockSymbolExists(string symbol)
@@ -90,6 +94,13 @@ public class MarketDataProvider : IMarketDataProvider
             return null;
 
         return _quotePageParser.Parse(pageContext);
+    }
+
+    public async Task<IReadOnlyList<MarketCandle>> GetDailyCandles(string symbol, DateOnly from, DateOnly to, CancellationToken ct)
+    {
+        var result = await _historyApiProvider.GetDailyCandles(symbol, from, to, ct);
+
+        return result;
     }
 
     private static bool TryNormalizeSymbol(string? symbol, out string normalizedSymbol)
