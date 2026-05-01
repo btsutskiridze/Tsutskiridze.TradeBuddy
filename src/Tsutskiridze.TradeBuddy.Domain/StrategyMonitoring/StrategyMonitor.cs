@@ -16,6 +16,7 @@ public class StrategyMonitor : Entity<Guid>, IAggregateRoot
     public StrategyPositionState PositionState { get; private set; }
     public DateTime CreateTime { get; private set; }
     public DateTime? StopTime { get; private set; }
+    public DateOnly? LastEvaluatedCandleDate { get; private set; }
 
     private StrategyMonitor() {}
     
@@ -43,5 +44,19 @@ public class StrategyMonitor : Entity<Guid>, IAggregateRoot
         Status = MonitorStatus.Active;
         PositionState = StrategyPositionState.OutOfMarket();
         CreateTime = nowUtc;
+    }
+    
+    public void MarkEvaluated(DateOnly candleDate)
+    {
+        if (Status != MonitorStatus.Active)
+            throw new DomainException("Cannot evaluate stopped monitor.");
+
+        if (LastEvaluatedCandleDate is not null &&
+            candleDate <= LastEvaluatedCandleDate.Value)
+        {
+            throw new DomainException("Candle was already evaluated.");
+        }
+
+        LastEvaluatedCandleDate = candleDate;
     }
 }

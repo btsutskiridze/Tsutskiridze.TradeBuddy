@@ -7,7 +7,7 @@ public record AtrStopSettings : ValueObject
     public int Period { get; }
     public decimal InitialStopMultiplier { get; }
     public decimal TrailingStopMultiplier { get; }
-    public int TrailingActivationMultiplier { get; }
+    public decimal TrailingActivationMultiplier { get; }
     
     public AtrStopSettings(int period, decimal initialStopMultiplier, decimal trailingStopMultiplier, int trailingActivationMultiplier)
     {
