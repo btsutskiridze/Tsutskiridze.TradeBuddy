@@ -4,18 +4,17 @@ using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.MarketData;
 
 //todo: rename relocate and reorganize overal this folder
-public class TechnicalIndicatorCalculator : ITechnicalIndicatorCalculator
+public class EmaAdxAtrEvaluationCandleBuilder : IEmaAdxAtrEvaluationCandleBuilder
 {
-    private const int EmaFastPeriod = 10;
-    private const int EmaSlowPeriod = 20;
-    private const int AtrPeriod = 14;
-    private const int AdxPeriod = 14;
-
-    public IReadOnlyList<DailyStrategyCandle> BuildDailyStrategyCandles(
+    public IReadOnlyList<EmaAdxAtrEvaluationCandle> BuildDailyStrategyCandles(
+        int fastEmaPeriod,
+        int slowEmaPeriod,
+        int adxPeriod,
+        int atrPeriod,
         IReadOnlyList<MarketCandle> candles)
     {
         if (candles.Count == 0)
-            return Array.Empty<DailyStrategyCandle>();
+            return Array.Empty<EmaAdxAtrEvaluationCandle>();
 
         var orderedCandles = candles
             .OrderBy(x => x.Date)
@@ -25,31 +24,31 @@ public class TechnicalIndicatorCalculator : ITechnicalIndicatorCalculator
             .Select(x => x.Close)
             .ToArray();
 
-        var ema10 = CalculateEma(closes, EmaFastPeriod);
-        var ema20 = CalculateEma(closes, EmaSlowPeriod);
-        var atr14 = CalculateAtr(orderedCandles, AtrPeriod);
-        var adx14 = CalculateAdx(orderedCandles, AdxPeriod);
+        var slowEma = CalculateEma(closes, fastEmaPeriod);
+        var fastEma = CalculateEma(closes, slowEmaPeriod);
+        var atr = CalculateAtr(orderedCandles, atrPeriod);
+        var adx = CalculateAdx(orderedCandles, adxPeriod);
 
-        var result = new DailyStrategyCandle[orderedCandles.Length];
+        var result = new EmaAdxAtrEvaluationCandle[orderedCandles.Length];
 
         for (var i = 0; i < orderedCandles.Length; i++)
         {
             var candle = orderedCandles[i];
 
-            result[i] = new DailyStrategyCandle(
+            result[i] = new EmaAdxAtrEvaluationCandle(
                 Date: candle.Date,
                 Close: candle.Close,
                 Low: candle.Low,
-                Ema10: ema10[i],
-                Ema20: ema20[i],
-                Atr14: atr14[i],
-                AdxToday: adx14[i],
-                AdxYesterday: GetValueOrNull(adx14, i - 1),
-                AdxTwoDaysAgo: GetValueOrNull(adx14, i - 2),
-                AdxThreeDaysAgo: GetValueOrNull(adx14, i - 3));
+                SlowEma: slowEma[i],
+                FastEma: fastEma[i],
+                Atr: atr[i],
+                Adx: adx[i]);
         }
 
-        return result;
+        return result
+            .Where(x
+                => x is { FastEma: not null, SlowEma: not null, Atr: not null, Adx: not null }
+            ).ToArray();
     }
 
     private static decimal?[] CalculateEma(

@@ -8,14 +8,14 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
     public class YahooScraperController : ControllerBase
     {
         private readonly IMarketDataProvider _marketDataProvider;
-        private readonly ITechnicalIndicatorCalculator _technicalIndicatorCalculator;
+        private readonly IEmaAdxAtrEvaluationCandleBuilder _emaAdxAtrEvaluationCandleBuilder;
 
         public YahooScraperController(
             IMarketDataProvider marketDataProvider,
-            ITechnicalIndicatorCalculator technicalIndicatorCalculator)
+            IEmaAdxAtrEvaluationCandleBuilder emaAdxAtrEvaluationCandleBuilder)
         {
             _marketDataProvider = marketDataProvider;
-            _technicalIndicatorCalculator = technicalIndicatorCalculator;
+            _emaAdxAtrEvaluationCandleBuilder = emaAdxAtrEvaluationCandleBuilder;
         }
 
         [HttpGet("{symbol}/exists")]
@@ -122,7 +122,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
             }
 
             var candles = await _marketDataProvider.GetDailyCandles(symbol, from, to, ct);
-            var strategyCandles = _technicalIndicatorCalculator.BuildDailyStrategyCandles(candles);
+            var strategyCandles = _emaAdxAtrEvaluationCandleBuilder.BuildDailyStrategyCandles(10, 20, 14, 14, candles);
 
             return Ok(strategyCandles);
         }

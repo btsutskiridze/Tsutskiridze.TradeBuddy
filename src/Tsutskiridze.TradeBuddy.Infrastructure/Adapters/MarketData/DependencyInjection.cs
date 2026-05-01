@@ -9,7 +9,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IMarketDataProvider, MarketDataProvider>();
         services.AddScoped<IMarketDataListener, MarketDataListener>();
-        services.AddScoped<ITechnicalIndicatorCalculator, TechnicalIndicatorCalculator>();
+        services.AddScoped<IEmaAdxAtrEvaluationCandleBuilder, EmaAdxAtrEvaluationCandleBuilder>();
         
         return services;
     }
