@@ -119,7 +119,7 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
         if (stock is not null)
             return stock;
 
-        stock = new Stock(normalizedSymbol, currency, name);
+        stock = new Stock(Guid.NewGuid(), normalizedSymbol, currency, name);
         await _stocks.AddAsync(stock, ct);
         return stock;
     }

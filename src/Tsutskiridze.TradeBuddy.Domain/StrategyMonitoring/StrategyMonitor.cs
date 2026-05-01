@@ -38,6 +38,10 @@ public class StrategyMonitor : Entity<Guid>, IAggregateRoot
         ChatId = chatId;
         TradeStrategyId = tradeStrategyId;
         StockId = stockId;
-        Symbol = symbol;
+        Symbol = symbol.Trim().ToUpperInvariant();
+        Timeframe = timeframe;
+        Status = MonitorStatus.Active;
+        PositionState = StrategyPositionState.OutOfMarket();
+        CreateTime = nowUtc;
     }
 }

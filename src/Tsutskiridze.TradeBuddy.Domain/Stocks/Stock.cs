@@ -10,9 +10,10 @@ public class Stock : Entity<Guid>, IAggregateRoot
     public string Name { get; private init; }
     public bool IsWatched { get; private set; }
     
-    //todo: move outside later
-    public Stock(string symbol, string currency, string name): base(Guid.NewGuid())
+    public Stock(Guid id, string symbol, string currency, string name): base(id)
     {
+        if (id == Guid.Empty)
+            throw new DomainException("Invalid id");
         ArgumentException.ThrowIfNullOrEmpty(symbol);
         ArgumentException.ThrowIfNullOrEmpty(currency);
 

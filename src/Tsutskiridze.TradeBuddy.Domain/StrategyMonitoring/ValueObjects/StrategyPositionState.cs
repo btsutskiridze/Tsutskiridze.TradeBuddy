@@ -66,7 +66,7 @@ public record StrategyPositionState : ValueObject
         TrailingActivated = true;
     }
 
-    public void RatchetTop(decimal newStop)
+    public void RatchetStop(decimal newStop)
     {
         if (Side != PositionSide.Long)
             throw new DomainException("Cannot ratchet top without long position.");
