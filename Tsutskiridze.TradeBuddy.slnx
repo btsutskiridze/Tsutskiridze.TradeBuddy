@@ -18,15 +18,16 @@
         <File Path="Dockerfile" />
         <File Path="Jenkinsfile" />
         <File Path="README.md" />
-        <File Path="test.json" />
+        <File Path="AGENTS.md" />
     </Folder>
     <Folder Name="/src/">
-        <Project Path="Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" />
-        <Project Path="Tsutskiridze.TradeBuddy.Application/Tsutskiridze.TradeBuddy.Application.csproj" />
-        <Project Path="Tsutskiridze.TradeBuddy.Core/Tsutskiridze.TradeBuddy.Core.csproj" />
-        <Project Path="Tsutskiridze.TradeBuddy.Infrastructure/Tsutskiridze.TradeBuddy.Infrastructure.csproj" />
+        <Project Path="src/SharedKernel/SharedKernel.csproj" />
+        <Project Path="src/Tsutskiridze.TradeBuddy.API/Tsutskiridze.TradeBuddy.API.csproj" />
+        <Project Path="src/Tsutskiridze.TradeBuddy.Application/Tsutskiridze.TradeBuddy.Application.csproj" />
+        <Project Path="src/Tsutskiridze.TradeBuddy.Domain/Tsutskiridze.TradeBuddy.Domain.csproj" />
+        <Project Path="src/Tsutskiridze.TradeBuddy.Infrastructure/Tsutskiridze.TradeBuddy.Infrastructure.csproj" />
     </Folder>
     <Folder Name="/tests/">
-        <Project Path="Tsutskiridze.TradeBuddy.Application.Tests/Tsutskiridze.TradeBuddy.Application.Tests.csproj" />
+        <Project Path="tests/Tsutskiridze.TradeBuddy.Application.Tests/Tsutskiridze.TradeBuddy.Application.Tests.csproj" />
     </Folder>
 </Solution>

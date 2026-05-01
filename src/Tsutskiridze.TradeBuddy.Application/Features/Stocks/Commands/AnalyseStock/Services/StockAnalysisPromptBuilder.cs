@@ -1,0 +1,62 @@
+﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
+using Tsutskiridze.TradeBuddy.Application.Abstractions.News;
+using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Models;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Prompts;
+
+namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Services
+{
+    public class StockAnalysisPromptBuilder
+    {
+        private readonly IStockNewsReader _newsReader;
+        private readonly IMarketDataProvider _scraper;
+
+        public StockAnalysisPromptBuilder(IStockNewsReader newsReader, IMarketDataProvider scraper)
+        {
+            _newsReader = newsReader;
+            _scraper = scraper;
+        }
+
+        public async Task<StockAnalysisPrompt> BuildAsync(string symbol)
+        {
+            try
+            {
+                var quote = _scraper.GetStockQuote(symbol);
+                var stockOverview = _scraper.GetStockOverview(symbol);
+                var prevDayPrices = _scraper.GetStockPrevDaysClosePrices(symbol, 10);
+                var annualReport = _scraper.GetStockLastAnnualReport(symbol);
+                var allNews = _newsReader.GetNewsAsync(symbol, limit: 3);
+
+                await Task.WhenAll(quote, stockOverview, prevDayPrices, annualReport, allNews);
+
+                var stock = new StockAnalysisPromptDetails
+                {
+                    Name = quote.Result?.Name ?? "Unknown",
+                    Symbol = symbol,
+                    Currency = quote.Result?.Currency ?? "Unknown",
+                    ReturnOnEquityTTM = stockOverview.Result?.ReturnOnEquityTTM ?? "Unknown",
+                    PriceToSalesRatioTTM = stockOverview.Result?.PriceToSalesRatioTTM ?? "Unknown",
+                    QuarterlyRevenueGrowthYOY = stockOverview.Result?.QuarterlyRevenueGrowthYOY ?? "Unknown",
+                    PriceAvg50 = stockOverview.Result?.PriceAvg50 ?? "Unknown",
+                    PriceAvg200 = stockOverview.Result?.PriceAvg200 ?? "Unknown",
+                    SharesOutstanding = stockOverview.Result?.SharesOutstanding ?? "Unknown",
+                    Quote = quote.Result,
+                    PrevDays = prevDayPrices.Result,
+                    AnnualReport = annualReport.Result,
+                    News = allNews.Result
+                };
+
+                return new StockAnalysisPrompt
+                {
+                    AnalysisRequest = StockAnalysisPromptTemplate.AnalysisRequest,
+                    InvestmentHorizon = StockAnalysisPromptTemplate.InvestmentHorizon,
+                    Stock = stock
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationLayerException("Failed to build stock analysis prompt", inner: ex);
+            }
+        }
+    }
+}
