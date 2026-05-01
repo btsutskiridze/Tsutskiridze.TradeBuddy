@@ -10,7 +10,8 @@ public class Stock : Entity<Guid>, IAggregateRoot
     public string Name { get; private init; }
     public bool IsWatched { get; private set; }
     
-    public Stock(string symbol, string currency, string name)
+    //todo: move outside later
+    public Stock(string symbol, string currency, string name): base(Guid.NewGuid())
     {
         ArgumentException.ThrowIfNullOrEmpty(symbol);
         ArgumentException.ThrowIfNullOrEmpty(currency);

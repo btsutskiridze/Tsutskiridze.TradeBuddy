@@ -19,13 +19,16 @@ public class TradeStrategy : Entity<Guid>, IAggregateRoot
     }
 
     public TradeStrategy(
+        Guid id,
         Guid chatId, 
         string name, 
         Timeframe timeframe, 
         EmaTrendSettings emaTrend,
         AdxTrendStrengthSettings adxTrendStrength, 
-        AtrStopSettings atrStop)
+        AtrStopSettings atrStop): base(id)
     {
+        if(Guid.Empty == id)
+            throw new DomainException("Invalid id");
         if (chatId == Guid.Empty)
             throw new DomainException("Invalid chatId");
         if (string.IsNullOrEmpty(name))
