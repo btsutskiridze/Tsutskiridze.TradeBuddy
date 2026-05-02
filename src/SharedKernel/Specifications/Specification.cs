@@ -2,28 +2,33 @@
 
 namespace SharedKernel.Specifications;
 
-public abstract class Specification<TEntity, TResult> : Specification<TEntity>, ISpecification<TEntity, TResult>
-    where TEntity : Entity<Guid>, IAggregateRoot
+public abstract class Specification<TEntity, TId, TResult> : Specification<TEntity, TId>,
+    ISpecification<TEntity, TId, TResult>
+    where TEntity : Entity<TId>, IAggregateRoot
+    where TId : notnull
 {
-    protected new virtual ISpecificationBuilder<TEntity, TResult> Query { get; }
+    protected new virtual ISpecificationBuilder<TEntity, TId, TResult> Query { get; }
 
     protected Specification()
     {
-        Query = new SpecificationBuilder<TEntity, TResult>(this);
+        Query = new SpecificationBuilder<TEntity, TId, TResult>(this);
     }
 
     public Expression<Func<TEntity, TResult>>? Selector { get; internal set; }
 }
 
-public abstract class Specification<TEntity> : ISpecification<TEntity> where TEntity : Entity<Guid>, IAggregateRoot
+public abstract class Specification<TEntity, TId> : ISpecification<TEntity, TId>
+    where TEntity : Entity<TId>, IAggregateRoot
+    where TId : notnull
 {
     private readonly List<Expression<Func<TEntity, bool>>> _criterias = [];
     private readonly List<Expression<Func<TEntity, object>>> _includes = [];
-    protected virtual ISpecificationBuilder<TEntity> Query { get; }
+
+    protected virtual ISpecificationBuilder<TEntity, TId> Query { get; }
 
     protected Specification()
     {
-        Query = new SpecificationBuilder<TEntity>(this);
+        Query = new SpecificationBuilder<TEntity, TId>(this);
     }
 
     public IReadOnlyList<Expression<Func<TEntity, bool>>> Criterias => _criterias.AsReadOnly();

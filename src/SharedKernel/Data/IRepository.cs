@@ -1,7 +1,8 @@
 ﻿namespace SharedKernel.Data;
 
-public interface IRepository<TEntity> : IReadRepository<TEntity>
-    where TEntity : Entity<Guid>, IAggregateRoot
+public interface IRepository<TEntity, TId> : IReadRepository<TEntity, TId>
+    where TEntity : Entity<TId>, IAggregateRoot
+    where TId : notnull
 {
     Task<TEntity> AddAsync(TEntity entity, CancellationToken ct = default);
     Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct = default);
@@ -11,6 +12,6 @@ public interface IRepository<TEntity> : IReadRepository<TEntity>
 
     void Update(TEntity entity);
     
-    Task<TEntity?> GetByIdForUpdateAsync(Guid id, CancellationToken ct = default);
-    Task LockByIdAsync(Guid id, CancellationToken ct = default);
+    Task<TEntity?> GetByIdForUpdateAsync(TId id, CancellationToken ct = default);
+    Task LockByIdAsync(TId id, CancellationToken ct = default);
 }
