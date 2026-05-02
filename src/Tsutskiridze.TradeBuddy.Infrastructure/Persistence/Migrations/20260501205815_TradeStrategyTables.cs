@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,9 +16,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                 name: "trade_strategies",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     chat_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     timeframe = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     ema_fast_period = table.Column<int>(type: "integer", nullable: false),
                     ema_slow_period = table.Column<int>(type: "integer", nullable: false),
@@ -46,9 +47,10 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                 name: "strategy_monitors",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     chat_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    trade_strategy_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    trade_strategy_id = table.Column<int>(type: "integer", nullable: false),
                     stock_id = table.Column<Guid>(type: "uuid", nullable: false),
                     symbol = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     timeframe = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
@@ -108,11 +110,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                 table: "trade_strategies",
                 column: "chat_id");
 
-            migrationBuilder.CreateIndex(
-                name: "UX_trade_strategies_chat_name",
-                table: "trade_strategies",
-                columns: new[] { "chat_id", "name" },
-                unique: true);
         }
 
         /// <inheritdoc />

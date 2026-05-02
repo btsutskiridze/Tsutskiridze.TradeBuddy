@@ -27,9 +27,10 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.Chats.Chat", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         .HasColumnName("id");
 
                     b.Property<string>("ActivationToken")
@@ -207,8 +208,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("timeframe");
 
-                    b.Property<Guid>("TradeStrategyId")
-                        .HasColumnType("uuid")
+                    b.Property<int>("TradeStrategyId")
+                        .HasColumnType("integer")
                         .HasColumnName("trade_strategy_id");
 
                     b.Property<uint>("xmin")
@@ -234,9 +235,10 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.TradeStrategies.TradeStrategy", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                         .HasColumnName("id");
 
                     b.Property<Guid>("ChatId")
@@ -246,12 +248,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
 
                     b.Property<string>("Timeframe")
                         .IsRequired()
@@ -270,10 +266,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ChatId")
                         .HasDatabaseName("IX_trade_strategies_chat_id");
-
-                    b.HasIndex("ChatId", "Name")
-                        .IsUnique()
-                        .HasDatabaseName("UX_trade_strategies_chat_name");
 
                     b.ToTable("trade_strategies", (string)null);
                 });
@@ -349,8 +341,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
 
                     b.OwnsOne("Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.ValueObjects.StrategyPositionState", "PositionState", b1 =>
                         {
-                            b1.Property<Guid>("StrategyMonitorId")
-                                .HasColumnType("uuid")
+                            b1.Property<int>("StrategyMonitorId")
+                                .HasColumnType("integer")
                                 .HasColumnName("id");
 
                             b1.Property<decimal?>("ActiveStop")
@@ -411,8 +403,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
 
                     b.OwnsOne("Tsutskiridze.TradeBuddy.Domain.TradeStrategies.ValueObjects.AdxTrendStrengthSettings", "AdxTrendStrength", b1 =>
                         {
-                            b1.Property<Guid>("TradeStrategyId")
-                                .HasColumnType("uuid")
+                            b1.Property<int>("TradeStrategyId")
+                                .HasColumnType("integer")
                                 .HasColumnName("id");
 
                             b1.Property<int>("NonFallingLookBackBars")
@@ -439,8 +431,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
 
                     b.OwnsOne("Tsutskiridze.TradeBuddy.Domain.TradeStrategies.ValueObjects.AtrStopSettings", "AtrStop", b1 =>
                         {
-                            b1.Property<Guid>("TradeStrategyId")
-                                .HasColumnType("uuid")
+                            b1.Property<int>("TradeStrategyId")
+                                .HasColumnType("integer")
                                 .HasColumnName("id");
 
                             b1.Property<decimal>("InitialStopMultiplier")
@@ -473,8 +465,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
 
                     b.OwnsOne("Tsutskiridze.TradeBuddy.Domain.TradeStrategies.ValueObjects.EmaTrendSettings", "EmaTrend", b1 =>
                         {
-                            b1.Property<Guid>("TradeStrategyId")
-                                .HasColumnType("uuid")
+                            b1.Property<int>("TradeStrategyId")
+                                .HasColumnType("integer")
                                 .HasColumnName("id");
 
                             b1.Property<int>("FastPeriod")

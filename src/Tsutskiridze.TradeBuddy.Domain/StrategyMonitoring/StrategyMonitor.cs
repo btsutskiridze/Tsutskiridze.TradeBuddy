@@ -5,10 +5,10 @@ using Tsutskiridze.TradeBuddy.Domain.TradeStrategies.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring;
 
-public class StrategyMonitor : Entity<Guid>, IAggregateRoot
+public class StrategyMonitor : Entity<int>, IAggregateRoot
 {
     public Guid ChatId { get; private set; }
-    public Guid TradeStrategyId { get; private set; }
+    public int TradeStrategyId { get; private set; }
     public Guid StockId { get; private set; }
     public string Symbol { get; private set; } = null!;
     public Timeframe Timeframe { get; private set; }
@@ -21,17 +21,15 @@ public class StrategyMonitor : Entity<Guid>, IAggregateRoot
     private StrategyMonitor() {}
     
     public StrategyMonitor(
-        Guid id,
         Guid chatId,
-        Guid tradeStrategyId,
+        int tradeStrategyId,
         Guid stockId,
         string symbol,
         Timeframe timeframe,
-        DateTime nowUtc) : base(id)
+        DateTime nowUtc)
     {
-        if(Guid.Empty == id) throw new DomainException("Invalid id");
         if (chatId == Guid.Empty) throw new DomainException("Invalid chatId");
-        if (tradeStrategyId == Guid.Empty) throw new DomainException("Invalid tradeStrategyId");
+        if (tradeStrategyId <= 0) throw new DomainException("Invalid tradeStrategyId");
         if (stockId == Guid.Empty) throw new DomainException("Invalid stockId");
         if (string.IsNullOrEmpty(symbol)) throw new DomainException("Invalid symbol");
         if (!Enum.IsDefined(timeframe)) throw new DomainException("Invalid timeframe");

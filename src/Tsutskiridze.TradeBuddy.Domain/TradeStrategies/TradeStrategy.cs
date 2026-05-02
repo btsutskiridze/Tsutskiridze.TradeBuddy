@@ -4,10 +4,10 @@ using Tsutskiridze.TradeBuddy.Domain.TradeStrategies.ValueObjects;
 
 namespace Tsutskiridze.TradeBuddy.Domain.TradeStrategies;
 
-public class TradeStrategy : Entity<Guid>, IAggregateRoot
+public class TradeStrategy : Entity<int>, IAggregateRoot
 {
     public Guid ChatId { get; private set; }
-    public string Name { get; private set; } = null!;
+    public string Code => $"ts_{Id:N}";
     public Timeframe Timeframe { get; private set; }
     public EmaTrendSettings EmaTrend { get; private set; } = null!;
     public AdxTrendStrengthSettings AdxTrendStrength { get; private set; } = null!;
@@ -19,25 +19,18 @@ public class TradeStrategy : Entity<Guid>, IAggregateRoot
     }
 
     public TradeStrategy(
-        Guid id,
-        Guid chatId, 
-        string name, 
+        Guid chatId,
         Timeframe timeframe, 
         EmaTrendSettings emaTrend,
-        AdxTrendStrengthSettings adxTrendStrength, 
-        AtrStopSettings atrStop): base(id)
+        AdxTrendStrengthSettings adxTrendStrength,
+        AtrStopSettings atrStop)
     {
-        if(Guid.Empty == id)
-            throw new DomainException("Invalid id");
         if (chatId == Guid.Empty)
             throw new DomainException("Invalid chatId");
-        if (string.IsNullOrEmpty(name))
-            throw new DomainException("Invalid name");
         if (!Enum.IsDefined(timeframe))
             throw new DomainException("Invalid timeframe");
 
         ChatId = chatId;
-        Name = name;
         Timeframe = timeframe;
         EmaTrend = emaTrend;
         AdxTrendStrength = adxTrendStrength;

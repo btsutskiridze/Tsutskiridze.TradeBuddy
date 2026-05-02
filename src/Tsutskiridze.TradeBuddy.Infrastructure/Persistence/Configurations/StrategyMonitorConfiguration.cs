@@ -15,6 +15,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
 
             builder.HasKey(sm => sm.Id);
 
+            builder.Property(sm => sm.Id)
+                .ValueGeneratedOnAdd();
+
             builder.Property(sm => sm.ChatId)
                 .IsRequired();
 

@@ -12,13 +12,13 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
             builder.ToTable("trade_strategies");
 
             builder.HasKey(ts => ts.Id);
+            
+            builder.Property(ts => ts.Id)
+                .ValueGeneratedOnAdd()
+                .UseIdentityByDefaultColumn();
 
             builder.Property(ts => ts.ChatId)
                 .IsRequired();
-
-            builder.Property(ts => ts.Name)
-                .IsRequired()
-                .HasMaxLength(100);
 
             builder.Property(ts => ts.Timeframe)
                 .HasConversion<string>()
@@ -99,10 +99,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(ts => ts.ChatId)
                 .HasDatabaseName("IX_trade_strategies_chat_id");
-
-            builder.HasIndex(ts => new { ts.ChatId, ts.Name })
-                .IsUnique()
-                .HasDatabaseName("UX_trade_strategies_chat_name");
         }
     }
 }
