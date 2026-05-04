@@ -54,6 +54,8 @@ public static class DependencyInjection
 
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
+
+        services.AddHealthChecks(); 
         
         return services;
     }
