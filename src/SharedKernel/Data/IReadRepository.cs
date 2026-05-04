@@ -2,6 +2,9 @@ using SharedKernel.Specifications;
 
 namespace SharedKernel.Data;
 
+public interface IReadRepository<TEntity> : IReadRepository<TEntity, Guid>
+    where TEntity : Entity<Guid>, IAggregateRoot;
+
 public interface IReadRepository<TEntity, TId>
     where TEntity : Entity<TId>, IAggregateRoot
     where TId : notnull

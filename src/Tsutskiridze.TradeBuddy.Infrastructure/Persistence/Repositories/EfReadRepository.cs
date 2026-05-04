@@ -5,6 +5,14 @@ using SharedKernel.Specifications;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
+public class EfReadRepository<TEntity> : EfReadRepository<TEntity, Guid>, IReadRepository<TEntity>
+    where TEntity : Entity<Guid>, IAggregateRoot
+{
+    public EfReadRepository(AppDbContext db) : base(db)
+    {
+    }
+}
+
 public class EfReadRepository<TEntity, TId> : IReadRepository<TEntity, TId>
     where TEntity : Entity<TId>, IAggregateRoot
     where TId : notnull

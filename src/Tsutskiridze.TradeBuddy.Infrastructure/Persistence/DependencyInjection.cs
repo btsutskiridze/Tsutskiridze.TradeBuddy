@@ -25,6 +25,8 @@ public static class DependencyInjection
                     })
                 .UseSnakeCaseNamingConvention());
 
+        services.AddScoped(typeof(IReadRepository<>), typeof(EfReadRepository<>));
+        services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped(typeof(IReadRepository<,>), typeof(EfReadRepository<,>));
         services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
         services.AddScoped<ITradeStrategyRepository, TradeStrategyRepository>();

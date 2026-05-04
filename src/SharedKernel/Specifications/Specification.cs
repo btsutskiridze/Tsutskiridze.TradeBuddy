@@ -2,6 +2,9 @@
 
 namespace SharedKernel.Specifications;
 
+public abstract class Specification<TEntity> : Specification<TEntity, Guid>
+    where TEntity : Entity<Guid>, IAggregateRoot;
+
 public abstract class Specification<TEntity, TId, TResult> : Specification<TEntity, TId>,
     ISpecification<TEntity, TId, TResult>
     where TEntity : Entity<TId>, IAggregateRoot

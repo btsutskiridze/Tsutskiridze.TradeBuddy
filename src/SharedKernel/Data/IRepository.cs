@@ -1,5 +1,8 @@
 ﻿namespace SharedKernel.Data;
 
+public interface IRepository<TEntity> : IRepository<TEntity, Guid>, IReadRepository<TEntity>
+    where TEntity : Entity<Guid>, IAggregateRoot;
+
 public interface IRepository<TEntity, TId> : IReadRepository<TEntity, TId>
     where TEntity : Entity<TId>, IAggregateRoot
     where TId : notnull

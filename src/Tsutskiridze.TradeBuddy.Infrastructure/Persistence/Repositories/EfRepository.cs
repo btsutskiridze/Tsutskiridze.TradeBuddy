@@ -6,6 +6,14 @@ using SharedKernel.Data;
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
 //todo: refactor and move those into shared kernel later
+public class EfRepository<TEntity> : EfRepository<TEntity, Guid>, IRepository<TEntity>
+    where TEntity : Entity<Guid>, IAggregateRoot
+{
+    public EfRepository(AppDbContext db) : base(db)
+    {
+    }
+}
+
 public class EfRepository<TEntity, TId> : EfReadRepository<TEntity, TId>, IRepository<TEntity, TId>
     where TEntity : Entity<TId>, IAggregateRoot
     where TId : notnull
