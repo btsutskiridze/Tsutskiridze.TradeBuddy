@@ -20,5 +20,6 @@
       <Folder Include="Events\" />
       <Folder Include="Features\MarketData\Commands\" />
       <Folder Include="Features\PriceAlerts\Queries\" />
+      <Folder Include="Features\TradeStrategies\Queries\" />
     </ItemGroup>
 </Project>

@@ -43,6 +43,13 @@ public static class TelegramCommandCatalog
             "Create a daily EMA/ADX/ATR strategy",
             "/addstrategy ema <fast-period> <slow-period> adx <period> <threshold> <lookback> atr <period> <initial-stop-multiplier> <trailing-stop-multiplier> <trailing-activation-multiplier>\nExample: /addstrategy ema 10 20 adx 14 25 3 atr 14 2 3 1");
 
+    public static readonly TelegramCommandDefinition ListStrategies =
+        new(
+            "/mystrategies",
+            "List your active trade strategies",
+            "/mystrategies [st-id]\nExample: /mystrategies st_2\nExample: /mystrategies"
+        );
+    
     public static readonly TelegramCommandDefinition RemoveAlert =
         new(
             "/del",
@@ -57,6 +64,7 @@ public static class TelegramCommandCatalog
         MyAlerts,
         AnalyseStock,
         AddStrategy,
+        ListStrategies,
         RemoveAlert
     ];
 }
