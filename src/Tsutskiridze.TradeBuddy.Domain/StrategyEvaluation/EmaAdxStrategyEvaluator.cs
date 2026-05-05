@@ -145,7 +145,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
         positionState.EnterLong(
             entryPrice: today.Close,
             lockedAtr: lockedAtr,
-            entryDate: today.Date.ToDateTime(TimeOnly.MinValue),
+            entryDate: DateTime.SpecifyKind(today.Date.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc),
             initialStop: initialStop);
 
         return new StrategyEvaluationResult(

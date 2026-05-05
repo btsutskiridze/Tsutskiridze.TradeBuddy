@@ -53,6 +53,7 @@ public class StrategyMonitor : Entity<int>, IAggregateRoot
 
         PositionState = StrategyPositionState.OutOfMarket();
         Status = MonitorStatus.Active;
+        StopTime = null;
     }
 
     public void Stop()
@@ -61,6 +62,7 @@ public class StrategyMonitor : Entity<int>, IAggregateRoot
             throw new DomainException("strategy is already stopped");
         
         Status = MonitorStatus.Stopped;
+        StopTime = DateTime.UtcNow;
     }
 
     public void MarkEvaluated(DateOnly candleDate)

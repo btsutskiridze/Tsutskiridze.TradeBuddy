@@ -32,6 +32,7 @@ public sealed record ActivateStrategyMonitorResult(
     decimal ClosePrice,
     decimal? ExecutionPrice,
     decimal? ActiveStop,
+    decimal? LongProfitPercent,
     bool ShouldNotify,
     string Reason
 );
@@ -116,7 +117,9 @@ public class
         var currentState = results[^1];
 
         await _uow.SaveChangesAsync(ct);
-        
+
+        var longProfitPercent = CalculateLongProfitPercent(currentState, strategyMonitor);
+
         return new ActivateStrategyMonitorResult(
             currentState.Action,
             currentState.PositionSideAfter,
@@ -124,9 +127,18 @@ public class
             currentState.ClosePrice,
             currentState.ExecutionPrice,
             currentState.ActiveStop,
+            longProfitPercent,
             currentState.ShouldNotify,
             currentState.Reason
         );
+    }
+
+    private static decimal? CalculateLongProfitPercent(StrategyEvaluationResult currentState, StrategyMonitor strategyMonitor)
+    {
+        return currentState.Action is 
+            StrategyAction.HoldLong or StrategyAction.ExitLongByEmaCross or StrategyAction.ExitLongByStop
+            ? (((currentState.ExecutionPrice ?? currentState.ClosePrice) - strategyMonitor.PositionState.EntryPrice) * 100) / strategyMonitor.PositionState.EntryPrice
+            : null;
     }
 
     private async Task<TradeStrategy> GetValidatedStrategyId(string strategyCode, Guid chatId, CancellationToken ct)

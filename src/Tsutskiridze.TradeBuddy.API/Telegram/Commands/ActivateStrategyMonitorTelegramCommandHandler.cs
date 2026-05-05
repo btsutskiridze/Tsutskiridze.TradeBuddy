@@ -58,6 +58,7 @@ public sealed class ActivateStrategyMonitorTelegramCommandHandler : ITelegramCom
         return
             $"Strategy monitor activated for `{normalizedSymbol}` with `{strategyCode}`.\n" +
             $"Latest candle: `{result.CandleDate:yyyy-MM-dd}` close `{FormatDecimal(result.ClosePrice)}`.\n" +
+            (result.LongProfitPercent is null ? "" : $"Profit: {result.LongProfitPercent.Value:N}%") +
             $"Action: `{result.Action}`. Position: `{result.PositionSideAfter}`.\n" +
             $"Execution: `{FormatNullableDecimal(result.ExecutionPrice)}`. Stop: `{FormatNullableDecimal(result.ActiveStop)}`.\n" +
             $"Reason: {result.Reason}";
