@@ -9,10 +9,10 @@ namespace Tsutskiridze.TradeBuddy.Domain.StrategyEvaluation;
 
 public sealed class EmaAdxAtrStrategyEvaluator
 {
-    public StrategyEvaluationResult EvaluateLatest(
+    public static StrategyEvaluationResult EvaluateLatest(
         TradeStrategy tradeStrategy,
         StrategyMonitor monitor,
-        IReadOnlyList<DailyStrategyCandle> candles)
+        IReadOnlyList<EmaAdxAtrEvaluationCandle> candles)
     {
         ValidateInputs(
             tradeStrategy.EmaTrend,
@@ -36,10 +36,10 @@ public sealed class EmaAdxAtrStrategyEvaluator
             todayIndex);
     }
 
-    public IReadOnlyList<StrategyEvaluationResult> Replay(
+    public static IReadOnlyList<StrategyEvaluationResult> Replay(
         TradeStrategy tradeStrategy,
         StrategyMonitor monitor,
-        IReadOnlyList<DailyStrategyCandle> candles)
+        IReadOnlyList<EmaAdxAtrEvaluationCandle> candles)
     {
         ValidateInputs(
             tradeStrategy.EmaTrend,
@@ -75,7 +75,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
         AdxTrendStrengthSettings adxSettings,
         AtrStopSettings atrSettings,
         StrategyPositionState positionState,
-        IReadOnlyList<DailyStrategyCandle> candles,
+        IReadOnlyList<EmaAdxAtrEvaluationCandle> candles,
         int index)
     {
         var today = candles[index];
@@ -103,9 +103,9 @@ public sealed class EmaAdxAtrStrategyEvaluator
         AdxTrendStrengthSettings adxSettings,
         AtrStopSettings atrSettings,
         StrategyPositionState positionState,
-        IReadOnlyList<DailyStrategyCandle> candles,
+        IReadOnlyList<EmaAdxAtrEvaluationCandle> candles,
         int index,
-        DailyStrategyCandle today)
+        EmaAdxAtrEvaluationCandle today)
     {
         if (!HasRequiredEntryIndicators(today))
         {
@@ -162,7 +162,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
     private static StrategyEvaluationResult EvaluateLong(
         AtrStopSettings atrSettings,
         StrategyPositionState positionState,
-        DailyStrategyCandle today)
+        EmaAdxAtrEvaluationCandle today)
     {
         if (positionState.ActiveStop is null)
             throw new DomainException("Active stop is required while position is long.");
@@ -247,7 +247,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
     }
 
     private static bool IsEntrySetupAt(
-        IReadOnlyList<DailyStrategyCandle> candles,
+        IReadOnlyList<EmaAdxAtrEvaluationCandle> candles,
         int index,
         AdxTrendStrengthSettings adxSettings)
     {
@@ -269,7 +269,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
     }
 
     private static bool IsAdxNotFalling(
-        IReadOnlyList<DailyStrategyCandle> candles,
+        IReadOnlyList<EmaAdxAtrEvaluationCandle> candles,
         int index,
         int previousBarsToCheck)
     {
@@ -297,7 +297,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
         return true;
     }
 
-    private static bool HasRequiredEntryIndicators(DailyStrategyCandle candle)
+    private static bool HasRequiredEntryIndicators(EmaAdxAtrEvaluationCandle candle)
     {
         return candle.FastEma is not null
                && candle.SlowEma is not null
@@ -306,7 +306,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
     }
 
     private static StrategyEvaluationResult InsufficientData(
-        DailyStrategyCandle candle,
+        EmaAdxAtrEvaluationCandle candle,
         StrategyPositionState positionState,
         string reason)
     {
@@ -326,7 +326,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
         AdxTrendStrengthSettings adxSettings,
         AtrStopSettings atrSettings,
         StrategyPositionState positionState,
-        IReadOnlyList<DailyStrategyCandle> candles)
+        IReadOnlyList<EmaAdxAtrEvaluationCandle> candles)
     {
         if (emaSettings is null)
             throw new DomainException("EMA settings are required.");

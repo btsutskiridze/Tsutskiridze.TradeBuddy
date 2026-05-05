@@ -1,4 +1,4 @@
-﻿namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
+﻿namespace Tsutskiridze.TradeBuddy.Domain.StrategyEvaluation;
 
 public sealed record EmaAdxAtrEvaluationCandle(
     DateOnly Date,

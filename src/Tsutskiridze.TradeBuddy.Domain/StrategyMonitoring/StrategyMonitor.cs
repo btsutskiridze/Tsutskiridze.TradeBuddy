@@ -18,8 +18,10 @@ public class StrategyMonitor : Entity<int>, IAggregateRoot
     public DateTime? StopTime { get; private set; }
     public DateOnly? LastEvaluatedCandleDate { get; private set; }
 
-    private StrategyMonitor() {}
-    
+    private StrategyMonitor()
+    {
+    }
+
     public StrategyMonitor(
         Guid chatId,
         int tradeStrategyId,
@@ -43,7 +45,24 @@ public class StrategyMonitor : Entity<int>, IAggregateRoot
         PositionState = StrategyPositionState.OutOfMarket();
         CreateTime = nowUtc;
     }
-    
+
+    public void Activate()
+    {
+        if (Status == MonitorStatus.Active)
+            throw new DomainException("strategy is already monitored");
+
+        PositionState = StrategyPositionState.OutOfMarket();
+        Status = MonitorStatus.Active;
+    }
+
+    public void Stop()
+    {
+        if (Status == MonitorStatus.Stopped)
+            throw new DomainException("strategy is already stopped");
+        
+        Status = MonitorStatus.Stopped;
+    }
+
     public void MarkEvaluated(DateOnly candleDate)
     {
         if (Status != MonitorStatus.Active)

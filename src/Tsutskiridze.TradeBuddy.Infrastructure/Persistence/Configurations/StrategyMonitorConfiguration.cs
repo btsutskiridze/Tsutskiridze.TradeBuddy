@@ -106,14 +106,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations
                 .HasForeignKey(sm => sm.StockId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasIndex(sm => sm.ChatId)
-                .HasDatabaseName("IX_strategy_monitors_chat_id");
-
-            builder.HasIndex(sm => sm.TradeStrategyId)
-                .HasDatabaseName("IX_strategy_monitors_trade_strategy_id");
-
-            builder.HasIndex(sm => sm.StockId)
-                .HasDatabaseName("IX_strategy_monitors_stock_id");
+            builder.HasIndex(sm => new { sm.ChatId, sm.TradeStrategyId, sm.StockId })
+                .IsUnique()
+                .HasDatabaseName("ux_strategy_monitors_active_chat_strategy_stock");
         }
     }
 }

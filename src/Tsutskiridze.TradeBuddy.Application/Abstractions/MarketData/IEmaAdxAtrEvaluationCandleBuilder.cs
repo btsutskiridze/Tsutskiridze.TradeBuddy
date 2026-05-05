@@ -1,4 +1,5 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
+using Tsutskiridze.TradeBuddy.Domain.StrategyEvaluation;
 
 namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 

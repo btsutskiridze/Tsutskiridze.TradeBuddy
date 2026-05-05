@@ -1,5 +1,6 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
+using Tsutskiridze.TradeBuddy.Domain.StrategyEvaluation;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.MarketData;
 
@@ -24,8 +25,8 @@ public class EmaAdxAtrEvaluationCandleBuilder : IEmaAdxAtrEvaluationCandleBuilde
             .Select(x => x.Close)
             .ToArray();
 
-        var slowEma = CalculateEma(closes, fastEmaPeriod);
-        var fastEma = CalculateEma(closes, slowEmaPeriod);
+        var slowEma = CalculateEma(closes, slowEmaPeriod);
+        var fastEma = CalculateEma(closes,fastEmaPeriod);
         var atr = CalculateAtr(orderedCandles, atrPeriod);
         var adx = CalculateAdx(orderedCandles, adxPeriod);
 

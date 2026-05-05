@@ -62,6 +62,13 @@ public static class TelegramCommandCatalog
             "Delete a trade strategy",
             "/delstrategy <ts-id>\nExample: /delstrategy ts_3"
         );
+
+    public static readonly TelegramCommandDefinition MonitorStrategy =
+        new(
+            "/monitor",
+            "Activate a strategy monitor",
+            "/monitor <symbol> <ts-id>\nExample: /monitor NVDA ts_3"
+        );
     
     
     public static readonly IReadOnlyList<TelegramCommandDefinition> All =
@@ -74,6 +81,7 @@ public static class TelegramCommandCatalog
         AddStrategy,
         ListStrategies,
         RemoveAlert,
-        DeleteStrategy
+        DeleteStrategy,
+        MonitorStrategy
     ];
 }
