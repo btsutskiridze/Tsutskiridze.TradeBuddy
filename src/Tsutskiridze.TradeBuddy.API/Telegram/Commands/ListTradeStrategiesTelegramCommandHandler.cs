@@ -31,44 +31,18 @@ public sealed class ListTradeStrategiesTelegramCommandHandler : ITelegramCommand
             throw new TelegramPresentationException(Usage);
         }
 
-        int? strategyId = dispatchRequest.Args.Count == 0
+        var strategyCode = dispatchRequest.Args.Count == 0
             ? null
-            : ParseStrategyId(dispatchRequest.Args[0]);
+            : dispatchRequest.Args[0];
 
         var result = await _mediator.Send(
-            new ListTradeStrategiesCommand(dispatchRequest.ChatId, strategyId),
+            new ListTradeStrategiesCommand(dispatchRequest.ChatId, strategyCode),
             ct);
 
         return TelegramCommandDispatchResponse.TextReply(
             dispatchRequest.ChatId,
             CreateMessage(result),
             ParseMode.Markdown);
-    }
-
-    private static int ParseStrategyId(string value)
-    {
-        var span = value.AsSpan();
-        var separatorIndex = span.LastIndexOf('_');
-
-        if (separatorIndex <= 0 || separatorIndex == span.Length - 1)
-        {
-            throw new TelegramPresentationException(Usage);
-        }
-
-        var prefix = span[..separatorIndex];
-        if (!prefix.Equals("st", StringComparison.OrdinalIgnoreCase)
-            && !prefix.Equals("ts", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new TelegramPresentationException(Usage);
-        }
-
-        var idText = span[(separatorIndex + 1)..];
-        if (!int.TryParse(idText, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id) || id <= 0)
-        {
-            throw new TelegramPresentationException(Usage);
-        }
-
-        return id;
     }
 
     private static string CreateMessage(ListTradeStrategiesResult result)

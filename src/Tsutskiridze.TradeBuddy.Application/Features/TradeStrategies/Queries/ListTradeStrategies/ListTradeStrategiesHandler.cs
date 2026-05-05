@@ -5,10 +5,11 @@ using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Application.Features.TradeStrategies.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies.Enums;
+using Tsutskiridze.TradeBuddy.Domain.TradeStrategies.ValueObjects;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.TradeStrategies.Queries.ListTradeStrategies;
 
-public sealed record ListTradeStrategiesCommand(long ChatId, int? StrategyId) : IQuery<ListTradeStrategiesResult>;
+public sealed record ListTradeStrategiesCommand(long ChatId, string? StrategyCode) : IQuery<ListTradeStrategiesResult>;
 
 public sealed record ListTradeStrategiesResult(IReadOnlyList<TradeStrategyListItem> Strategies);
 
@@ -42,14 +43,18 @@ public sealed class ListTradeStrategiesHandler : IQueryHandler<ListTradeStrategi
     public async ValueTask<ListTradeStrategiesResult> Handle(ListTradeStrategiesCommand command, CancellationToken ct)
     {
         var chatId = await _activeChatProvider.GetIdAsync(command.ChatId, ct);
+        int? strategyId = command.StrategyCode is null
+            ? null
+            : TradeStrategyCode.Parse(command.StrategyCode).Id;
+
         var strategies = await _strategies.ListAsync(
-            new ActiveTradeStrategiesByChatIdSpec(chatId, command.StrategyId),
+            new ActiveTradeStrategiesByChatIdSpec(chatId, strategyId),
             ct);
 
         if (strategies.Count == 0)
         {
             throw new ApplicationLayerException(
-                command.StrategyId.HasValue
+                strategyId.HasValue
                     ? "Trade strategy not found."
                     : "You have no active trade strategies.");
         }
@@ -57,7 +62,7 @@ public sealed class ListTradeStrategiesHandler : IQueryHandler<ListTradeStrategi
         var items = strategies
             .Select(strategy => new TradeStrategyListItem(
                 strategy.Id,
-                $"st_{strategy.Id}",
+                strategy.Code.ToString(),
                 strategy.Timeframe,
                 strategy.EmaTrend.FastPeriod,
                 strategy.EmaTrend.SlowPeriod,

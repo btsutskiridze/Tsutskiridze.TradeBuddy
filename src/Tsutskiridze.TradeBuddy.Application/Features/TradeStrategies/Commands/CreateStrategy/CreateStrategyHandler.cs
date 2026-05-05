@@ -51,6 +51,6 @@ public sealed class CreateStrategyHandler : ICommandHandler<CreateStrategyComman
 
         await _uow.SaveChangesAsync(ct);
         
-        return new CreateStrategyResult(strategy.Code);
+        return new CreateStrategyResult(strategy.Code.ToString());
     }
 }

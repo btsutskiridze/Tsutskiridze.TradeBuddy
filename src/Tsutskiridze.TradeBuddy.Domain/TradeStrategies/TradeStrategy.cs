@@ -7,7 +7,7 @@ namespace Tsutskiridze.TradeBuddy.Domain.TradeStrategies;
 public class TradeStrategy : Entity<int>, IAggregateRoot
 {
     public Guid ChatId { get; private set; }
-    public string Code => $"ts_{Id:N}";
+    public TradeStrategyCode Code => TradeStrategyCode.FromId(Id);
     public Timeframe Timeframe { get; private set; }
     public EmaTrendSettings EmaTrend { get; private set; } = null!;
     public AdxTrendStrengthSettings AdxTrendStrength { get; private set; } = null!;
@@ -37,4 +37,5 @@ public class TradeStrategy : Entity<int>, IAggregateRoot
         AtrStop = atrStop;
         IsActive = true;
     }
+
 }

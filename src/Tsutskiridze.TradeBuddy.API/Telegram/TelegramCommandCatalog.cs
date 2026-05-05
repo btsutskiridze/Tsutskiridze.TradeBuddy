@@ -37,6 +37,12 @@ public static class TelegramCommandCatalog
             "Get current price and analysis",
             "/price <symbol>\nExample: /price NVDA");
 
+    public static readonly TelegramCommandDefinition RemoveAlert =
+        new(
+            "/del",
+            "Delete a price alert",
+            "/del <symbol> <above|below> <price>\nExample: /del NVDA above 300");
+    
     public static readonly TelegramCommandDefinition AddStrategy =
         new(
             "/addstrategy",
@@ -47,15 +53,17 @@ public static class TelegramCommandCatalog
         new(
             "/mystrategies",
             "List your active trade strategies",
-            "/mystrategies [st-id]\nExample: /mystrategies st_2\nExample: /mystrategies"
+            "/mystrategies [ts-id]\nExample: /mystrategies ts_2\nExample: /mystrategies"
+        );
+
+    public static readonly TelegramCommandDefinition DeleteStrategy =
+        new(
+            "/delstrategy",
+            "Delete a trade strategy",
+            "/delstrategy <ts-id>\nExample: /delstrategy ts_3"
         );
     
-    public static readonly TelegramCommandDefinition RemoveAlert =
-        new(
-            "/del",
-            "Delete a price alert",
-            "/del <symbol> <above|below> <price>\nExample: /del NVDA above 300");
-
+    
     public static readonly IReadOnlyList<TelegramCommandDefinition> All =
     [
         Help,
@@ -65,6 +73,7 @@ public static class TelegramCommandCatalog
         AnalyseStock,
         AddStrategy,
         ListStrategies,
-        RemoveAlert
+        RemoveAlert,
+        DeleteStrategy
     ];
 }
