@@ -29,7 +29,6 @@ public static class DependencyInjection
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped(typeof(IReadRepository<,>), typeof(EfReadRepository<,>));
         services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
-        services.AddScoped<ITradeStrategyRepository, TradeStrategyRepository>();
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
         services.AddSingleton<IDbExceptionClassifier, PostgresDbExceptionClassifier>();
         
