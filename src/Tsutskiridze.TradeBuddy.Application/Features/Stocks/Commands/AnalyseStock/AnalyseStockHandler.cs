@@ -36,7 +36,10 @@ public class AnalyseStockHandler : ICommandHandler<AnalyseStockCommand, AnalyseS
 
     public async ValueTask<AnalyseStockResult> Handle(AnalyseStockCommand command, CancellationToken ct)
     {
-        await _activeChatProvider.ExistsAsync(command.ChatId, ct);
+        if (await _activeChatProvider.ExistsAsync(command.ChatId, ct))
+        {
+            throw new ResourceNotFoundException("Chat isn't activated.");
+        }
         
         var symbol = command.Symbol.Trim().ToUpperInvariant();
         _logger.LogDebug("Received stock command for symbol {StockSymbol}", symbol);
