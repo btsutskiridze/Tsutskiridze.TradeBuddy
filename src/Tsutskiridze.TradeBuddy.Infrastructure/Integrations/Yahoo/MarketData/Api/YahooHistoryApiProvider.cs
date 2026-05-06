@@ -50,7 +50,44 @@ public class YahooHistoryApiProvider : IYahooHistoryApiProvider
 
         return MapToCandles(yahooResponse, symbol, from, to);
     }
-    
+
+    public async Task<MarketHistoryDateRange> GetClosedDailyDateRange(
+        string symbol,
+        DateTimeOffset nowUtc,
+        CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(symbol))
+            throw new ArgumentException("Symbol cannot be empty.", nameof(symbol));
+
+        var requestUri = BuildChartMetadataUri(symbol);
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+
+        request.Headers.UserAgent.ParseAdd(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36");
+
+        using var response = await _httpClient.SendAsync(
+            request,
+            HttpCompletionOption.ResponseHeadersRead,
+            ct);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync(ct);
+
+            throw new HttpRequestException(
+                $"Yahoo chart metadata request failed. StatusCode: {(int)response.StatusCode}. Body: {body}");
+        }
+
+        var yahooResponse = await response.Content.ReadFromJsonAsync<YahooChartResponse>(
+            cancellationToken: ct);
+
+        if (yahooResponse is null)
+            throw new InvalidOperationException("Yahoo returned empty response.");
+
+        return MapToClosedDailyDateRange(yahooResponse, symbol, nowUtc);
+    }
+
     private static string BuildChartUri(string symbol, DateOnly from, DateOnly to)
     {
         var normalizedSymbol = Uri.EscapeDataString(symbol.Trim().ToUpperInvariant());
@@ -65,6 +102,86 @@ public class YahooHistoryApiProvider : IYahooHistoryApiProvider
                "&interval=1d" +
                "&includePrePost=false" +
                "&events=div|split";
+    }
+    
+    private static string BuildChartMetadataUri(string symbol)
+    {
+        var normalizedSymbol = Uri.EscapeDataString(symbol.Trim().ToUpperInvariant());
+
+        return $"v8/finance/chart/{normalizedSymbol}" +
+               "?range=1d" +
+               "&interval=1d" +
+               "&includePrePost=false" +
+               "&events=div|split";
+    }
+    
+    private static MarketHistoryDateRange MapToClosedDailyDateRange(
+        YahooChartResponse response,
+        string requestedSymbol,
+        DateTimeOffset nowUtc)
+    {
+        var chart = response.Chart
+                    ?? throw new InvalidOperationException("Yahoo response does not contain chart node.");
+
+        if (chart.Error is not null)
+        {
+            throw new InvalidOperationException(
+                $"Yahoo returned chart error. Code: {chart.Error.Code}. Description: {chart.Error.Description}");
+        }
+
+        var result = chart.Result?.FirstOrDefault();
+
+        if (result is null)
+            throw new InvalidOperationException("Yahoo response does not contain chart result.");
+
+        if (!string.IsNullOrWhiteSpace(result.Meta?.Symbol) &&
+            !string.Equals(result.Meta.Symbol, requestedSymbol, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException(
+                $"Yahoo returned symbol '{result.Meta.Symbol}', but requested '{requestedSymbol}'.");
+        }
+
+        var exchangeTimeZone = TryGetExchangeTimeZone(result.Meta?.ExchangeTimezoneName)
+                               ?? TimeZoneInfo.Utc;
+
+        var marketNow = TimeZoneInfo.ConvertTime(nowUtc, exchangeTimeZone);
+        var marketToday = DateOnly.FromDateTime(marketNow.DateTime);
+
+        var regularMarketEndUtc = result.Meta?.CurrentTradingPeriod?.Regular?.End is long end
+            ? DateTimeOffset.FromUnixTimeSeconds(end)
+            : (DateTimeOffset?)null;
+
+        DateOnly to;
+
+        if (regularMarketEndUtc is not null)
+        {
+            var marketAlreadyClosed = nowUtc >= regularMarketEndUtc.Value;
+
+            to = marketAlreadyClosed
+                ? marketToday
+                : PreviousTradingWeekday(marketToday.AddDays(-1));
+        }
+        else
+        {
+            // Fallback when Yahoo metadata is missing.
+            // Better than crashing, but less accurate because we do not know exact market close.
+            to = PreviousTradingWeekday(marketToday.AddDays(-1));
+        }
+
+        //todo: make the date to be passed to  amethod
+        return new MarketHistoryDateRange(
+            From: to.AddYears(-1),
+            To: to);
+    }
+    
+    private static DateOnly PreviousTradingWeekday(DateOnly date)
+    {
+        while (date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
+        {
+            date = date.AddDays(-1);
+        }
+
+        return date;
     }
 
     private static long ToUnixSeconds(DateOnly date)

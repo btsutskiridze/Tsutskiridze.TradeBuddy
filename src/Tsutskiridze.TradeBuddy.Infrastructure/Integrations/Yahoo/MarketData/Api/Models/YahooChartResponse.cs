@@ -51,6 +51,25 @@ internal sealed class YahooChartMeta
 
     [JsonPropertyName("currency")]
     public string? Currency { get; init; }
+    
+    [JsonPropertyName("currentTradingPeriod")]
+    public YahooCurrentTradingPeriod? CurrentTradingPeriod { get; init; }
+}
+
+internal sealed class YahooCurrentTradingPeriod
+{
+    public YahooTradingPeriod? Regular { get; init; }
+}
+
+internal sealed class YahooTradingPeriod
+{
+    public long? Start { get; init; }
+
+    public long? End { get; init; }
+
+    public string? Timezone { get; init; }
+
+    public int? GmtOffset { get; init; }
 }
 
 internal sealed class YahooChartIndicators

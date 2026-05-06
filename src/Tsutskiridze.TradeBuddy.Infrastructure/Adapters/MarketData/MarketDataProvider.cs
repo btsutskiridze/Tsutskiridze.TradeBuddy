@@ -14,6 +14,7 @@ public class MarketDataProvider : IMarketDataProvider
     private readonly IYahooKeyStatisticsPageParser _keyStatisticsPageParser;
     private readonly IYahooFinancialsPageParser _financialsPageParser;
     private readonly IYahooHistoryApiProvider _historyApiProvider;
+    private readonly IYahooStockQuoteApiProvider _stockQuoteApiProvider;
     
     public MarketDataProvider(
         IYahooPageLoader pageLoader,
@@ -21,7 +22,8 @@ public class MarketDataProvider : IMarketDataProvider
         IYahooHistoryPageParser historyPageParser,
         IYahooKeyStatisticsPageParser keyStatisticsPageParser,
         IYahooFinancialsPageParser financialsPageParser, 
-        IYahooHistoryApiProvider historyApiProvider)
+        IYahooHistoryApiProvider historyApiProvider, 
+        IYahooStockQuoteApiProvider stockQuoteApiProvider)
     {
         _pageLoader = pageLoader;
         _quotePageParser = quotePageParser;
@@ -29,6 +31,7 @@ public class MarketDataProvider : IMarketDataProvider
         _keyStatisticsPageParser = keyStatisticsPageParser;
         _financialsPageParser = financialsPageParser;
         _historyApiProvider = historyApiProvider;
+        _stockQuoteApiProvider = stockQuoteApiProvider;
     }
 
     public async Task<bool> StockSymbolExists(string symbol)
@@ -84,12 +87,20 @@ public class MarketDataProvider : IMarketDataProvider
         return _financialsPageParser.Parse(pageContext);
     }
 
-    public async Task<StockQuote?> GetStockQuote(string symbol)
+    public async Task<StockQuote?> GetStockQuote(string symbol, CancellationToken ct)
     {
         if (!TryNormalizeSymbol(symbol, out var normalizedSymbol))
             return null;
 
+        var apiQuote = await _stockQuoteApiProvider.GetStockQuote(
+            normalizedSymbol,
+            ct);
+
+        if (apiQuote is not null)
+            return apiQuote;
+
         var pageContext = await _pageLoader.LoadQuotePageAsync(normalizedSymbol);
+
         if (pageContext is null)
             return null;
 
@@ -102,8 +113,23 @@ public class MarketDataProvider : IMarketDataProvider
 
         return result;
     }
+    
+    public async Task<MarketHistoryDateRange> GetClosedDailyDateRange(
+        string symbol,
+        CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(symbol))
+            throw new ArgumentException("Invalid symbol provided");
+        
+        var normalizedSymbol = symbol.Trim().ToUpperInvariant();
+        
+        return await _historyApiProvider.GetClosedDailyDateRange(
+            normalizedSymbol,
+            DateTimeOffset.UtcNow,
+            ct);
+    }
 
-    private static bool TryNormalizeSymbol(string? symbol, out string normalizedSymbol)
+    private static bool TryNormalizeSymbol(string symbol, out string normalizedSymbol)
     {
         normalizedSymbol = string.Empty;
 

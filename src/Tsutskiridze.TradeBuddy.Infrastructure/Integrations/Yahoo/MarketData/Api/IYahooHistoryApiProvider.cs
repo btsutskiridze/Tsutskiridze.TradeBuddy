@@ -5,4 +5,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.A
 public interface IYahooHistoryApiProvider
 {
     Task<IReadOnlyList<MarketCandle>> GetDailyCandles(string symbol, DateOnly from, DateOnly to, CancellationToken ct);
+    
+    Task<MarketHistoryDateRange> GetClosedDailyDateRange(
+        string symbol,
+        DateTimeOffset nowUtc,
+        CancellationToken ct);
 }
