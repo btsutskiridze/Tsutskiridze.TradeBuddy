@@ -72,14 +72,14 @@ public class
     {
         var now = DateTime.UtcNow;
         var chatId = await _activeChatProvider.GetIdAsync(cmd.ChatId, ct);
-        var stockQuote = await GetValidatedStockQuote(cmd.Symbol);
+        var (stockQuote, historyDateRange) = await FetchStockQuoteDetails(cmd.Symbol, ct);
+
         var stock = await GetOrCreateStock(cmd.Symbol, stockQuote.Name, stockQuote.Currency, ct);
         var strategy = await GetValidatedStrategyId(cmd.StrategyCode, chatId, ct);
 
-        var strategyMonitor = await _monitors.FirstOrDefaultAsync(
-            new StrategyMonitorByChatStrategyStockSpec(chatId, strategy.Id, stock.Id),
-            ct
-        );
+        var strategyMonitor =
+            await _monitors.FirstOrDefaultAsync(
+                new StrategyMonitorByChatStrategyStockSpec(chatId, strategy.Id, stock.Id), ct);
 
         if (strategyMonitor is null)
         {
@@ -101,8 +101,8 @@ public class
 
         var historyCandles = await _market.GetDailyCandles(
             cmd.Symbol,
-            DateOnly.FromDateTime(now.AddYears(-1)),
-            DateOnly.FromDateTime(now),
+            historyDateRange.From,
+            historyDateRange.To,
             ct
         );
         var strategyCandles = _emaAdxAtrEvaluationCandleBuilder.BuildDailyStrategyCandles(
@@ -133,11 +133,24 @@ public class
         );
     }
 
-    private static decimal? CalculateLongProfitPercent(StrategyEvaluationResult currentState, StrategyMonitor strategyMonitor)
+    private async Task<(StockQuote stockQuote, MarketHistoryDateRange historyDateRange)> FetchStockQuoteDetails(
+        string symbol,
+        CancellationToken ct)
     {
-        return currentState.Action is 
+        var stockQuote = await _market.GetStockQuote(symbol, ct)
+                         ?? throw new ResourceNotFoundException("Stock symbol not found");
+        var historyDateRange = await _market.GetClosedDailyDateRange(symbol, ct);
+
+        return (stockQuote, historyDateRange);
+    }
+
+    private static decimal? CalculateLongProfitPercent(StrategyEvaluationResult currentState,
+        StrategyMonitor strategyMonitor)
+    {
+        return currentState.Action is
             StrategyAction.HoldLong or StrategyAction.ExitLongByEmaCross or StrategyAction.ExitLongByStop
-            ? (((currentState.ExecutionPrice ?? currentState.ClosePrice) - strategyMonitor.PositionState.EntryPrice) * 100) / strategyMonitor.PositionState.EntryPrice
+            ? (((currentState.ExecutionPrice ?? currentState.ClosePrice) - strategyMonitor.PositionState.EntryPrice) *
+               100) / strategyMonitor.PositionState.EntryPrice
             : null;
     }
 
@@ -150,12 +163,6 @@ public class
         ) ?? throw new ResourceNotFoundException("Trade strategy not found.");
 
         return strategy;
-    }
-
-    private async Task<StockQuote> GetValidatedStockQuote(string symbol)
-    {
-        return await _market.GetStockQuote(symbol)
-               ?? throw new ResourceNotFoundException("Stock symbol not found");
     }
 
     private async Task<Stock> GetOrCreateStock(string symbol, string name, string currency, CancellationToken ct)
