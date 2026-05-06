@@ -8,6 +8,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Loading;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Web;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Parsing;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Parsing.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming;
