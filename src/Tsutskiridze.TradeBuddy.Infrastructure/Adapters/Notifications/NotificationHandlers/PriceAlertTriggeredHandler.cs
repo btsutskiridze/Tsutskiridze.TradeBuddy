@@ -7,13 +7,13 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.Notifications.NotificationHandlers;
 
-public sealed class PriceAlertTriggeredNotificationHandler : IBaseNotificationHandler<PriceAlertTriggeredNotification>
+public sealed class PriceAlertTriggeredHandler : IBaseNotificationHandler<PriceAlertTriggeredNotification>
 {
     private readonly ITelegramSender _sender;
-    private readonly ILogger<PriceAlertTriggeredNotificationHandler> _logger;
+    private readonly ILogger<PriceAlertTriggeredHandler> _logger;
 
-    public PriceAlertTriggeredNotificationHandler(ITelegramSender sender,
-        ILogger<PriceAlertTriggeredNotificationHandler> logger)
+    public PriceAlertTriggeredHandler(ITelegramSender sender,
+        ILogger<PriceAlertTriggeredHandler> logger)
     {
         _sender = sender;
         _logger = logger;

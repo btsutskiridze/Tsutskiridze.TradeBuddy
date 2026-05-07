@@ -29,6 +29,8 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
         {
             try
             {
+                await RunIfDueAsync(easternTimeZone, stoppingToken);
+                
                 var nowUtc = DateTimeOffset.UtcNow;
                 var nextRunUtc = GetNextWeekdayRunUtc(nowUtc, easternTimeZone);
 
@@ -84,6 +86,41 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
         }
     }
 
+    private async Task RunIfDueAsync(
+        TimeZoneInfo easternTimeZone,
+        CancellationToken ct)
+    {
+        var easternNow = TimeZoneInfo.ConvertTime(
+            DateTimeOffset.UtcNow,
+            easternTimeZone);
+
+        if (IsWeekend(easternNow.DayOfWeek))
+            return;
+
+        var currentTime = TimeOnly.FromDateTime(easternNow.DateTime);
+
+        if (currentTime < RunAtEasternTime)
+            return;
+
+        var tradingDate = DateOnly.FromDateTime(easternNow.Date);
+
+        _logger.LogInformation(
+            "Running daily strategy job for {TradingDate}",
+            tradingDate);
+
+        await using var scope = _scopeFactory.CreateAsyncScope();
+
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+        await mediator.Send(
+            new EvaluateDailyStrategyMonitorsCommand(tradingDate),
+            ct);
+
+        _logger.LogInformation(
+            "Daily strategy job completed for {TradingDate}",
+            tradingDate);
+    }
+    
     private static DateTimeOffset GetNextWeekdayRunUtc(
         DateTimeOffset nowUtc,
         TimeZoneInfo easternTimeZone)

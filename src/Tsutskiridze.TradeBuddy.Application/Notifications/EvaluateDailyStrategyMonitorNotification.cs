@@ -5,6 +5,9 @@ using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.Enums;
 namespace Tsutskiridze.TradeBuddy.Application.Notifications;
 
 public sealed record EvaluateDailyStrategyMonitorNotification(    
+    long ChatId,
+    string StrategyCode,
+    string Symbol,
     StrategyAction Action,
     PositionSide PositionSideAfter,
     DateOnly CandleDate,

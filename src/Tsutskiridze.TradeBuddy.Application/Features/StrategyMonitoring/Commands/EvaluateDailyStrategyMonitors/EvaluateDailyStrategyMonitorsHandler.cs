@@ -2,9 +2,11 @@
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
+using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.TradeStrategies.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Notifications;
+using Tsutskiridze.TradeBuddy.Domain.Chats;
 using Tsutskiridze.TradeBuddy.Domain.StrategyEvaluation;
 using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies;
@@ -18,6 +20,7 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
     private readonly IUnitOfWork _uow;
     private readonly IRepository<StrategyMonitor, int> _monitors;
     private readonly IRepository<TradeStrategy, int> _strategies;
+    private readonly IReadRepository<Chat> _chats;
     private readonly INotificationDispatcher _notifier;
     private readonly IMarketDataProvider _market;
     private readonly IEmaAdxAtrEvaluationCandleBuilder _candleBuilder;
@@ -27,7 +30,8 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
         IRepository<StrategyMonitor, int> monitors,
         IRepository<TradeStrategy, int> strategies,
         INotificationDispatcher notifier, IMarketDataProvider market,
-        IEmaAdxAtrEvaluationCandleBuilder candleBuilder)
+        IEmaAdxAtrEvaluationCandleBuilder candleBuilder,
+        IReadRepository<Chat> chats)
     {
         _uow = uow;
         _monitors = monitors;
@@ -35,6 +39,7 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
         _notifier = notifier;
         _market = market;
         _candleBuilder = candleBuilder;
+        _chats = chats;
     }
 
     public async ValueTask<Unit> Handle(
@@ -45,10 +50,13 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
         var monitors = await _monitors.ListAsync(
             new ActiveStrategyMonitorsByTradeStrategyIdsSpec(strategies.Select(x => x.Id).ToArray()),
             ct);
+        var chatIdsSet =
+            (await _chats.ListAsync(new ActiveChatTelegramIdsByIdsSpec(monitors.Select(x => x.ChatId).ToArray()), ct))
+            .ToDictionary(x => x.ChatId, x => x.TelegramId);
 
         var strategiesDict = strategies.ToDictionary(x => x.Id);
 
-        var results = new List<(StrategyEvaluationResult evaluateResult, StrategyMonitor strategyMonitor)>();
+        var notifications = new List<EvaluateDailyStrategyMonitorNotification>();
 
         foreach (var mn in monitors)
         {
@@ -73,25 +81,22 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
             );
 
             var result = EmaAdxAtrStrategyEvaluator.EvaluateLatest(st, mn, strategyCandles);
-            results.Add((result, mn));
 
             mn.MarkEvaluated(result.CandleDate);
-        }
 
-        var notifications = new List<EvaluateDailyStrategyMonitorNotification>();
-
-        foreach (var (currentState, strategyMonitor) in results)
-        {
             notifications.Add(new EvaluateDailyStrategyMonitorNotification(
-                currentState.Action,
-                currentState.PositionSideAfter,
-                currentState.CandleDate,
-                currentState.ClosePrice,
-                currentState.ExecutionPrice,
-                currentState.ActiveStop,
-                CalculateLongProfitPercent(currentState, strategyMonitor),
-                currentState.ShouldNotify,
-                currentState.Reason
+                chatIdsSet[mn.ChatId],
+                st.Code.ToString(),
+                mn.Symbol,
+                result.Action,
+                result.PositionSideAfter,
+                result.CandleDate,
+                result.ClosePrice,
+                result.ExecutionPrice ?? mn.PositionState.EntryPrice,
+                result.ActiveStop,
+                CalculateLongProfitPercent(result, mn),
+                result.ShouldNotify,
+                result.Reason
             ));
         }
 
