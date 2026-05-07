@@ -75,7 +75,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
         AdxTrendStrengthSettings adxSettings,
         AtrStopSettings atrSettings,
         StrategyPositionState positionState,
-        IReadOnlyList<EmaAdxAtrEvaluationCandle> candles,
+        EmaAdxAtrEvaluationCandle[] candles,
         int index)
     {
         var today = candles[index];
