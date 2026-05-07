@@ -14,6 +14,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo;
+using Tsutskiridze.TradeBuddy.Infrastructure.Jobs;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure;
@@ -30,7 +31,8 @@ public static class DependencyInjection
             .AddRateLimiter(configuration)
             .AddIntegrations(configuration)
             .AddMarketDataServices()
-            .AddNewsServices();
+            .AddNewsServices()
+            .AddJobs();
 
         return services;
     }
