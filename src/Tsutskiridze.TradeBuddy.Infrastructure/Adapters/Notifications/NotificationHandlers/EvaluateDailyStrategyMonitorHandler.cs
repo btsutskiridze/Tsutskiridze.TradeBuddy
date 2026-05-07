@@ -11,13 +11,10 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.Notifications.Notifica
 public class EvaluateDailyStrategyMonitorHandler : IBaseNotificationHandler<EvaluateDailyStrategyMonitorNotification>
 {
     private readonly ITelegramSender _sender;
-    private readonly ILogger<EvaluateDailyStrategyMonitorHandler> _logger;
 
-    public EvaluateDailyStrategyMonitorHandler(ITelegramSender sender,
-        ILogger<EvaluateDailyStrategyMonitorHandler> logger)
+    public EvaluateDailyStrategyMonitorHandler(ITelegramSender sender)
     {
         _sender = sender;
-        _logger = logger;
     }
 
     public async ValueTask Handle(EvaluateDailyStrategyMonitorNotification notification,
