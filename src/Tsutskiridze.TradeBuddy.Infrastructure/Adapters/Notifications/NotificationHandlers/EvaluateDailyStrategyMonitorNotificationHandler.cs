@@ -7,11 +7,11 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.Notifications.NotificationHandlers;
 
-public class EvaluateDailyStrategyMonitorHandler : IBaseNotificationHandler<EvaluateDailyStrategyMonitorNotification>
+public class EvaluateDailyStrategyMonitorNotificationHandler : IBaseNotificationHandler<EvaluateDailyStrategyMonitorNotification>
 {
     private readonly ITelegramSender _sender;
 
-    public EvaluateDailyStrategyMonitorHandler(ITelegramSender sender)
+    public EvaluateDailyStrategyMonitorNotificationHandler(ITelegramSender sender)
     {
         _sender = sender;
     }
