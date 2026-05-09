@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using SharedKernel;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Notifications;

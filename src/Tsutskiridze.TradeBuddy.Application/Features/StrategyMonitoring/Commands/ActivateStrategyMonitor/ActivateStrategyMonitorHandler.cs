@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using Mediator;
+﻿using Mediator;
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
@@ -12,7 +11,6 @@ using Tsutskiridze.TradeBuddy.Domain.Stocks;
 using Tsutskiridze.TradeBuddy.Domain.StrategyEvaluation;
 using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring;
 using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.Enums;
-using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.ValueObjects;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies.Enums;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies.ValueObjects;

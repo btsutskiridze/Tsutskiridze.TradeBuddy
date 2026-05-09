@@ -101,7 +101,6 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
         }
 
         await _uow.SaveChangesAsync(ct);
-        //todo: notification handler
         await _notifier.DispatchAsync(notifications, ct);
 
         return Unit.Value;
