@@ -92,7 +92,7 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
                 result.PositionSideAfter,
                 result.CandleDate,
                 result.ClosePrice,
-                result.ExecutionPrice ?? mn.PositionState.EntryPrice,
+                result.EntryPrice,
                 result.ActiveStop,
                 CalculateLongProfitPercent(result, mn),
                 result.ShouldNotify,

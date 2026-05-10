@@ -7,6 +7,7 @@ public sealed record StrategyEvaluationResult(
     PositionSide PositionSideAfter,
     DateOnly CandleDate,
     decimal ClosePrice,
+    decimal? EntryPrice,
     decimal? ExecutionPrice,
     decimal? ActiveStop,
     bool ShouldNotify,

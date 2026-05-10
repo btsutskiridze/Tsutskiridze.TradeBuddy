@@ -129,6 +129,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
                 PositionSideAfter: PositionSide.OutOfMarket,
                 CandleDate: today.Date,
                 ClosePrice: today.Close,
+                EntryPrice: null,
                 ExecutionPrice: null,
                 ActiveStop: null,
                 ShouldNotify: false,
@@ -153,6 +154,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
             PositionSideAfter: PositionSide.Long,
             CandleDate: today.Date,
             ClosePrice: today.Close,
+            EntryPrice: today.Close,
             ExecutionPrice: today.Close,
             ActiveStop: initialStop,
             ShouldNotify: true,
@@ -174,7 +176,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
             throw new DomainException("Locked ATR is required while position is long.");
 
         var activeStopBeforeEvaluation = positionState.ActiveStop.Value;
-
+        var entryPrice = positionState.EntryPrice;
         // Conservative daily-candle rule:
         // If today's low touched active stop, exit first.
         if (today.Low <= activeStopBeforeEvaluation)
@@ -186,6 +188,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
                 PositionSideAfter: PositionSide.OutOfMarket,
                 CandleDate: today.Date,
                 ClosePrice: today.Close,
+                EntryPrice: entryPrice,
                 ExecutionPrice: activeStopBeforeEvaluation,
                 ActiveStop: null,
                 ShouldNotify: true,
@@ -209,6 +212,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
                 PositionSideAfter: PositionSide.OutOfMarket,
                 CandleDate: today.Date,
                 ClosePrice: today.Close,
+                EntryPrice:entryPrice,
                 ExecutionPrice: today.Close,
                 ActiveStop: null,
                 ShouldNotify: true,
@@ -240,6 +244,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
             PositionSideAfter: PositionSide.Long,
             CandleDate: today.Date,
             ClosePrice: today.Close,
+            EntryPrice:entryPrice,
             ExecutionPrice: null,
             ActiveStop: positionState.ActiveStop,
             ShouldNotify: false,
@@ -315,6 +320,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
             PositionSideAfter: positionState.Side,
             CandleDate: candle.Date,
             ClosePrice: candle.Close,
+            EntryPrice:null,
             ExecutionPrice: null,
             ActiveStop: positionState.ActiveStop,
             ShouldNotify: false,
