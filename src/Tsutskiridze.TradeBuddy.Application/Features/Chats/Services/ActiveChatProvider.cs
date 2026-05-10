@@ -14,6 +14,12 @@ public class ActiveChatProvider : IActiveChatProvider
         _chats = chats;
     }
 
+    public async Task ThrowIfNotFound(long telegramChatId, CancellationToken ct = default)
+    {
+        var activeChatExists = await _chats.AnyAsync(new ActiveChatIdByTelegramIdSpec(telegramChatId), ct);
+        if (!activeChatExists) throw new ResourceNotFoundException("Chat isn't activated.");
+    }
+
     public async Task<bool> ExistsAsync(long telegramChatId, CancellationToken ct = default)
     {
         return await _chats.AnyAsync(new ActiveChatIdByTelegramIdSpec(telegramChatId), ct);
@@ -22,12 +28,12 @@ public class ActiveChatProvider : IActiveChatProvider
     public async Task<Guid> GetIdAsync(long telegramChatId, CancellationToken ct = default)
     {
         return await _chats.FirstOrDefaultAsync(new ActiveChatIdByTelegramIdSpec(telegramChatId), ct)
-                     ?? throw new ResourceNotFoundException("Chat isn't activated.");
+               ?? throw new ResourceNotFoundException("Chat isn't activated.");
     }
 
     public async Task<Chat> GetAsync(long telegramChatId, CancellationToken ct = default)
     {
         return await _chats.FirstOrDefaultAsync(new ActiveChatByTelegramIdSpec(telegramChatId), ct)
-                   ?? throw new ResourceNotFoundException("Chat isn't activated.");
+               ?? throw new ResourceNotFoundException("Chat isn't activated.");
     }
 }
