@@ -102,6 +102,8 @@ public class
 
         var results = EmaAdxAtrStrategyEvaluator.Replay(strategy, strategyMonitor, strategyCandles);
         var currentState = results[^1];
+        
+        strategyMonitor.MarkEvaluated(currentState.CandleDate);
 
         await _uow.SaveChangesAsync(ct);
 
