@@ -32,10 +32,6 @@ app.UseRouting();
 
 app.UseCors("AllowSpecificOrigins");
 
-app.UseAuthentication();
-
-app.UseAuthorization();
-
 app.MapControllers();
 
 app.MapHealthChecks("/health");
