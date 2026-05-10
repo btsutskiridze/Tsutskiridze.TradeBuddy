@@ -3,6 +3,7 @@ using Mediator;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.API.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.API.Telegram.Errors;
+using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring;
 using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Commands.ActivateStrategyMonitor;
 
 namespace Tsutskiridze.TradeBuddy.API.Telegram.Commands;
@@ -44,24 +45,21 @@ public sealed class ActivateStrategyMonitorTelegramCommandHandler : ITelegramCom
 
         return TelegramCommandDispatchResponse.TextReply(
             dispatchRequest.ChatId,
-            CreateMessage(strategyCode, symbol, result),
+            CreateMessage(result),
             ParseMode.Markdown);
     }
 
-    private static string CreateMessage(
-        string strategyCode,
-        string symbol,
-        ActivateStrategyMonitorResult result)
+    private static string CreateMessage(StrategyMonitorEvaluationSummary result)
     {
-        var normalizedSymbol = symbol.Trim().ToUpperInvariant();
+        var evaluation = result.Evaluation;
 
         return
-            $"Strategy monitor activated for `{normalizedSymbol}` with `{strategyCode}`.\n" +
-            $"Latest candle: `{result.CandleDate:yyyy-MM-dd}` close `{FormatDecimal(result.ClosePrice)}`.\n" +
-            (result.LongProfitPercent is null ? "" : $"Profit: {result.LongProfitPercent.Value:N}%") +
-            $"Action: `{result.Action}`. Position: `{result.PositionSideAfter}`.\n" +
-            $"Execution: `{FormatNullableDecimal(result.ExecutionPrice)}`. Stop: `{FormatNullableDecimal(result.ActiveStop)}`.\n" +
-            $"Reason: {result.Reason}";
+            $"Strategy monitor activated for `{result.Symbol}` with `{result.StrategyCode}`.\n" +
+            $"Latest candle: `{evaluation.CandleDate:yyyy-MM-dd}` close `{FormatDecimal(evaluation.ClosePrice)}`.\n" +
+            (result.LongProfitPercent is null ? "" : $"Profit: {result.LongProfitPercent.Value:N}%\n") +
+            $"Action: `{evaluation.Action}`. Position: `{evaluation.PositionSideAfter}`.\n" +
+            $"Execution: `{FormatNullableDecimal(evaluation.ExecutionPrice)}`. Stop: `{FormatNullableDecimal(evaluation.ActiveStop)}`.\n" +
+            $"Reason: {evaluation.Reason}";
     }
 
     private static string FormatNullableDecimal(decimal? value)

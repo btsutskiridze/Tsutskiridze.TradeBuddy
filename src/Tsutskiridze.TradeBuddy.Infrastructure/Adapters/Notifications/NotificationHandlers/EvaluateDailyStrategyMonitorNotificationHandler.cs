@@ -2,6 +2,7 @@
 using System.Text;
 using SharedKernel;
 using Telegram.Bot.Types.Enums;
+using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring;
 using Tsutskiridze.TradeBuddy.Application.Notifications;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 
@@ -19,13 +20,14 @@ public class EvaluateDailyStrategyMonitorNotificationHandler : IBaseNotification
     public async ValueTask Handle(EvaluateDailyStrategyMonitorNotification notification,
         CancellationToken ct)
     {
-        var message = CreateMessage(notification);
+        var message = CreateMessage(notification.Summary);
 
-        await _sender.Send(new TelegramOutgoingMessage(notification.ChatId, message, ParseMode.Markdown), ct);
+        await _sender.Send(new TelegramOutgoingMessage(notification.Summary.ChatId, message, ParseMode.Markdown), ct);
     }
 
-    private static string CreateMessage(EvaluateDailyStrategyMonitorNotification result)
+    private static string CreateMessage(StrategyMonitorEvaluationSummary result)
     {
+        var evaluation = result.Evaluation;
         var sb = new StringBuilder();
 
         sb.AppendLine($"📊 *Strategy Monitor Alert*");
@@ -33,15 +35,15 @@ public class EvaluateDailyStrategyMonitorNotificationHandler : IBaseNotification
         sb.AppendLine();
 
         sb.AppendLine($"🕯 *Latest Candle*");
-        sb.AppendLine($"Date: *{result.CandleDate:yyyy-MM-dd}* | Close: *{FormatDecimal(result.ClosePrice)}*");
+        sb.AppendLine($"Date: *{evaluation.CandleDate:yyyy-MM-dd}* | Close: *{FormatDecimal(evaluation.ClosePrice)}*");
         sb.AppendLine();
 
         sb.AppendLine($"⚡ *Signal*");
-        sb.AppendLine($"Action: *{result.Action}* | Position: *{result.PositionSideAfter}*");
+        sb.AppendLine($"Action: *{evaluation.Action}* | Position: *{evaluation.PositionSideAfter}*");
         sb.AppendLine();
 
         sb.AppendLine($"💰 *Execution Details*");
-        sb.AppendLine($"Entry: *{FormatNullableDecimal(result.ExecutionPrice)}* | Stop: *{FormatNullableDecimal(result.ActiveStop)}*");
+        sb.AppendLine($"Entry: *{FormatNullableDecimal(evaluation.ExecutionPrice)}* | Stop: *{FormatNullableDecimal(evaluation.ActiveStop)}*");
 
         if (result.LongProfitPercent is not null)
         {
@@ -51,7 +53,7 @@ public class EvaluateDailyStrategyMonitorNotificationHandler : IBaseNotification
 
         sb.AppendLine();
         sb.AppendLine($"📝 *Reason*");
-        sb.AppendLine(result.Reason);
+        sb.AppendLine(evaluation.Reason);
 
         return sb.ToString();
     }

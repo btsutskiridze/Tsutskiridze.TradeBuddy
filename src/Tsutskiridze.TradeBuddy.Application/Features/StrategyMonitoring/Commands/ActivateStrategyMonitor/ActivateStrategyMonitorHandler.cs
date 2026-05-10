@@ -4,6 +4,7 @@ using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
+using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.TradeStrategies.Specifications;
@@ -21,22 +22,10 @@ public sealed record ActivateStrategyMonitorCommand(
     long ChatId,
     string StrategyCode,
     string Symbol
-) : ICommand<ActivateStrategyMonitorResult>;
-
-public sealed record ActivateStrategyMonitorResult(
-    StrategyAction Action,
-    PositionSide PositionSideAfter,
-    DateOnly CandleDate,
-    decimal ClosePrice,
-    decimal? ExecutionPrice,
-    decimal? ActiveStop,
-    decimal? LongProfitPercent,
-    bool ShouldNotify,
-    string Reason
-);
+) : ICommand<StrategyMonitorEvaluationSummary>;
 
 public class
-    ActivateStrategyMonitorHandler : ICommandHandler<ActivateStrategyMonitorCommand, ActivateStrategyMonitorResult>
+    ActivateStrategyMonitorHandler : ICommandHandler<ActivateStrategyMonitorCommand, StrategyMonitorEvaluationSummary>
 {
     private readonly IUnitOfWork _uow;
     private readonly IActiveChatProvider _activeChatProvider;
@@ -65,7 +54,7 @@ public class
     }
 
 
-    public async ValueTask<ActivateStrategyMonitorResult> Handle(ActivateStrategyMonitorCommand cmd,
+    public async ValueTask<StrategyMonitorEvaluationSummary> Handle(ActivateStrategyMonitorCommand cmd,
         CancellationToken ct)
     {
         var now = DateTime.UtcNow;
@@ -116,19 +105,11 @@ public class
 
         await _uow.SaveChangesAsync(ct);
 
-        var longProfitPercent = CalculateLongProfitPercent(currentState, strategyMonitor);
-
-        return new ActivateStrategyMonitorResult(
-            currentState.Action,
-            currentState.PositionSideAfter,
-            currentState.CandleDate,
-            currentState.ClosePrice,
-            currentState.ExecutionPrice,
-            currentState.ActiveStop,
-            longProfitPercent,
-            currentState.ShouldNotify,
-            currentState.Reason
-        );
+        return StrategyMonitorEvaluationSummary.Create(
+            cmd.ChatId,
+            strategy.Code.ToString(),
+            stock.Symbol,
+            currentState);
     }
 
     private async Task<(StockQuote stockQuote, MarketHistoryDateRange historyDateRange)> FetchStockQuoteDetails(
@@ -140,16 +121,6 @@ public class
         var historyDateRange = await _market.GetClosedDailyDateRange(symbol, ct);
 
         return (stockQuote, historyDateRange);
-    }
-
-    private static decimal? CalculateLongProfitPercent(StrategyEvaluationResult currentState,
-        StrategyMonitor strategyMonitor)
-    {
-        return currentState.Action is
-            StrategyAction.HoldLong or StrategyAction.ExitLongByEmaCross or StrategyAction.ExitLongByStop
-            ? (((currentState.ExecutionPrice ?? currentState.ClosePrice) - strategyMonitor.PositionState.EntryPrice) *
-               100) / strategyMonitor.PositionState.EntryPrice
-            : null;
     }
 
     private async Task<TradeStrategy> GetValidatedStrategyId(string strategyCode, Guid chatId, CancellationToken ct)

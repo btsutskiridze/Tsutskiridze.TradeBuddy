@@ -3,6 +3,7 @@ using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
+using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring;
 using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.TradeStrategies.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Notifications;
@@ -85,18 +86,11 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
             mn.MarkEvaluated(result.CandleDate);
 
             notifications.Add(new EvaluateDailyStrategyMonitorNotification(
-                chatIdsSet[mn.ChatId],
-                st.Code.ToString(),
-                mn.Symbol,
-                result.Action,
-                result.PositionSideAfter,
-                result.CandleDate,
-                result.ClosePrice,
-                result.EntryPrice,
-                result.ActiveStop,
-                CalculateLongProfitPercent(result, mn),
-                result.ShouldNotify,
-                result.Reason
+                StrategyMonitorEvaluationSummary.Create(
+                    chatIdsSet[mn.ChatId],
+                    st.Code.ToString(),
+                    mn.Symbol,
+                    result)
             ));
         }
 
@@ -104,15 +98,5 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
         await _notifier.DispatchAsync(notifications, ct);
 
         return Unit.Value;
-    }
-
-    private static decimal? CalculateLongProfitPercent(StrategyEvaluationResult currentState,
-        StrategyMonitor strategyMonitor)
-    {
-        return currentState.Action is
-            StrategyAction.HoldLong or StrategyAction.ExitLongByEmaCross or StrategyAction.ExitLongByStop
-            ? (((currentState.ExecutionPrice ?? currentState.ClosePrice) - strategyMonitor.PositionState.EntryPrice) *
-               100) / strategyMonitor.PositionState.EntryPrice
-            : null;
     }
 }
