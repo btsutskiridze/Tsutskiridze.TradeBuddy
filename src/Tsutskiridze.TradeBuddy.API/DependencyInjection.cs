@@ -6,6 +6,7 @@ using SharedKernel.Validations.Mediator;
 using Tsutskiridze.TradeBuddy.API.Exceptions;
 using Tsutskiridze.TradeBuddy.Application;
 using Tsutskiridze.TradeBuddy.Application.Behaviors;
+using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
 
 namespace Tsutskiridze.TradeBuddy.API;
 
@@ -60,6 +61,12 @@ public static class DependencyInjection
         return services;
     }
 
+    public static IServiceCollection AddDomainServices(this IServiceCollection services)
+    {
+        services.AddScoped<AlertWatchingDomainService>();
+        return services;
+    }
+    
     public static WebApplication UseScalarUi(this WebApplication app)
     {
         app.MapOpenApi();
