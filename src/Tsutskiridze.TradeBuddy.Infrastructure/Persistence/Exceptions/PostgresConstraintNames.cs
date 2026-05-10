@@ -3,8 +3,8 @@
 internal static class PostgresConstraintNames
 {
     public const string PriceAlertsUniqueBusinessKey =
-        "ux_price_alerts_chat_stock_direction_price";
+        "UX_price_alerts_chat_stock_direction_price";
 
     public const string StocksSymbol =
-        "ux_stocks_symbol";
+        "UX_stocks_symbol";
 }
