@@ -14,9 +14,9 @@ using Tsutskiridze.TradeBuddy.Domain.TradeStrategies;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Commands.EvaluateDailyStrategyMonitors;
 
-public sealed record EvaluateDailyStrategyMonitorsCommand(DateOnly TradingDate) : ICommand;
+public sealed record EvaluateStrategyMonitorsCommand(DateOnly TradingDate) : ICommand;
 
-public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDailyStrategyMonitorsCommand>
+public class EvaluateStrategyMonitorsHandler : ICommandHandler<EvaluateStrategyMonitorsCommand>
 {
     private readonly IUnitOfWork _uow;
     private readonly IRepository<StrategyMonitor, int> _monitors;
@@ -26,7 +26,7 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
     private readonly IMarketDataProvider _market;
     private readonly IEmaAdxAtrEvaluationCandleBuilder _candleBuilder;
 
-    public EvaluateDailyStrategyMonitorsHandler(
+    public EvaluateStrategyMonitorsHandler(
         IUnitOfWork uow,
         IRepository<StrategyMonitor, int> monitors,
         IRepository<TradeStrategy, int> strategies,
@@ -44,7 +44,7 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
     }
 
     public async ValueTask<Unit> Handle(
-        EvaluateDailyStrategyMonitorsCommand command,
+        EvaluateStrategyMonitorsCommand command,
         CancellationToken ct)
     {
         var strategies = await _strategies.ListAsync(new ActiveTradeStrategiesSpec(), ct);
@@ -57,7 +57,7 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
 
         var strategiesDict = strategies.ToDictionary(x => x.Id);
 
-        var notifications = new List<EvaluateDailyStrategyMonitorNotification>();
+        var notifications = new List<StrategyMonitorAlertNotification>();
 
         foreach (var mn in monitors)
         {
@@ -85,7 +85,7 @@ public class EvaluateDailyStrategyMonitorsHandler : ICommandHandler<EvaluateDail
 
             mn.MarkEvaluated(result.CandleDate);
 
-            notifications.Add(new EvaluateDailyStrategyMonitorNotification(
+            notifications.Add(new StrategyMonitorAlertNotification(
                 StrategyMonitorEvaluationSummary.Create(
                     chatIdsSet[mn.ChatId],
                     st.Code.ToString(),

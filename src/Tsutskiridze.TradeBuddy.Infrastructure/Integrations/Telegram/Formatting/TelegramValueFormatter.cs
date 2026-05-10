@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram.Formatting;
 
-internal static class TelegramValueFormatter
+public static class TelegramValueFormatter
 {
     public static string Decimal(decimal value)
     {

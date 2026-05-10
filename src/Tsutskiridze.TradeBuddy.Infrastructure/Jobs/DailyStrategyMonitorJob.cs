@@ -65,7 +65,7 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
                 await mediator.Send(
-                    new EvaluateDailyStrategyMonitorsCommand(tradingDate),
+                    new EvaluateStrategyMonitorsCommand(tradingDate),
                     stoppingToken);
 
                 _logger.LogInformation(
@@ -113,7 +113,7 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
         await mediator.Send(
-            new EvaluateDailyStrategyMonitorsCommand(tradingDate),
+            new EvaluateStrategyMonitorsCommand(tradingDate),
             ct);
 
         _logger.LogInformation(
