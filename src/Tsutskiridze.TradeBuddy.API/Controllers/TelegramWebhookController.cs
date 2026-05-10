@@ -17,6 +17,7 @@ namespace Tsutskiridze.TradeBuddy.API.Controllers
             _dispatcher = dispatcher;
         }
 
+        //todo: needs to be secured
         [HttpPost("webhook")]
         public async Task<IActionResult> Webhook([FromBody] TelegramWebhookRequest request, CancellationToken ct)
         {
