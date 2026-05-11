@@ -3,7 +3,6 @@ using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
-using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring;
 using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.TradeStrategies.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Notifications;

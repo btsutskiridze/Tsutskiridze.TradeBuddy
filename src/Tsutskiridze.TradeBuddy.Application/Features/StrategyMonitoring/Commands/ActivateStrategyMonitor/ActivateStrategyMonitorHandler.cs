@@ -1,17 +1,15 @@
-﻿using Mediator;
+﻿using System.Data;
+using Mediator;
 using SharedKernel.Data;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
-using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring;
-using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Services;
 using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.TradeStrategies.Specifications;
-using Tsutskiridze.TradeBuddy.Domain.Stocks;
 using Tsutskiridze.TradeBuddy.Domain.StrategyEvaluation;
 using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring;
-using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.Enums;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies.Enums;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies.ValueObjects;
@@ -31,7 +29,7 @@ public class
     private readonly IActiveChatProvider _activeChatProvider;
     private readonly IReadRepository<TradeStrategy, int> _strategies;
     private readonly IRepository<StrategyMonitor, int> _monitors;
-    private readonly IRepository<Stock> _stocks;
+    private readonly IStockService _stocks;
     private readonly IMarketDataProvider _market;
     private readonly IEmaAdxAtrEvaluationCandleBuilder _emaAdxAtrEvaluationCandleBuilder;
 
@@ -40,7 +38,7 @@ public class
         IActiveChatProvider activeChatProvider,
         IReadRepository<TradeStrategy, int> strategies,
         IRepository<StrategyMonitor, int> monitors,
-        IRepository<Stock> stocks,
+        IStockService stocks,
         IMarketDataProvider market,
         IEmaAdxAtrEvaluationCandleBuilder emaAdxAtrEvaluationCandleBuilder)
     {
@@ -61,7 +59,9 @@ public class
         var chatId = await _activeChatProvider.GetIdAsync(cmd.ChatId, ct);
         var (stockQuote, historyDateRange) = await FetchStockQuoteDetails(cmd.Symbol, ct);
 
-        var stock = await GetOrCreateStock(cmd.Symbol, stockQuote.Name, stockQuote.Currency, ct);
+        await using var tx = await _uow.BeginTransactionAsync(IsolationLevel.ReadCommitted, ct);
+
+        var stock = await _stocks.GetOrCreateStock(cmd.Symbol, stockQuote.Name, stockQuote.Currency, ct);
         var strategy = await GetValidatedStrategyId(cmd.StrategyCode, chatId, ct);
 
         var strategyMonitor =
@@ -102,10 +102,11 @@ public class
 
         var results = EmaAdxAtrStrategyEvaluator.Replay(strategy, strategyMonitor, strategyCandles);
         var currentState = results[^1];
-        
+
         strategyMonitor.MarkEvaluated(currentState.CandleDate);
 
         await _uow.SaveChangesAsync(ct);
+        await tx.CommitAsync(ct);
 
         return StrategyMonitorEvaluationSummary.Create(
             cmd.ChatId,
@@ -134,18 +135,5 @@ public class
         ) ?? throw new ResourceNotFoundException("Trade strategy not found.");
 
         return strategy;
-    }
-
-    private async Task<Stock> GetOrCreateStock(string symbol, string name, string currency, CancellationToken ct)
-    {
-        var normalizedSymbol = symbol.Trim().ToUpperInvariant();
-
-        var stock = await _stocks.FirstOrDefaultAsync(new StockBySymbolSpec(normalizedSymbol), ct);
-        if (stock is not null)
-            return stock;
-
-        stock = new Stock(Guid.NewGuid(), normalizedSymbol, currency, name);
-        await _stocks.AddAsync(stock, ct);
-        return stock;
     }
 }

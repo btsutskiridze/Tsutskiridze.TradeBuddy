@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Data;
+using System.Net;
 using Mediator;
 using SharedKernel.Data;
 using SharedKernel.Validations;
@@ -8,12 +9,11 @@ using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Specifications;
-using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
+using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Services;
 using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
 using Tsutskiridze.TradeBuddy.Domain.PriceAlerts;
 using Tsutskiridze.TradeBuddy.Domain.PriceAlerts.Enums;
 using Tsutskiridze.TradeBuddy.Domain.PriceAlerts.ValueObjects;
-using Tsutskiridze.TradeBuddy.Domain.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.CreateAlert;
 
@@ -25,7 +25,7 @@ public sealed record CreateAlertResult(string Symbol, string CurrencyCode, Price
 public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAlertResult>
 {
     private readonly IUnitOfWork _uow;
-    private readonly IRepository<Stock> _stocks;
+    private readonly IStockService _stocks;
     private readonly IActiveChatProvider _activeChatProvider;
     private readonly IRepository<PriceAlert> _alerts;
     private readonly IMarketDataProvider _market;
@@ -35,8 +35,8 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
 
     public CreateAlertHandler(
         IUnitOfWork uow,
+        IStockService stocks,
         IMarketDataProvider market,
-        IRepository<Stock> stocks,
         IActiveChatProvider activeChatProvider,
         IRepository<PriceAlert> alerts,
         IDbExceptionClassifier excClassifier,
@@ -44,11 +44,11 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
     {
         _uow = uow;
         _market = market;
-        _stocks = stocks;
         _activeChatProvider = activeChatProvider;
         _alerts = alerts;
         _persistenceExceptionClassifier = excClassifier;
         _alertWatchingSvc = alertWatchingSvc;
+        _stocks = stocks;
     }
 
     //todo: add resilience
@@ -57,7 +57,8 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
         var chatId = await _activeChatProvider.GetIdAsync(command.ChatId, ct);
         var stockQuote = await GetValidatedStockQuote(command.Symbol);
 
-        var stock = await GetOrCreateStock(command.Symbol, stockQuote.Name, stockQuote.Currency, ct);
+        await using var tx = await _uow.BeginTransactionAsync(IsolationLevel.ReadCommitted, ct);
+        var stock = await _stocks.GetOrCreateStock(command.Symbol, stockQuote.Name, stockQuote.Currency, ct);
         var alert = await GetOrCreateAlert(chatId, stock.Id, command.Direction, command.Price, ct);
 
         _alertWatchingSvc.ActivateAlert(alert, stock);
@@ -65,10 +66,12 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
         try
         {
             await _uow.SaveChangesAsync(ct);
+            await tx.CommitAsync(ct);
         }
         catch (Exception ex) when (
             _persistenceExceptionClassifier.TryClassify(ex, out var error))
         {
+            await tx.RollbackAsync(ct);
             var newEx = MapPersistenceError(error, ex);
             if (newEx != ex)
                 throw newEx;
@@ -109,19 +112,6 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
     {
         return await _market.GetStockQuote(symbol)
                ?? throw new ValidationException("Stock symbol not found");
-    }
-
-    private async Task<Stock> GetOrCreateStock(string symbol, string name, string currency, CancellationToken ct)
-    {
-        var normalizedSymbol = symbol.Trim().ToUpperInvariant();
-
-        var stock = await _stocks.FirstOrDefaultAsync(new StockBySymbolSpec(normalizedSymbol), ct);
-        if (stock is not null)
-            return stock;
-
-        stock = new Stock(Guid.NewGuid(), normalizedSymbol, currency, name);
-        await _stocks.AddAsync(stock, ct);
-        return stock;
     }
 
     private static Exception MapPersistenceError(
