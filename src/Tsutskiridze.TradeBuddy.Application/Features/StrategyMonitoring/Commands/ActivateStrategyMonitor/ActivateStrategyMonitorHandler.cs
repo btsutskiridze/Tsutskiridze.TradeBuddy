@@ -70,6 +70,7 @@ public class
 
         if (strategyMonitor is null)
         {
+            //todo: fix resilience wise and concurrent runs
             strategyMonitor = new StrategyMonitor(
                 chatId,
                 strategy.Id,
