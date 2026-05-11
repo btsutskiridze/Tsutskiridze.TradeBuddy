@@ -60,7 +60,7 @@ public class StrategyMonitor : Entity<int>, IAggregateRoot
     {
         if (Status == MonitorStatus.Stopped)
             throw new DomainException("strategy is already stopped");
-        
+
         Status = MonitorStatus.Stopped;
         StopTime = DateTime.UtcNow;
     }
@@ -77,5 +77,11 @@ public class StrategyMonitor : Entity<int>, IAggregateRoot
         }
 
         LastEvaluatedCandleDate = candleDate;
+    }
+
+    public void UpdatePositionState(StrategyPositionState positionState)
+    {
+        PositionState = positionState
+                        ?? throw new DomainException("Position state is required.");
     }
 }

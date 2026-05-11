@@ -1,4 +1,5 @@
 ﻿using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.Enums;
+using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.ValueObjects;
 
 namespace Tsutskiridze.TradeBuddy.Domain.StrategyEvaluation;
 
@@ -11,7 +12,9 @@ public sealed record StrategyEvaluationResult(
     decimal? ExecutionPrice,
     decimal? ActiveStop,
     bool ShouldNotify,
-    string Reason)
+    string Reason,
+    StrategyPositionState PositionStateAfter
+    )
 {
     public bool IsEntryOrExit =>
         Action is StrategyAction.EnterLong

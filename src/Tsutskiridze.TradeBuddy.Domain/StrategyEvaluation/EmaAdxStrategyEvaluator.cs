@@ -54,17 +54,21 @@ public sealed class EmaAdxAtrStrategyEvaluator
 
         var results = new List<StrategyEvaluationResult>(orderedCandles.Length);
 
+        var positionState = monitor.PositionState;
+
         for (var i = 0; i < orderedCandles.Length; i++)
         {
             var result = EvaluateAt(
                 tradeStrategy.EmaTrend,
                 tradeStrategy.AdxTrendStrength,
                 tradeStrategy.AtrStop,
-                monitor.PositionState,
+                positionState,
                 orderedCandles,
                 i);
 
             results.Add(result);
+
+            positionState = result.PositionStateAfter;
         }
 
         return results;
@@ -118,7 +122,7 @@ public sealed class EmaAdxAtrStrategyEvaluator
         var setupToday = IsEntrySetupAt(candles, index, adxSettings);
 
         var setupYesterday = index > 0
-                              && IsEntrySetupAt(candles, index - 1, adxSettings);
+                             && IsEntrySetupAt(candles, index - 1, adxSettings);
 
         var isNewSetup = setupToday && !setupYesterday;
 
@@ -135,7 +139,8 @@ public sealed class EmaAdxAtrStrategyEvaluator
                 ShouldNotify: false,
                 Reason: setupToday
                     ? "Entry setup exists, but it is not new today."
-                    : "Entry setup is not active today.");
+                    : "Entry setup is not active today.",
+                PositionStateAfter: positionState);
         }
 
         var lockedAtr = today.Atr!.Value;
@@ -143,10 +148,12 @@ public sealed class EmaAdxAtrStrategyEvaluator
         var initialStop =
             today.Close - lockedAtr * atrSettings.InitialStopMultiplier;
 
-        positionState.EnterLong(
+        var positionStateAfter = positionState.EnterLong(
             entryPrice: today.Close,
             lockedAtr: lockedAtr,
-            entryDate: DateTime.SpecifyKind(today.Date.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc),
+            entryDate: DateTime.SpecifyKind(
+                today.Date.ToDateTime(TimeOnly.MinValue),
+                DateTimeKind.Utc),
             initialStop: initialStop);
 
         return new StrategyEvaluationResult(
@@ -158,7 +165,8 @@ public sealed class EmaAdxAtrStrategyEvaluator
             ExecutionPrice: today.Close,
             ActiveStop: initialStop,
             ShouldNotify: true,
-            Reason: "New long setup appeared today: fast EMA is above slow EMA, ADX is strong, and ADX is not falling.");
+            Reason: "New long setup appeared today: fast EMA is above slow EMA, ADX is strong, and ADX is not falling.",
+            PositionStateAfter: positionStateAfter);
     }
 
     private static StrategyEvaluationResult EvaluateLong(
@@ -176,12 +184,13 @@ public sealed class EmaAdxAtrStrategyEvaluator
             throw new DomainException("Locked ATR is required while position is long.");
 
         var activeStopBeforeEvaluation = positionState.ActiveStop.Value;
-        var entryPrice = positionState.EntryPrice;
+        var entryPrice = positionState.EntryPrice.Value;
+
         // Conservative daily-candle rule:
         // If today's low touched active stop, exit first.
         if (today.Low <= activeStopBeforeEvaluation)
         {
-            positionState.Exit();
+            var positionStateAfter = positionState.Exit();
 
             return new StrategyEvaluationResult(
                 Action: StrategyAction.ExitLongByStop,
@@ -192,7 +201,8 @@ public sealed class EmaAdxAtrStrategyEvaluator
                 ExecutionPrice: activeStopBeforeEvaluation,
                 ActiveStop: null,
                 ShouldNotify: true,
-                Reason: "Today's low touched the active stop.");
+                Reason: "Today's low touched the active stop.",
+                PositionStateAfter: positionStateAfter);
         }
 
         if (today.FastEma is null || today.SlowEma is null)
@@ -205,38 +215,40 @@ public sealed class EmaAdxAtrStrategyEvaluator
 
         if (today.FastEma.Value <= today.SlowEma.Value)
         {
-            positionState.Exit();
+            var positionStateAfter = positionState.Exit();
 
             return new StrategyEvaluationResult(
                 Action: StrategyAction.ExitLongByEmaCross,
                 PositionSideAfter: PositionSide.OutOfMarket,
                 CandleDate: today.Date,
                 ClosePrice: today.Close,
-                EntryPrice:entryPrice,
+                EntryPrice: entryPrice,
                 ExecutionPrice: today.Close,
                 ActiveStop: null,
                 ShouldNotify: true,
-                Reason: "Fast EMA crossed below or equal to slow EMA.");
+                Reason: "Fast EMA crossed below or equal to slow EMA.",
+                PositionStateAfter: positionStateAfter);
         }
 
-        positionState.UpdateHighestClose(today.Close);
+        var positionStateAfterUpdate = positionState
+            .UpdateHighestClose(today.Close);
 
         var activationPrice =
-            positionState.EntryPrice.Value
-            + positionState.LockedAtr.Value * atrSettings.TrailingActivationMultiplier;
+            positionStateAfterUpdate.EntryPrice!.Value
+            + positionStateAfterUpdate.LockedAtr!.Value * atrSettings.TrailingActivationMultiplier;
 
-        if (!positionState.TrailingActivated && today.Close >= activationPrice)
+        if (!positionStateAfterUpdate.TrailingActivated && today.Close >= activationPrice)
         {
-            positionState.ActivateTrailing();
+            positionStateAfterUpdate = positionStateAfterUpdate.ActivateTrailing();
         }
 
-        if (positionState.TrailingActivated)
+        if (positionStateAfterUpdate.TrailingActivated)
         {
             var newStop =
-                positionState.HighestClose!.Value
-                - positionState.LockedAtr.Value * atrSettings.TrailingStopMultiplier;
+                positionStateAfterUpdate.HighestClose!.Value
+                - positionStateAfterUpdate.LockedAtr!.Value * atrSettings.TrailingStopMultiplier;
 
-            positionState.RatchetStop(newStop);
+            positionStateAfterUpdate = positionStateAfterUpdate.RatchetStop(newStop);
         }
 
         return new StrategyEvaluationResult(
@@ -244,11 +256,12 @@ public sealed class EmaAdxAtrStrategyEvaluator
             PositionSideAfter: PositionSide.Long,
             CandleDate: today.Date,
             ClosePrice: today.Close,
-            EntryPrice:entryPrice,
+            EntryPrice: entryPrice,
             ExecutionPrice: null,
-            ActiveStop: positionState.ActiveStop,
+            ActiveStop: positionStateAfterUpdate.ActiveStop,
             ShouldNotify: false,
-            Reason: "Long position is still active.");
+            Reason: "Long position is still active.",
+            PositionStateAfter: positionStateAfterUpdate);
     }
 
     private static bool IsEntrySetupAt(
@@ -320,13 +333,14 @@ public sealed class EmaAdxAtrStrategyEvaluator
             PositionSideAfter: positionState.Side,
             CandleDate: candle.Date,
             ClosePrice: candle.Close,
-            EntryPrice:null,
+            EntryPrice: positionState.EntryPrice,
             ExecutionPrice: null,
             ActiveStop: positionState.ActiveStop,
             ShouldNotify: false,
-            Reason: reason);
+            Reason: reason,
+            PositionStateAfter: positionState);
     }
-
+    
     private static void ValidateInputs(
         EmaTrendSettings emaSettings,
         AdxTrendStrengthSettings adxSettings,
