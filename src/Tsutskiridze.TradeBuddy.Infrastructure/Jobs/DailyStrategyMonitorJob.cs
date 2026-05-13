@@ -21,15 +21,15 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
         _logger = logger;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken ct)
     {
         var easternTimeZone = GetEasternTimeZone();
 
-        while (!stoppingToken.IsCancellationRequested)
+        while (!ct.IsCancellationRequested)
         {
             try
             {
-                await RunIfDueAsync(easternTimeZone, stoppingToken);
+                await RunIfDueAsync(easternTimeZone, ct);
                 
                 var nowUtc = DateTimeOffset.UtcNow;
                 var nextRunUtc = GetNextWeekdayRunUtc(nowUtc, easternTimeZone);
@@ -42,7 +42,7 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
 
                 if (delay > TimeSpan.Zero)
                 {
-                    await Task.Delay(delay, stoppingToken);
+                    await Task.Delay(delay, ct);
                 }
 
                 var easternNow = TimeZoneInfo.ConvertTime(
@@ -55,24 +55,10 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
                 }
 
                 var tradingDate = DateOnly.FromDateTime(easternNow.Date);
-
-                _logger.LogInformation(
-                    "Running daily strategy job for {TradingDate}",
-                    tradingDate);
-
-                await using var scope = _scopeFactory.CreateAsyncScope();
-
-                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
-                await mediator.Send(
-                    new EvaluateStrategyMonitorsCommand(tradingDate),
-                    stoppingToken);
-
-                _logger.LogInformation(
-                    "Daily strategy job completed for {TradingDate}",
-                    tradingDate);
+                
+                await EvaluateStrategyMonitors(tradingDate, ct);
             }
-            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
                 break;
             }
@@ -81,7 +67,7 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
                 _logger.LogError(ex, "Daily strategy job failed");
 
                 // Avoid tight loop if something keeps failing.
-                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(5), ct);
             }
         }
     }
@@ -104,10 +90,15 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
 
         var tradingDate = DateOnly.FromDateTime(easternNow.Date);
 
+        await EvaluateStrategyMonitors(tradingDate, ct);
+    }
+
+    private async Task EvaluateStrategyMonitors(DateOnly tradingDate, CancellationToken ct)
+    {
         _logger.LogInformation(
             "Running daily strategy job for {TradingDate}",
             tradingDate);
-
+        
         await using var scope = _scopeFactory.CreateAsyncScope();
 
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -115,12 +106,12 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
         await mediator.Send(
             new EvaluateStrategyMonitorsCommand(tradingDate),
             ct);
-
+        
         _logger.LogInformation(
             "Daily strategy job completed for {TradingDate}",
             tradingDate);
     }
-    
+
     private static DateTimeOffset GetNextWeekdayRunUtc(
         DateTimeOffset nowUtc,
         TimeZoneInfo easternTimeZone)
