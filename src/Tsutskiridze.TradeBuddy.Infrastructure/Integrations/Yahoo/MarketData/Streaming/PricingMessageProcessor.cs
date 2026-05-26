@@ -36,9 +36,10 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
 
                 var update = PricingData.Parser.ParseFrom(Convert.FromBase64String(base64Message));
                 _log.LogDebug("Parsed update {Symbol} @ {Price}", update.Id, update.Price);
+                var timestamp = DateTimeOffset.FromUnixTimeMilliseconds(update.Time).UtcDateTime;
 
                 await mediator.Send(
-                    new ProcessMarketPriceTickCommand(update.Id, (decimal)update.Price, DateTime.UtcNow), ct
+                    new ProcessMarketPriceTickCommand(update.Id, (decimal)update.Price, timestamp), ct
                 );
             }
             catch (ConcurrencyConflictException ex)
