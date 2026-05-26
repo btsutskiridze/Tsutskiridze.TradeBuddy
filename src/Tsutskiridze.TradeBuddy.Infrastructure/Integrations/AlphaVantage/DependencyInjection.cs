@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Http;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage;
 
@@ -9,13 +10,13 @@ public static class DependencyInjection
     public static IServiceCollection AddAlphaVantageIntegration(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<AlphaVantageOptions>(configuration.GetSection(AlphaVantageOptions.SectionName));
-        
+
         services.AddHttpClient<IAlphaVantageMarketDataProvider, AlphaVantageClient>((serviceProvider, client) =>
-        {
-            var options = serviceProvider.GetRequiredService<IOptions<AlphaVantageOptions>>().Value;
-            client.BaseAddress = new Uri(options.BaseUrl);
-        });
-        
+            {
+                var options = serviceProvider.GetRequiredService<IOptions<AlphaVantageOptions>>().Value;
+                client.BaseAddress = new Uri(options.BaseUrl);
+            })
+            .AddResiliencePipeline(AlphaVantageOptions.ResiliencePipelineName);
         return services;
     }
 }

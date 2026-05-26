@@ -6,6 +6,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstracti
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Helpers;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Loading;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Web;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Http;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Parsing;
@@ -36,7 +37,8 @@ public static class DependencyInjection
     {
         services.AddTransient<IYahooPayloadExtractor, YahooPayloadExtractor>();
         services.AddTransient<IYahooJsonNavigator, YahooJsonNavigator>();
-        services.AddHttpClient<IYahooPageLoader, YahooPageLoader>(ConfigureYahooClient);
+        services.AddHttpClient<IYahooPageLoader, YahooPageLoader>(ConfigureYahooClient)
+            .AddResiliencePipeline(YahooOptions.PageResiliencePipelineName);
         services.AddTransient<IYahooCookieBypassService, YahooCookieBypassService>();
 
         return services;
@@ -44,10 +46,12 @@ public static class DependencyInjection
     
     private static IServiceCollection AddApiServices(this IServiceCollection services)
     {
-        services.AddHttpClient<IYahooHistoryApiProvider, YahooHistoryApiProvider>(ConfigureYahooApiClient);
+        services.AddHttpClient<IYahooHistoryApiProvider, YahooHistoryApiProvider>(ConfigureYahooApiClient)
+            .AddResiliencePipeline(YahooOptions.HistoryResiliencePipelineName);
         
         services.AddSingleton<YahooCookieJar>();
         services.AddHttpClient<IYahooStockQuoteApiProvider, YahooStockQuoteApiProvider>(ConfigureYahooApiClient)
+            .AddResiliencePipeline(YahooOptions.StockQuoteResiliencePipelineName)
             .ConfigurePrimaryHttpMessageHandler(sp =>
             {
                 var cookieJar = sp.GetRequiredService<YahooCookieJar>();

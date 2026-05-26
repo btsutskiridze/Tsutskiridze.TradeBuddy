@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Http;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub;
 
@@ -14,7 +15,8 @@ public static class DependencyInjection
         {
             var options = serviceProvider.GetRequiredService<IOptions<FinnhubOptions>>().Value;
             client.BaseAddress = new Uri(options.BaseUrl);
-        });
+        })
+        .AddResiliencePipeline(FinnhubOptions.ResiliencePipelineName);
 
         return services;
     }
