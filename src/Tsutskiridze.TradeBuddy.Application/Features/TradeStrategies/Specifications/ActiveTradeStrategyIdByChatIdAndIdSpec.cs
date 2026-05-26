@@ -7,7 +7,9 @@ internal sealed class ActiveTradeStrategyIdByChatIdAndIdSpec: Specification<Trad
 {
     public ActiveTradeStrategyIdByChatIdAndIdSpec(Guid chatId, int strategyId)
     {
-        Query.Where(strategy =>
+        Query
+            .Select(x => x.Id)
+            .Where(strategy =>
             strategy.IsActive &&
             strategy.ChatId == chatId &&
             strategy.Id == strategyId);
