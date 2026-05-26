@@ -1,6 +1,5 @@
 using Mediator;
 using SharedKernel.Data;
-using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Application.Features.TradeStrategies.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies;
@@ -53,10 +52,7 @@ public sealed class ListTradeStrategiesHandler : IQueryHandler<ListTradeStrategi
 
         if (strategies.Count == 0)
         {
-            throw new ApplicationLayerException(
-                strategyId.HasValue
-                    ? "Trade strategy not found."
-                    : "You have no active trade strategies.");
+            return new ListTradeStrategiesResult([]);
         }
 
         var items = strategies

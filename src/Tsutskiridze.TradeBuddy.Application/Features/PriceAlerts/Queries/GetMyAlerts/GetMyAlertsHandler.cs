@@ -37,7 +37,7 @@ public sealed class GetMyAlertsHandler : IQueryHandler<MyAlertsQuery, MyAlertsRe
     {
         var chatId = await _activeChatProvider.GetIdAsync(query.ChatId, ct);
         var alerts = await _alerts.ListAsync(new ActiveAlertsByChatIdSpec(chatId), ct);
-        if (alerts.Count == 0) throw new ApplicationLayerException("You have no alerts set.");
+        if (alerts.Count == 0) return new MyAlertsResult([]);
 
         var stockIds = alerts.Select(x => x.StockId).ToList();
         var stocks = (await _stocks.ListAsync(new StocksByIdsSpec(stockIds), ct))

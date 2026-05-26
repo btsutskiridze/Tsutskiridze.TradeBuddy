@@ -3,6 +3,7 @@ using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram.Formatting;
 
+//todo: I don't like file location
 public static class StrategyMonitorTelegramMessageFormatter
 {
     public static string CreateActivationMessage(StrategyMonitorEvaluationSummary summary)
