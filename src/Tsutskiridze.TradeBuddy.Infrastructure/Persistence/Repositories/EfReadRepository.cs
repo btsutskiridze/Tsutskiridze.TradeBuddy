@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 using SharedKernel.Data;
@@ -41,6 +42,18 @@ public class EfReadRepository<TEntity, TId> : IReadRepository<TEntity, TId>
         return query;
     }
 
+    protected IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> predicate)
+    {
+        IQueryable<TEntity> query = Set;
+
+        if (UseNoTracking)
+            query = query.AsNoTracking();
+
+        query = query.Where(predicate);
+
+        return query;
+    }
+
     protected IQueryable<TResult> Query<TResult>(ISpecification<TEntity, TId, TResult> spec)
     {
         IQueryable<TEntity> startQuery = Set;
@@ -55,7 +68,7 @@ public class EfReadRepository<TEntity, TId> : IReadRepository<TEntity, TId>
 
     public async Task<TEntity?> GetByIdAsync(TId id, CancellationToken ct = default)
     {
-        return await Set.FindAsync([id], cancellationToken: ct);
+        return await Query(e => e.Id.Equals(id)).FirstOrDefaultAsync(ct);
     }
 
     public async Task<TEntity?> FirstOrDefaultAsync(CancellationToken ct = default)
@@ -100,7 +113,8 @@ public class EfReadRepository<TEntity, TId> : IReadRepository<TEntity, TId>
         return await Query(spec).AnyAsync(ct);
     }
 
-    public async Task<bool> AnyAsync<TResult>(ISpecification<TEntity, TId, TResult> spec, CancellationToken ct = default)
+    public async Task<bool> AnyAsync<TResult>(ISpecification<TEntity, TId, TResult> spec,
+        CancellationToken ct = default)
     {
         return await Query(spec).AnyAsync(ct);
     }
@@ -115,7 +129,8 @@ public class EfReadRepository<TEntity, TId> : IReadRepository<TEntity, TId>
         return await Query(spec).CountAsync(ct);
     }
 
-    public async Task<int> CountAsync<TResult>(ISpecification<TEntity, TId, TResult> spec, CancellationToken ct = default)
+    public async Task<int> CountAsync<TResult>(ISpecification<TEntity, TId, TResult> spec,
+        CancellationToken ct = default)
     {
         return await Query(spec).CountAsync(ct);
     }
