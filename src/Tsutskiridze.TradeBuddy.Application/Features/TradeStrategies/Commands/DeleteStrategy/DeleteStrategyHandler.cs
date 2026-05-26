@@ -33,7 +33,7 @@ public sealed class DeleteStrategyHandler : ICommandHandler<DeleteStrategyComman
         var chatId = await _activeChatProvider.GetIdAsync(command.ChatId, ct);
         var strategyCode = TradeStrategyCode.Parse(command.StrategyCode);
         var strategy = await _strategies.FirstOrDefaultAsync(
-            new ActiveTradeStrategyByChatIdAndIdSpec(chatId, strategyCode.Id),
+            new TradeStrategyByChatIdAndIdSpec(chatId, strategyCode.Id),
             ct);
 
         if (strategy is null)
@@ -41,8 +41,13 @@ public sealed class DeleteStrategyHandler : ICommandHandler<DeleteStrategyComman
             throw new ResourceNotFoundException("Trade strategy not found.");
         }
 
+        if (!strategy.IsRemovable())
+        {
+            throw new ApplicationLayerException("Strategy monitor cannot be removed");
+        }
+
         _strategies.Remove(strategy);
-        
+
         await _uow.SaveChangesAsync(ct);
 
         return new DeleteStrategyResult(strategyCode.ToString());

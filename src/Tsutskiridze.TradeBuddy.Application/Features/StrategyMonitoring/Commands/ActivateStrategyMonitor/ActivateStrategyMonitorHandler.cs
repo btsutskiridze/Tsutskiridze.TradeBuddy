@@ -27,7 +27,7 @@ public class
 {
     private readonly IUnitOfWork _uow;
     private readonly IActiveChatProvider _activeChatProvider;
-    private readonly IReadRepository<TradeStrategy, int> _strategies;
+    private readonly IRepository<TradeStrategy, int> _strategies;
     private readonly IRepository<StrategyMonitor, int> _monitors;
     private readonly IStockService _stocks;
     private readonly IMarketDataProvider _market;
@@ -36,7 +36,7 @@ public class
     public ActivateStrategyMonitorHandler(
         IUnitOfWork uow,
         IActiveChatProvider activeChatProvider,
-        IReadRepository<TradeStrategy, int> strategies,
+        IRepository<TradeStrategy, int> strategies,
         IRepository<StrategyMonitor, int> monitors,
         IStockService stocks,
         IMarketDataProvider market,
@@ -86,6 +86,8 @@ public class
         {
             strategyMonitor.Activate();
         }
+        
+        strategy.Activate();
 
         var historyCandles = await _market.GetDailyCandles(
             cmd.Symbol,
@@ -132,7 +134,7 @@ public class
     {
         var tradeStrategyCode = TradeStrategyCode.Parse(strategyCode);
         var strategy = await _strategies.FirstOrDefaultAsync(
-            new ActiveTradeStrategyByChatIdAndIdSpec(chatId, tradeStrategyCode.Id),
+            new TradeStrategyByChatIdAndIdSpec(chatId, tradeStrategyCode.Id),
             ct
         ) ?? throw new ResourceNotFoundException("Trade strategy not found.");
 

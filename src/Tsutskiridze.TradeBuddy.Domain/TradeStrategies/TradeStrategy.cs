@@ -20,7 +20,7 @@ public class TradeStrategy : Entity<int>, IAggregateRoot
 
     public TradeStrategy(
         Guid chatId,
-        Timeframe timeframe, 
+        Timeframe timeframe,
         EmaTrendSettings emaTrend,
         AdxTrendStrengthSettings adxTrendStrength,
         AtrStopSettings atrStop)
@@ -35,7 +35,18 @@ public class TradeStrategy : Entity<int>, IAggregateRoot
         EmaTrend = emaTrend;
         AdxTrendStrength = adxTrendStrength;
         AtrStop = atrStop;
+        IsActive = false;
+    }
+
+    public void Activate()
+    {
+        if (IsActive)
+            return;
         IsActive = true;
     }
 
+    public bool IsRemovable()
+    {
+        return !IsActive;
+    }
 }
