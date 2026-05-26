@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.Stocks.Commands.AnalyseStock.Models
 {
+    //todo: Define a clean Application result + an Infrastructure-side input contract that maps to it
     public class AnalyseStockResult
     {
         [Required]
