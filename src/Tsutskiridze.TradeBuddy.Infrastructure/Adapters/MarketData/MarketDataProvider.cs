@@ -1,5 +1,6 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Nasdaq.SymbolDirectory;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Parsing.Abstractions;
@@ -15,6 +16,7 @@ public class MarketDataProvider : IMarketDataProvider
     private readonly IYahooFinancialsPageParser _financialsPageParser;
     private readonly IYahooHistoryApiProvider _historyApiProvider;
     private readonly IYahooStockQuoteApiProvider _stockQuoteApiProvider;
+    private readonly INasdaqSymbolDirectoryProvider _nasdaqSymbolDirectoryProvider;
     
     public MarketDataProvider(
         IYahooPageLoader pageLoader,
@@ -23,7 +25,8 @@ public class MarketDataProvider : IMarketDataProvider
         IYahooKeyStatisticsPageParser keyStatisticsPageParser,
         IYahooFinancialsPageParser financialsPageParser, 
         IYahooHistoryApiProvider historyApiProvider, 
-        IYahooStockQuoteApiProvider stockQuoteApiProvider)
+        IYahooStockQuoteApiProvider stockQuoteApiProvider,
+        INasdaqSymbolDirectoryProvider nasdaqSymbolDirectoryProvider)
     {
         _pageLoader = pageLoader;
         _quotePageParser = quotePageParser;
@@ -32,12 +35,17 @@ public class MarketDataProvider : IMarketDataProvider
         _financialsPageParser = financialsPageParser;
         _historyApiProvider = historyApiProvider;
         _stockQuoteApiProvider = stockQuoteApiProvider;
+        _nasdaqSymbolDirectoryProvider = nasdaqSymbolDirectoryProvider;
     }
 
     public async Task<bool> StockSymbolExists(string symbol)
     {
         if (!TryNormalizeSymbol(symbol, out var normalizedSymbol))
             return false;
+
+        var nasdaqLookupResult = await _nasdaqSymbolDirectoryProvider.StockSymbolExists(normalizedSymbol);
+        if (nasdaqLookupResult.IsSuccessful)
+            return nasdaqLookupResult.Exists;
 
         var pageContext = await _pageLoader.LoadQuotePageAsync(normalizedSymbol);
         if (pageContext is null)

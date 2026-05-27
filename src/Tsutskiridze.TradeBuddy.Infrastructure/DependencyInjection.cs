@@ -10,6 +10,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Gemini;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.GoogleNews;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Nasdaq;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
@@ -55,6 +56,7 @@ public static class DependencyInjection
             .AddGoogleNewsIntegration()
             .AddOpenaiIntegration(configuration)
             .AddGeminiIntegration(configuration)
+            .AddNasdaqIntegration()
             .AddYahooIntegration(configuration);
         
         return services;

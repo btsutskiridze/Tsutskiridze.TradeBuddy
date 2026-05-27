@@ -17,7 +17,8 @@ public static class DependencyInjection
                     configuration.GetConnectionString("Postgres"),
                     npgsql =>
                     {
-                        npgsql.EnableRetryOnFailure();
+                        
+                        // npgsql.EnableRetryOnFailure();  //todo: fix this user transaction not working situation and enable retry
                         npgsql.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "public");
                     })
