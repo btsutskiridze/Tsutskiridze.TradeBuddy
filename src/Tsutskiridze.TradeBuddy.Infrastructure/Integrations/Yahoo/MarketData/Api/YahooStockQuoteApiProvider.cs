@@ -7,24 +7,20 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api.M
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api;
 
-public class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
+internal class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
 {
     private static readonly JsonSerializerOptions YahooJsonOptions = new(JsonSerializerDefaults.Web);
     private static readonly TimeSpan YahooCrumbLifetime = TimeSpan.FromHours(6);
-
-    private readonly SemaphoreSlim _crumbLock = new(1, 1);
     
-    private YahooCrumbSession? _crumbSession;
-    private sealed record YahooCrumbSession(string Crumb, DateTimeOffset ExpiresAtUtc);
-
+    private readonly YahooCrumbCache _crumbCache;
     private readonly HttpClient _httpClient;
-    
-    public YahooStockQuoteApiProvider(HttpClient httpClient)
+
+    public YahooStockQuoteApiProvider(HttpClient httpClient, YahooCrumbCache crumbCache)
     {
         _httpClient = httpClient;
+        _crumbCache = crumbCache;
     }
-    
-    
+
     public async Task<StockQuote?> GetStockQuote(string symbol, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(symbol))
@@ -56,7 +52,7 @@ public class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
         catch
         {
             // Important: return null so MarketDataProvider can fallback to scraping.
-            _crumbSession = null;
+            _crumbCache.Session = null;
             return null;
         }
     }
@@ -79,10 +75,10 @@ public class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
 
         if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
         {
-            _crumbSession = null;
+            _crumbCache.Session = null;
             return null;
         }
- 
+
         if (!response.IsSuccessStatusCode)
             return null;
 
@@ -110,26 +106,20 @@ public class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
         CancellationToken ct)
     {
         var nowUtc = DateTimeOffset.UtcNow;
+        var session = _crumbCache.Session;
 
-        if (!forceRefresh &&
-            _crumbSession is not null &&
-            _crumbSession.ExpiresAtUtc > nowUtc)
-        {
-            return _crumbSession.Crumb;
-        }
+        if (!forceRefresh && session is not null && session.ExpiresAtUtc > nowUtc)
+            return session.Crumb;
 
-        await _crumbLock.WaitAsync(ct);
+        await _crumbCache.WaitAsync(ct);
 
         try
         {
             nowUtc = DateTimeOffset.UtcNow;
+            session = _crumbCache.Session;
 
-            if (!forceRefresh &&
-                _crumbSession is not null &&
-                _crumbSession.ExpiresAtUtc > nowUtc)
-            {
-                return _crumbSession.Crumb;
-            }
+            if (!forceRefresh && session is not null && session.ExpiresAtUtc > nowUtc)
+                return session.Crumb;
 
             await PrimeYahooCookies(symbol, ct);
 
@@ -154,15 +144,17 @@ public class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
             if (string.IsNullOrWhiteSpace(crumb) || crumb.Contains('<'))
                 throw new InvalidOperationException("Yahoo returned invalid crumb.");
 
-            _crumbSession = new YahooCrumbSession(
-                crumb,
-                DateTimeOffset.UtcNow.Add(YahooCrumbLifetime));
+            _crumbCache.Session =
+                new YahooCrumbCache.YahooCrumbSession(
+                    crumb,
+                    DateTimeOffset.UtcNow.Add(YahooCrumbLifetime)
+                );
 
             return crumb;
         }
         finally
         {
-            _crumbLock.Release();
+            _crumbCache.Release();
         }
     }
 
@@ -197,7 +189,7 @@ public class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
         var encodedCrumb = Uri.EscapeDataString(crumb);
 
         return new Uri(
-            $"https://query1.finance.yahoo.com/v7/finance/quote" +
+            $"https://query2.finance.yahoo.com/v7/finance/quote" +
             $"?symbols={encodedSymbol}" +
             $"&crumb={encodedCrumb}");
     }

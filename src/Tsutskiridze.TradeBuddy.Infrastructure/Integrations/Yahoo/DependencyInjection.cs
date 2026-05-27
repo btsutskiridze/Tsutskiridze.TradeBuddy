@@ -43,13 +43,14 @@ public static class DependencyInjection
 
         return services;
     }
-    
+
     private static IServiceCollection AddApiServices(this IServiceCollection services)
     {
         services.AddHttpClient<IYahooHistoryApiProvider, YahooHistoryApiProvider>(ConfigureYahooApiClient)
             .AddResiliencePipeline(YahooOptions.HistoryResiliencePipelineName);
-        
+
         services.AddSingleton<YahooCookieJar>();
+        services.AddSingleton<YahooCrumbCache>();
         services.AddHttpClient<IYahooStockQuoteApiProvider, YahooStockQuoteApiProvider>(ConfigureYahooApiClient)
             .AddResiliencePipeline(YahooOptions.StockQuoteResiliencePipelineName)
             .ConfigurePrimaryHttpMessageHandler(sp =>
@@ -66,7 +67,7 @@ public static class DependencyInjection
                         DecompressionMethods.Brotli
                 };
             });
-        
+
         return services;
     }
 
@@ -90,7 +91,7 @@ public static class DependencyInjection
 
         return services;
     }
-    
+
     private static readonly Action<IServiceProvider, HttpClient> ConfigureYahooApiClient = (serviceProvider, client) =>
     {
         var options = serviceProvider.GetRequiredService<IOptions<YahooOptions>>().Value;
