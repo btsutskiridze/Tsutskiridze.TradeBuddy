@@ -4,7 +4,7 @@ using Tsutskiridze.TradeBuddy.Application.Notifications;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.TextFormatting.Telegram;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.Notifications.NotificationHandlers;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.NotificationHandlers.Telegram;
 
 public class StrategyMonitorAlertNotificationHandler : IBaseNotificationHandler<StrategyMonitorAlertNotification>
 {
