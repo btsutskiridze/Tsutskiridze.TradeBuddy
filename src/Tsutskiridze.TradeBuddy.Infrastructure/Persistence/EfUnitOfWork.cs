@@ -3,20 +3,25 @@ using Mediator;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 using SharedKernel.Data;
-using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 
-public class EfUnitOfWork : IUnitOfWork
+internal class EfUnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _db;
     private readonly IMediator _mediator;
+    private readonly IDbExceptionClassifier _dbExceptionClassifier;
 
-    public EfUnitOfWork(AppDbContext db, IMediator mediator)
+    public EfUnitOfWork(
+        AppDbContext db,
+        IMediator mediator,
+        IDbExceptionClassifier dbExceptionClassifier)
     {
         _db = db;
         _mediator = mediator;
+        _dbExceptionClassifier = dbExceptionClassifier;
     }
 
     public async Task<IAppDbTransaction> BeginTransactionAsync(
@@ -45,11 +50,9 @@ public class EfUnitOfWork : IUnitOfWork
         {
             result = await _db.SaveChangesAsync(ct);
         }
-        catch (DbUpdateConcurrencyException ex)
+        catch (DbUpdateException ex) when (_dbExceptionClassifier.Translate(ex) is { } translated)
         {
-            throw new ConcurrencyConflictException(
-                "The data was changed by another process.",
-                ex);
+            throw translated;
         }
 
         /*

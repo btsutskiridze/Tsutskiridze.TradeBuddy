@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SharedKernel.Data;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 

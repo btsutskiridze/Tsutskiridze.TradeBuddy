@@ -1,5 +1,4 @@
 ﻿using SharedKernel.Data;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
 using Tsutskiridze.TradeBuddy.Domain.Stocks;
@@ -10,13 +9,10 @@ internal class StockService : IStockService
 {
     private readonly IUnitOfWork _uow;
     private readonly IRepository<Stock> _stocks;
-    private readonly IDbExceptionClassifier _persistenceExceptionClassifier;
 
-    public StockService(IRepository<Stock> stocks, IDbExceptionClassifier persistenceExceptionClassifier,
-        IUnitOfWork uow)
+    public StockService(IRepository<Stock> stocks, IUnitOfWork uow)
     {
         _stocks = stocks;
-        _persistenceExceptionClassifier = persistenceExceptionClassifier;
         _uow = uow;
     }
 
@@ -35,16 +31,17 @@ internal class StockService : IStockService
             await _uow.SaveChangesAsync(ct);
             return stock;
         }
-        catch (Exception ex) when (
-            _persistenceExceptionClassifier.TryClassify(ex, out var error))
+        catch (DuplicateStockSymbolException)
         {
-            if (error.Code == PersistenceErrorCode.DuplicateStockSymbol)
-            {
-                return await _stocks.FirstOrDefaultAsync(new StockBySymbolSpec(normalizedSymbol), ct)
-                       ?? throw new ApplicationLayerException("Failed to get stock");
-            }
-
-            throw;
+            stock = await _stocks.FirstOrDefaultAsync(new StockBySymbolSpec(normalizedSymbol), ct);
         }
+
+        if (stock is null)
+        {
+            throw new InvalidOperationException(
+                $"Stock '{normalizedSymbol}' disappeared between duplicate-key conflict and re-read.");
+        }
+
+        return stock;
     }
 }

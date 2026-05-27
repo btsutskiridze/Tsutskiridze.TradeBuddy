@@ -1,69 +1,39 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
+using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
 
-public sealed class PostgresDbExceptionClassifier : IDbExceptionClassifier
+internal sealed class PostgresDbExceptionClassifier : IDbExceptionClassifier
 {
-    public bool IsUniqueConstraintViolation(Exception ex, out string constraintName)
+    public Exception? Translate(DbUpdateException exception)
     {
-        constraintName = string.Empty;
-
-        if (ex.InnerException is PostgresException pg &&
-            pg.SqlState == PostgresErrorCodes.UniqueViolation)
+        if (exception is DbUpdateConcurrencyException)
         {
-            constraintName = pg.ConstraintName ?? string.Empty;
-            return true;
+            return new ConcurrencyConflictException(
+                "The data was changed by another process.",
+                exception);
         }
 
-        return false;
-    }
-
-    public bool TryClassify(Exception exception, out PersistenceError error)
-    {
-        error = PersistenceError.None;
-
-        if (exception is not DbUpdateException dbUpdateException)
+        if (exception.InnerException is not PostgresException pg)
         {
-            return false;
-        }
-        
-        if (dbUpdateException.InnerException is not PostgresException postgresException)
-        {
-            return false;
+            return null;
         }
 
-        if (postgresException.SqlState != PostgresErrorCodes.UniqueViolation)
+        if (pg.SqlState != PostgresErrorCodes.UniqueViolation)
         {
-            return false;
+            return null;
         }
 
-        error = postgresException.ConstraintName switch
+        return pg.ConstraintName switch
         {
             PostgresConstraintNames.PriceAlertsUniqueBusinessKey
-                => new PersistenceError(
-                    PersistenceErrorCode.DuplicatePriceAlert
-                ),
+                => new DuplicatePriceAlertException(exception),
 
             PostgresConstraintNames.StocksSymbol
-                => new PersistenceError(
-                    PersistenceErrorCode.DuplicateStockSymbol
-                ),
-            _
-                => PersistenceError.None
+                => new DuplicateStockSymbolException(exception),
+
+            _ => null
         };
-
-        return error.Code != PersistenceErrorCode.None;
-    }
-
-    public bool IsForeignKeyViolation(Exception exception)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool IsDeadlock(Exception exception)
-    {
-        throw new NotImplementedException();
     }
 }

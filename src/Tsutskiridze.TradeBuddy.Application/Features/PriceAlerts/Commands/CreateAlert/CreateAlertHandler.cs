@@ -1,11 +1,9 @@
 ﻿using System.Data;
-using System.Net;
 using Mediator;
 using SharedKernel.Data;
 using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
-using Tsutskiridze.TradeBuddy.Application.Abstractions.Persistence;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Specifications;
@@ -29,7 +27,6 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
     private readonly IActiveChatProvider _activeChatProvider;
     private readonly IRepository<PriceAlert> _alerts;
     private readonly IMarketDataProvider _market;
-    private readonly IDbExceptionClassifier _persistenceExceptionClassifier;
     private readonly AlertWatchingDomainService _alertWatchingSvc;
 
 
@@ -39,14 +36,12 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
         IMarketDataProvider market,
         IActiveChatProvider activeChatProvider,
         IRepository<PriceAlert> alerts,
-        IDbExceptionClassifier excClassifier,
         AlertWatchingDomainService alertWatchingSvc)
     {
         _uow = uow;
         _market = market;
         _activeChatProvider = activeChatProvider;
         _alerts = alerts;
-        _persistenceExceptionClassifier = excClassifier;
         _alertWatchingSvc = alertWatchingSvc;
         _stocks = stocks;
     }
@@ -63,21 +58,8 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
 
         _alertWatchingSvc.ActivateAlert(alert, stock);
 
-        try
-        {
-            await _uow.SaveChangesAsync(ct);
-            await tx.CommitAsync(ct);
-        }
-        catch (Exception ex) when (
-            _persistenceExceptionClassifier.TryClassify(ex, out var error))
-        {
-            await tx.RollbackAsync(ct);
-            var newEx = MapPersistenceError(error, ex);
-            if (newEx != ex)
-                throw newEx;
-
-            throw;
-        }
+        await _uow.SaveChangesAsync(ct);
+        await tx.CommitAsync(ct);
 
         return new CreateAlertResult(stock.Symbol, stock.Currency, alert.Trigger.Direction, alert.Trigger.Price);
     }
@@ -114,25 +96,5 @@ public class CreateAlertHandler : ICommandHandler<CreateAlertCommand, CreateAler
                ?? throw new ValidationException("Stock symbol not found");
     }
 
-    private static Exception MapPersistenceError(
-        PersistenceError error,
-        Exception exception)
-    {
-        return error.Code switch
-        {
-            PersistenceErrorCode.DuplicatePriceAlert
-                => new ApplicationLayerException(
-                    "Alert already exists.",
-                    (int)HttpStatusCode.Conflict,
-                    exception),
-
-            PersistenceErrorCode.DuplicateStockSymbol
-                => new ApplicationLayerException(
-                    "Stock was created by another request. Please try again.",
-                    (int)HttpStatusCode.Conflict,
-                    exception),
-
-            _ => exception
-        };
-    }
+    // persistence exception mapping is being moved out of handlers
 }
