@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram.Formatting;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.TextFormatting.Telegram;
 
 public static class TelegramValueFormatter
 {

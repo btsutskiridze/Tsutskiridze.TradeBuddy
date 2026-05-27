@@ -2,7 +2,7 @@
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.Application.Notifications;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram.Formatting;
+using Tsutskiridze.TradeBuddy.Infrastructure.TextFormatting.Telegram;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.Notifications.NotificationHandlers;
 
@@ -18,7 +18,7 @@ public class StrategyMonitorAlertNotificationHandler : IBaseNotificationHandler<
     public async ValueTask Handle(StrategyMonitorAlertNotification alertNotification,
         CancellationToken ct)
     {
-        var message = StrategyMonitorTelegramMessageFormatter.CreateAlertMessage(alertNotification.Summary);
+        var message = StrategyMonitorMessageFormatter.CreateAlertMessage(alertNotification.Summary);
 
         await _sender.Send(new TelegramOutgoingMessage(alertNotification.Summary.ChatId, message, ParseMode.Markdown), ct);
     }

@@ -11,7 +11,7 @@ using Tsutskiridze.TradeBuddy.Domain.StrategyEvaluation;
 using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies;
 
-namespace Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Commands.EvaluateDailyStrategyMonitors;
+namespace Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Commands.EvaluateStrategyMonitors;
 
 public sealed record EvaluateStrategyMonitorsCommand(DateOnly TradingDate) : ICommand;
 

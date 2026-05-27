@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Commands.EvaluateDailyStrategyMonitors;
+using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Commands.EvaluateStrategyMonitors;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Jobs;
 

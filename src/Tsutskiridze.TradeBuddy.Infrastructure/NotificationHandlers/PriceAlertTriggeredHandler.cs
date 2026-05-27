@@ -5,7 +5,7 @@ using Tsutskiridze.TradeBuddy.Application.Notifications;
 using Tsutskiridze.TradeBuddy.Domain.PriceAlerts.Enums;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.Notifications.NotificationHandlers;
+namespace Tsutskiridze.TradeBuddy.Infrastructure.NotificationHandlers;
 
 public sealed class PriceAlertTriggeredHandler : IBaseNotificationHandler<PriceAlertTriggeredNotification>
 {
