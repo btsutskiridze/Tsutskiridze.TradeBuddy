@@ -11,7 +11,7 @@ internal class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
 {
     private static readonly JsonSerializerOptions YahooJsonOptions = new(JsonSerializerDefaults.Web);
     private static readonly TimeSpan YahooCrumbLifetime = TimeSpan.FromHours(6);
-    
+
     private readonly YahooCrumbCache _crumbCache;
     private readonly HttpClient _httpClient;
 
@@ -52,7 +52,7 @@ internal class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
         catch
         {
             // Important: return null so MarketDataProvider can fallback to scraping.
-            _crumbCache.Session = null;
+            _crumbCache.Invalidate();
             return null;
         }
     }
@@ -75,7 +75,7 @@ internal class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
 
         if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
         {
-            _crumbCache.Session = null;
+            _crumbCache.Invalidate();
             return null;
         }
 
@@ -105,57 +105,44 @@ internal class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
         bool forceRefresh,
         CancellationToken ct)
     {
-        var nowUtc = DateTimeOffset.UtcNow;
-        var session = _crumbCache.Session;
+        var session = await _crumbCache.GetOrRefreshAsync(
+            forceRefresh,
+            refreshSessionAsync: (refreshCt) => CreateYahooCrumbSession(symbol, refreshCt),
+            ct);
 
-        if (!forceRefresh && session is not null && session.ExpiresAtUtc > nowUtc)
-            return session.Crumb;
+        return session.Crumb;
+    }
+    
+    private async Task<YahooCrumbCache.YahooCrumbSession> CreateYahooCrumbSession(
+        string symbol,
+        CancellationToken ct)
+    {
+        await PrimeYahooCookies(symbol, ct);
 
-        await _crumbCache.WaitAsync(ct);
+        using var request = CreateYahooRequest(
+            new Uri("https://query2.finance.yahoo.com/v1/test/getcrumb"));
 
-        try
+        using var response = await _httpClient.SendAsync(
+            request,
+            HttpCompletionOption.ResponseHeadersRead,
+            ct);
+
+        if (!response.IsSuccessStatusCode)
         {
-            nowUtc = DateTimeOffset.UtcNow;
-            session = _crumbCache.Session;
+            var body = await response.Content.ReadAsStringAsync(ct);
 
-            if (!forceRefresh && session is not null && session.ExpiresAtUtc > nowUtc)
-                return session.Crumb;
-
-            await PrimeYahooCookies(symbol, ct);
-
-            using var request = CreateYahooRequest(
-                new Uri("https://query2.finance.yahoo.com/v1/test/getcrumb"));
-
-            using var response = await _httpClient.SendAsync(
-                request,
-                HttpCompletionOption.ResponseHeadersRead,
-                ct);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var body = await response.Content.ReadAsStringAsync(ct);
-
-                throw new HttpRequestException(
-                    $"Yahoo crumb request failed. StatusCode: {(int)response.StatusCode}. Body: {body}");
-            }
-
-            var crumb = (await response.Content.ReadAsStringAsync(ct)).Trim();
-
-            if (string.IsNullOrWhiteSpace(crumb) || crumb.Contains('<'))
-                throw new InvalidOperationException("Yahoo returned invalid crumb.");
-
-            _crumbCache.Session =
-                new YahooCrumbCache.YahooCrumbSession(
-                    crumb,
-                    DateTimeOffset.UtcNow.Add(YahooCrumbLifetime)
-                );
-
-            return crumb;
+            throw new HttpRequestException(
+                $"Yahoo crumb request failed. StatusCode: {(int)response.StatusCode}. Body: {body}");
         }
-        finally
-        {
-            _crumbCache.Release();
-        }
+
+        var crumb = (await response.Content.ReadAsStringAsync(ct)).Trim();
+
+        if (string.IsNullOrWhiteSpace(crumb) || crumb.Contains('<'))
+            throw new InvalidOperationException("Yahoo returned invalid crumb.");
+
+        return new YahooCrumbCache.YahooCrumbSession(
+            crumb,
+            DateTimeOffset.UtcNow.Add(YahooCrumbLifetime));
     }
 
     private async Task PrimeYahooCookies(string symbol, CancellationToken ct)
