@@ -105,15 +105,15 @@ public sealed class OutboxProcessorJob : BackgroundService
                 FROM messages_to_claim
                 WHERE message.id = messages_to_claim.id
                 RETURNING
-                    message.id AS "Id",
-                    message.event_type AS "EventType",
-                    message.event_version AS "EventVersion",
-                    message.serialize_type AS "SerializeType",
-                    message.payload AS "Payload",
-                    message.headers AS "Headers",
-                    message.retry_count AS "RetryCount",
-                    message.lock_id AS "LockId",
-                    message.occurred_at AS "OccurredAt";
+                    message.id,
+                    message.event_type,
+                    message.event_version,
+                    message.serialize_type,
+                    message.payload,
+                    message.headers,
+                    message.retry_count,
+                    message.lock_id,
+                    message.occurred_at;
                 """)
             .ToListAsync(ct);
     }
