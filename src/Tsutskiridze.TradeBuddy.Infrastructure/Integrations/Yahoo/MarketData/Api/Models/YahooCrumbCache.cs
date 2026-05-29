@@ -4,7 +4,6 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.A
 
 internal sealed class YahooCrumbCache
 {
-    //todo: check the approach without semaphore slim
     private YahooCrumbSession? _session;
 
     private Task<YahooCrumbSession>? _cacheRefreshTask;
@@ -85,8 +84,6 @@ internal sealed class YahooCrumbCache
 
     public void Invalidate()
     {
-        // UPDATED:
-        // Replaces direct public mutation: _crumbCache.Session = null.
         Volatile.Write(ref _session, null);
     }
 
