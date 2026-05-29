@@ -4,7 +4,7 @@ using SharedKernel.Outbox;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Configurations;
 
-public class OutboxConfiguration : IEntityTypeConfiguration<OutboxMessage>
+public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage>
 {
     public void Configure(EntityTypeBuilder<OutboxMessage> builder)
     {
@@ -13,42 +13,49 @@ public class OutboxConfiguration : IEntityTypeConfiguration<OutboxMessage>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.EventType)
-            .IsRequired()
-            .HasMaxLength(200);
+            .HasMaxLength(200)
+            .IsRequired();
 
         builder.Property(x => x.EventVersion)
             .IsRequired();
 
+        builder.Property(x => x.SerializeType)
+            .HasMaxLength(500)
+            .IsRequired();
+
         builder.Property(x => x.Payload)
-            .IsRequired()
-            .HasColumnType("text");
-
-        builder.Property(x => x.Headers)
-            .HasColumnType("text");
-
-        builder.Property(x => x.OccurTime)
             .IsRequired();
 
-        builder.Property(x => x.CreateTime)
+        builder.Property(x => x.Headers);
+
+        builder.Property(x => x.Status)
+            .HasConversion<string>()
+            .HasMaxLength(32)
             .IsRequired();
 
-        builder.Property(x => x.ProcessDate)
-            .IsRequired(false);
+        builder.Property(x => x.OccurredAt)
+            .IsRequired();
 
-        builder.Property(x => x.RetryCount)
-            .IsRequired()
-            .HasDefaultValue(0);
-
-        builder.Property(x => x.NextRetryTime)
-            .IsRequired(false);
+        builder.Property(x => x.CreatedAt)
+            .IsRequired();
 
         builder.Property(x => x.LastError)
             .HasMaxLength(4000);
 
-        builder.Ignore(x => x.IsProcessed);
-        builder.Ignore(x => x.IsReadyToProcess);
+        builder.Property(x => x.RetryCount)
+            .IsRequired();
 
-        builder.HasIndex(x => new { x.ProcessDate, x.NextRetryTime, x.CreateTime })
-            .HasDatabaseName("IX_outbox_messages_pending_dispatch");
+        builder.HasIndex(x => new
+        {
+            x.Status,
+            x.NextRetryAt,
+            x.OccurredAt
+        });
+
+        builder.HasIndex(x => x.LockId)
+            .HasFilter("lock_id IS NOT NULL");
+
+        builder.HasIndex(x => x.DeadAt)
+            .HasFilter("dead_at IS NOT NULL");
     }
 }

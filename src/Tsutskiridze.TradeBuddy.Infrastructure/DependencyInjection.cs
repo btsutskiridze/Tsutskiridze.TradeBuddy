@@ -35,7 +35,7 @@ public static class DependencyInjection
             .AddIntegrations(configuration)
             .AddMarketDataServices()
             .AddNewsServices()
-            .AddJobs();
+            .AddJobs(configuration);
 
         return services;
     }
