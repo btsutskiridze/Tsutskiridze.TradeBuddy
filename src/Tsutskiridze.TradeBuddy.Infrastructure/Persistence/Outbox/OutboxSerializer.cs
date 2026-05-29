@@ -12,7 +12,8 @@ public class OutboxSerializer : IOutboxSerializer
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = false,
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-        WriteIndented = false
+        WriteIndented = false,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false) }
     };
 
     public OutboxMessage Serialize(IDomainEvent domainEvent)
