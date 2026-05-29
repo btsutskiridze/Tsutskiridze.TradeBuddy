@@ -37,7 +37,7 @@ public static class DependencyInjection
                 jsonOptions.WriteIndented = false;
                 jsonOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 jsonOptions.Converters.Add(
-                    new JsonStringEnumConverter(namingPolicy:JsonNamingPolicy.CamelCase,allowIntegerValues:false)
+                    new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase, allowIntegerValues: false)
                 );
             });
 
@@ -56,8 +56,8 @@ public static class DependencyInjection
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
-        services.AddHealthChecks(); 
-        
+        services.AddHealthChecks();
+
         return services;
     }
 
@@ -66,7 +66,7 @@ public static class DependencyInjection
         services.AddScoped<AlertWatchingDomainService>();
         return services;
     }
-    
+
     public static WebApplication UseScalarUi(this WebApplication app)
     {
         app.MapOpenApi();

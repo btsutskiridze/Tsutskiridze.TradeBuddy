@@ -1,16 +1,22 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api.Models;
+using Tsutskiridze.TradeBuddy.Infrastructure.Serialization;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api;
 
 public class YahooHistoryApiProvider : IYahooHistoryApiProvider
 {
     private readonly HttpClient _httpClient;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public YahooHistoryApiProvider(HttpClient httpClient)
+    public YahooHistoryApiProvider(
+        HttpClient httpClient,
+        InfraJsonSerializerOptions jsonSerializerOptions)
     {
         _httpClient = httpClient;
+        _jsonSerializerOptions = jsonSerializerOptions.Options;
     }
 
     public async Task<IReadOnlyList<MarketCandle>> GetDailyCandles(string symbol, DateOnly from, DateOnly to,
@@ -43,7 +49,8 @@ public class YahooHistoryApiProvider : IYahooHistoryApiProvider
         }
 
         var yahooResponse = await response.Content.ReadFromJsonAsync<YahooChartResponse>(
-            cancellationToken: ct);
+            _jsonSerializerOptions,
+            ct);
 
         if (yahooResponse is null)
             throw new InvalidOperationException("Yahoo returned empty response.");
@@ -80,7 +87,8 @@ public class YahooHistoryApiProvider : IYahooHistoryApiProvider
         }
 
         var yahooResponse = await response.Content.ReadFromJsonAsync<YahooChartResponse>(
-            cancellationToken: ct);
+            _jsonSerializerOptions,
+            ct);
 
         if (yahooResponse is null)
             throw new InvalidOperationException("Yahoo returned empty response.");

@@ -17,6 +17,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo;
 using Tsutskiridze.TradeBuddy.Infrastructure.Jobs;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
+using Tsutskiridze.TradeBuddy.Infrastructure.Serialization;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure;
 
@@ -27,6 +28,7 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services
+            .AddJsonSerializationOptions()
             .AddPersistence(configuration)
             .AddNotifications()
             .AddRateLimiter(configuration)

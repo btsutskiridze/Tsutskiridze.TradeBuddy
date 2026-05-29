@@ -4,21 +4,26 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api.Models;
+using Tsutskiridze.TradeBuddy.Infrastructure.Serialization;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api;
 
 internal class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
 {
-    private static readonly JsonSerializerOptions YahooJsonOptions = new(JsonSerializerDefaults.Web);
     private static readonly TimeSpan YahooCrumbLifetime = TimeSpan.FromHours(6);
 
     private readonly YahooCrumbCache _crumbCache;
     private readonly HttpClient _httpClient;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public YahooStockQuoteApiProvider(HttpClient httpClient, YahooCrumbCache crumbCache)
+    public YahooStockQuoteApiProvider(
+        HttpClient httpClient,
+        YahooCrumbCache crumbCache,
+        InfraJsonSerializerOptions jsonSerializerOptions)
     {
         _httpClient = httpClient;
         _crumbCache = crumbCache;
+        _jsonSerializerOptions = jsonSerializerOptions.Options;
     }
 
     public async Task<StockQuote?> GetStockQuote(string symbol, CancellationToken ct)
@@ -83,7 +88,7 @@ internal class YahooStockQuoteApiProvider : IYahooStockQuoteApiProvider
             return null;
 
         var yahooResponse = await response.Content.ReadFromJsonAsync<YahooQuoteApiResponse>(
-            YahooJsonOptions,
+            _jsonSerializerOptions,
             ct);
 
         if (yahooResponse?.QuoteResponse?.Result is null ||
