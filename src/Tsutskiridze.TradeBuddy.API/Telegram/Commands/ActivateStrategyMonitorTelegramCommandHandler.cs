@@ -1,9 +1,7 @@
-using System.Text;
 using Mediator;
 using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.API.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.API.Telegram.Errors;
-using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring;
 using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Commands.ActivateStrategyMonitor;
 using Tsutskiridze.TradeBuddy.Infrastructure.TextFormatting.Telegram;
 

@@ -4,7 +4,6 @@ using SharedKernel.Data;
 using SharedKernel.Validations;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
-using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Services;

@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SharedKernel.Data;
+using SharedKernel.Events.DomainEventsDispatching;
+using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.DomainEventsDispatching;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
@@ -29,9 +31,12 @@ public static class DependencyInjection
         services.AddScoped(typeof(IReadRepository<,>), typeof(EfReadRepository<,>));
         services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+        
+        services.AddScoped<IDomainEventAccessor, DomainEventAccessor>();
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+        
         services.AddSingleton<IDbExceptionClassifier, PostgresDbExceptionClassifier>();
         
-
         return services;
     }
     

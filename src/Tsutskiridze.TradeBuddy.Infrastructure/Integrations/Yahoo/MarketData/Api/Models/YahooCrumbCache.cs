@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-
-namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api.Models;
+﻿namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api.Models;
 
 internal sealed class YahooCrumbCache
 {
