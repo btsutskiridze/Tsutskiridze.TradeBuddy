@@ -6,9 +6,9 @@ using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring.Commands.E
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Jobs;
 
-public sealed class DailyStrategyMonitorJob:BackgroundService
+public sealed class DailyStrategyMonitorJob : BackgroundService
 {
-private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
+    private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
 
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<DailyStrategyMonitorJob> _logger;
@@ -30,7 +30,7 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
             try
             {
                 await RunIfDueAsync(easternTimeZone, ct);
-                
+
                 var nowUtc = DateTimeOffset.UtcNow;
                 var nextRunUtc = GetNextWeekdayRunUtc(nowUtc, easternTimeZone);
 
@@ -55,7 +55,7 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
                 }
 
                 var tradingDate = DateOnly.FromDateTime(easternNow.Date);
-                
+
                 await EvaluateStrategyMonitors(tradingDate, ct);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
@@ -98,7 +98,7 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
         _logger.LogInformation(
             "Running daily strategy job for {TradingDate}",
             tradingDate);
-        
+
         await using var scope = _scopeFactory.CreateAsyncScope();
 
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -106,7 +106,7 @@ private static readonly TimeOnly RunAtEasternTime = new(17, 0); // 5:00 PM ET
         await mediator.Send(
             new EvaluateStrategyMonitorsCommand(tradingDate),
             ct);
-        
+
         _logger.LogInformation(
             "Daily strategy job completed for {TradingDate}",
             tradingDate);
