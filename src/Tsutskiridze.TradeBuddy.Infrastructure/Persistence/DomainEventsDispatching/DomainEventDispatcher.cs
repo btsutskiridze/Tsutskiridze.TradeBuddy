@@ -1,16 +1,20 @@
-using Mediator;
 using SharedKernel.Events;
 using SharedKernel.Events.DomainEventsDispatching;
+using SharedKernel.Outbox;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.DomainEventsDispatching;
 
 internal sealed class DomainEventDispatcher : IDomainEventDispatcher
 {
-    private readonly IMediator _mediator;
+    private readonly IOutbox _outbox;
+    private readonly IOutboxSerializer _outboxSerializer;
 
-    public DomainEventDispatcher(IMediator mediator)
+    public DomainEventDispatcher(
+        IOutbox outbox,
+        IOutboxSerializer outboxSerializer)
     {
-        _mediator = mediator;
+        _outbox = outbox;
+        _outboxSerializer = outboxSerializer;
     }
 
     public async Task DispatchAsync(IReadOnlyCollection<IDomainEvent> domainEvents, CancellationToken ct = default)
@@ -19,12 +23,10 @@ internal sealed class DomainEventDispatcher : IDomainEventDispatcher
             await PublishAsync(domainEvent, ct);
     }
 
-    private async Task PublishAsync(IDomainEvent domainEvent, CancellationToken ct)
+    private Task PublishAsync(IDomainEvent domainEvent, CancellationToken ct)
     {
-        /*
-         * todo: enqueue to outbox in the same transaction as SaveChanges,
-         * then publish asynchronously from a background processor.
-         */
-        await _mediator.Publish(domainEvent, ct);
+        _outbox.Add(_outboxSerializer.Serialize(domainEvent));
+        // await _mediator.Publish(domainEvent, ct);
+        return Task.CompletedTask;
     }
 }

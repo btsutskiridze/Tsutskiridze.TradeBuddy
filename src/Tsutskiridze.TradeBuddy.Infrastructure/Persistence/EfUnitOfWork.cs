@@ -41,9 +41,10 @@ internal class EfUnitOfWork : IUnitOfWork
 
         try
         {
-            var result = await _db.SaveChangesAsync(ct);
             _domainEventAccessor.ClearDomainEvents();
             await _domainEventDispatcher.DispatchAsync(domainEvents, ct);
+
+            var result = await _db.SaveChangesAsync(ct);
             return result;
         }
         catch (DbUpdateException ex) when (_dbExceptionClassifier.Translate(ex) is { } translated)

@@ -4,8 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SharedKernel.Data;
 using SharedKernel.Events.DomainEventsDispatching;
+using SharedKernel.Outbox;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.DomainEventsDispatching;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Outbox;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
@@ -19,7 +21,6 @@ public static class DependencyInjection
                     configuration.GetConnectionString("Postgres"),
                     npgsql =>
                     {
-                        
                         // npgsql.EnableRetryOnFailure();  //todo: fix this user transaction not working situation and enable retry
                         npgsql.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                         npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "public");
@@ -31,15 +32,18 @@ public static class DependencyInjection
         services.AddScoped(typeof(IReadRepository<,>), typeof(EfReadRepository<,>));
         services.AddScoped(typeof(IRepository<,>), typeof(EfRepository<,>));
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
-        
+
         services.AddScoped<IDomainEventAccessor, DomainEventAccessor>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         
-        services.AddSingleton<IDbExceptionClassifier, PostgresDbExceptionClassifier>();
+        services.AddScoped<IOutbox, OutboxWriter>();
+        services.AddScoped<IOutboxSerializer, OutboxSerializer>();
         
+        services.AddSingleton<IDbExceptionClassifier, PostgresDbExceptionClassifier>();
+
         return services;
     }
-    
+
     public static async Task ApplyDatabaseMigrationsAsync(this IHost host)
     {
         using var scope = host.Services.CreateScope();

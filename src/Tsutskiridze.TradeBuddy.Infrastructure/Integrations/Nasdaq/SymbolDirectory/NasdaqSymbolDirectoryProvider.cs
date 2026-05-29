@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Nasdaq;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Nasdaq.SymbolDirectory;
 
