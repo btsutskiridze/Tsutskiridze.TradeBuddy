@@ -20,6 +20,6 @@ public class StrategyMonitorAlertNotificationHandler : IBaseNotificationHandler<
     {
         var message = StrategyMonitorMessageFormatter.CreateAlertMessage(alertNotification.Summary);
 
-        await _sender.Send(new TelegramOutgoingMessage(alertNotification.Summary.ChatId, message, ParseMode.Markdown), ct);
+        await _sender.Send(new TelegramOutgoingMessage(alertNotification.Summary.ChatId, message), ct);
     }
 }
