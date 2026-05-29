@@ -23,7 +23,7 @@ public sealed record ActivateStrategyMonitorCommand(
 ) : ICommand<StrategyMonitorEvaluationSummary>;
 
 public class
-    ActivateStrategyMonitorHandler : ICommandHandler<ActivateStrategyMonitorCommand, StrategyMonitorEvaluationSummary>
+    ActivateStrategyMonitorCommandHandler : ICommandHandler<ActivateStrategyMonitorCommand, StrategyMonitorEvaluationSummary>
 {
     private readonly IUnitOfWork _uow;
     private readonly IActiveChatProvider _activeChatProvider;
@@ -33,7 +33,7 @@ public class
     private readonly IMarketDataProvider _market;
     private readonly IEmaAdxAtrEvaluationCandleBuilder _emaAdxAtrEvaluationCandleBuilder;
 
-    public ActivateStrategyMonitorHandler(
+    public ActivateStrategyMonitorCommandHandler(
         IUnitOfWork uow,
         IActiveChatProvider activeChatProvider,
         IRepository<TradeStrategy, int> strategies,
@@ -106,8 +106,7 @@ public class
         var results = EmaAdxAtrStrategyEvaluator.Replay(strategy, strategyMonitor, strategyCandles);
         var currentState = results[^1];
 
-        strategyMonitor.UpdatePositionState(currentState.PositionStateAfter);
-        strategyMonitor.MarkEvaluated(currentState.CandleDate);
+        strategyMonitor.ApplyEvaluation(currentState);
 
         await _uow.SaveChangesAsync(ct);
         await tx.CommitAsync(ct);

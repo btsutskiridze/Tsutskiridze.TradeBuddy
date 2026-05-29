@@ -1,4 +1,6 @@
 ﻿using SharedKernel;
+using Tsutskiridze.TradeBuddy.Domain.StrategyEvaluation;
+using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.Events;
 using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.Enums;
 using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.ValueObjects;
 using Tsutskiridze.TradeBuddy.Domain.TradeStrategies.Enums;
@@ -64,8 +66,24 @@ public class StrategyMonitor : Entity<int>, IAggregateRoot
         Status = MonitorStatus.Stopped;
         StopTime = DateTime.UtcNow;
     }
+    
+    public void ApplyEvaluation(StrategyEvaluationResult evaluation)
+    {
+        UpdatePositionState(evaluation.PositionStateAfter);
+        MarkEvaluated(evaluation.CandleDate);
 
-    public void MarkEvaluated(DateOnly candleDate)
+        if (!evaluation.ShouldNotify)
+            return;
+
+        RaiseDomainEvent(new StrategyMonitorAlertDomainEvent(
+            Id,
+            ChatId,
+            TradeStrategyId,
+            Symbol,
+            evaluation));
+    }
+
+    private void MarkEvaluated(DateOnly candleDate)
     {
         if (Status != MonitorStatus.Active)
             throw new DomainException("Cannot evaluate stopped monitor.");
@@ -79,7 +97,7 @@ public class StrategyMonitor : Entity<int>, IAggregateRoot
         LastEvaluatedCandleDate = candleDate;
     }
 
-    public void UpdatePositionState(StrategyPositionState positionState)
+    private void UpdatePositionState(StrategyPositionState positionState)
     {
         PositionState = positionState
                         ?? throw new DomainException("Position state is required.");

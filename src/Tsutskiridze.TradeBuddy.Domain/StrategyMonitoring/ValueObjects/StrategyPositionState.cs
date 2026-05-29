@@ -1,4 +1,5 @@
-﻿using SharedKernel;
+﻿using System.Text.Json.Serialization;
+using SharedKernel;
 using Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.Enums;
 
 namespace Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.ValueObjects;
@@ -18,7 +19,8 @@ public sealed record StrategyPositionState
         // EF Core
     }
 
-    private StrategyPositionState(
+    [JsonConstructor]
+    public StrategyPositionState(
         PositionSide side,
         decimal? entryPrice,
         DateTime? entryDate,
