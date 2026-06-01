@@ -14,7 +14,7 @@ public class TelegramSender : ITelegramSender
         _client = client;
         _logger = logger;
     }
-    //todo: add resilience everywhere it is necessary
+    
     public async Task Send(TelegramOutgoingMessage message, CancellationToken ct = default)
     {
         await _client.SendMessage(message.ChatId, message.Text, message.ParseMode, cancellationToken: ct);

@@ -3,7 +3,7 @@ using Telegram.Bot.Types.Enums;
 using Tsutskiridze.TradeBuddy.API.Telegram.Contracts;
 using Tsutskiridze.TradeBuddy.API.Telegram.Errors;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Commands.RemoveAlert;
-using Tsutskiridze.TradeBuddy.Domain.Enums;
+using Tsutskiridze.TradeBuddy.Domain.PriceAlerts.Enums;
 
 namespace Tsutskiridze.TradeBuddy.API.Telegram.Commands;
 

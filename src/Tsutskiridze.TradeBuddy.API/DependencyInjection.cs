@@ -6,6 +6,7 @@ using SharedKernel.Validations.Mediator;
 using Tsutskiridze.TradeBuddy.API.Exceptions;
 using Tsutskiridze.TradeBuddy.Application;
 using Tsutskiridze.TradeBuddy.Application.Behaviors;
+using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
 
 namespace Tsutskiridze.TradeBuddy.API;
 
@@ -36,7 +37,7 @@ public static class DependencyInjection
                 jsonOptions.WriteIndented = false;
                 jsonOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 jsonOptions.Converters.Add(
-                    new JsonStringEnumConverter(namingPolicy:JsonNamingPolicy.CamelCase,allowIntegerValues:false)
+                    new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase, allowIntegerValues: false)
                 );
             });
 
@@ -54,7 +55,15 @@ public static class DependencyInjection
 
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
-        
+
+        services.AddHealthChecks();
+
+        return services;
+    }
+
+    public static IServiceCollection AddDomainServices(this IServiceCollection services)
+    {
+        services.AddScoped<AlertWatchingDomainService>();
         return services;
     }
 

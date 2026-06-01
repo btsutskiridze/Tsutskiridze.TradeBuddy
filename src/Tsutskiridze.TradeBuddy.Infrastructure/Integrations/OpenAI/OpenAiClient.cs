@@ -3,6 +3,7 @@ using OpenAI.Chat;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
 using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI.Schema;
+using Tsutskiridze.TradeBuddy.Infrastructure.Serialization;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI
 {
@@ -11,11 +12,16 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI
         private readonly ChatClient _client;
 
         private readonly IOpenAiJsonSchemaGenerator _openAiJsonSchemaGenerator;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public OpenAiClient(ChatClient client, IOpenAiJsonSchemaGenerator openAiJsonSchemaGenerator)
+        public OpenAiClient(
+            ChatClient client,
+            IOpenAiJsonSchemaGenerator openAiJsonSchemaGenerator,
+            InfraJsonSerializerOptions jsonSerializerOptions)
         {
             _client = client;
             _openAiJsonSchemaGenerator = openAiJsonSchemaGenerator;
+            _jsonSerializerOptions = jsonSerializerOptions.Options;
         }
 
         //todo: refactor this class as the ask isn't generic and is specific for stock analysis
@@ -44,7 +50,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI
 
             ChatCompletion completion = await _client.CompleteChatAsync(messages, options);
 
-            var result = JsonSerializer.Deserialize<T>(completion.Content[0].Text)
+            var result = JsonSerializer.Deserialize<T>(completion.Content[0].Text, _jsonSerializerOptions)
                          ?? throw new InfrastructureException("Failed to parse OpenAI response.");
 
             return result;

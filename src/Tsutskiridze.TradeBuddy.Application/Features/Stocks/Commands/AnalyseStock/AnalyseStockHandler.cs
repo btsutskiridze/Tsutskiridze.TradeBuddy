@@ -36,8 +36,8 @@ public class AnalyseStockHandler : ICommandHandler<AnalyseStockCommand, AnalyseS
 
     public async ValueTask<AnalyseStockResult> Handle(AnalyseStockCommand command, CancellationToken ct)
     {
-        await _activeChatProvider.ExistsAsync(command.ChatId, ct);
-        
+        await _activeChatProvider.ThrowIfNotFound(command.ChatId, ct);
+
         var symbol = command.Symbol.Trim().ToUpperInvariant();
         _logger.LogDebug("Received stock command for symbol {StockSymbol}", symbol);
 
@@ -47,7 +47,7 @@ public class AnalyseStockHandler : ICommandHandler<AnalyseStockCommand, AnalyseS
         }
 
         var analysis = await _stockAnalysisGenerator.GenerateAsync(symbol);
-        
+
         return analysis;
     }
 }

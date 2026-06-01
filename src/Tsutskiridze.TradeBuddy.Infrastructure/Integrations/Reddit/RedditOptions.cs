@@ -3,6 +3,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
     public class RedditOptions
     {
         public const string SectionName = "Reddit";
+        public const string ResiliencePipelineName = SectionName;
         public string SearchEndpoint { get; set; } = string.Empty;
         public string AuthEndpoint { get; set; } = string.Empty;
         public string ClientId { get; set; } = string.Empty;

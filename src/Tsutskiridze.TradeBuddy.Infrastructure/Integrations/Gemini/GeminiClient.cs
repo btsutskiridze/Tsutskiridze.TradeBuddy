@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Options;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.AI;
 using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Serialization;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Gemini
 {
@@ -12,11 +13,13 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Gemini
         private readonly HttpClient _client;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public GeminiClient(HttpClient client, IOptions<JsonSerializerOptions> jsonSerializerOptions,
+        public GeminiClient(
+            HttpClient client,
+            InfraJsonSerializerOptions jsonSerializerOptions,
             IOptions<GeminiOptions> options)
         {
             _client = client;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            _jsonSerializerOptions = jsonSerializerOptions.Options;
             _options = options.Value;
         }
 

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming.Abstractions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
+using Tsutskiridze.TradeBuddy.Infrastructure.Serialization;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Streaming
 {
@@ -16,15 +17,18 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
         private readonly IServiceScopeFactory _scopes;
         private readonly IMarketDataTransportClient _transport;
         private readonly ILogger<SubscriptionManager> _log;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public SubscriptionManager(
             IServiceScopeFactory scopes,
             IMarketDataTransportClient transport,
-            ILogger<SubscriptionManager> log)
+            ILogger<SubscriptionManager> log,
+            InfraJsonSerializerOptions jsonSerializerOptions)
         {
             _scopes = scopes;
             _transport = transport;
             _log = log;
+            _jsonSerializerOptions = jsonSerializerOptions.Options;
         }
 
         public async Task InitializeAsync(CancellationToken ct)
@@ -44,7 +48,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
 
             if (_watched.IsEmpty) return;
 
-            var msg = JsonSerializer.Serialize(new { subscribe = symbols });
+            var msg = JsonSerializer.Serialize(new { subscribe = symbols }, _jsonSerializerOptions);
 
             await _transport.SendAsync(msg, ct);
 
@@ -64,7 +68,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
                 var msg = JsonSerializer.Serialize(new
                 {
                     subscribe = new[] { symbol }
-                });
+                }, _jsonSerializerOptions);
 
                 await _transport.SendAsync(msg, ct);
 
@@ -95,7 +99,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.S
                 var msg = JsonSerializer.Serialize(new
                 {
                     unsubscribe = new[] { symbol }
-                });
+                }, _jsonSerializerOptions);
 
                 await _transport.SendAsync(msg, ct);
 

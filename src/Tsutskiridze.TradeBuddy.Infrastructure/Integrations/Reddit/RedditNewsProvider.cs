@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using Tsutskiridze.TradeBuddy.Application.Common.Enums;
 using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Extensions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit.Models;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
@@ -19,7 +20,8 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
 
         private static AccessToken? _accessToken;
 
-        public RedditNewsProvider(HttpClient client, ILogger<RedditNewsProvider> logger, IOptions<RedditOptions> options)
+        public RedditNewsProvider(HttpClient client, ILogger<RedditNewsProvider> logger,
+            IOptions<RedditOptions> options)
         {
             _options = options.Value;
             _httpClient = client;
@@ -28,13 +30,21 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
 
         public async Task<List<RedditPost>?> GetRedditPosts(string keyword, SortType sortType, int? limit = null)
         {
-            string limitQuery = limit.HasValue ? $"&limit={limit}" : string.Empty;
+            var queryParams = new Dictionary<string, string>
+            {
+                { "q", keyword },
+                { "sort", sortType.ToString().ToLower() },
+                { "type", "posts" }
+            };
+            if (limit.HasValue)
+            {
+                queryParams.Add("limit", limit.Value.ToString());
+            }
 
             using var requestMessage = new HttpRequestMessage(
                 HttpMethod.Get,
-                $"{_options.SearchEndpoint}?q={keyword}&sort={sortType.ToString().ToLower()}&type=posts{limitQuery}"
+                $"{_options.SearchEndpoint}?{queryParams.AsQueryString()}"
             );
-            requestMessage.Headers.Add("User-Agent", _options.UserAgent);
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await GetAccessToken());
 
             var response = await _httpClient.SendAsync(requestMessage);
@@ -94,45 +104,38 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit
                 return _accessToken.Token;
             }
 
-            var requestBody = new StringContent(
-                $"grant_type=password&username={Uri.EscapeDataString(_options.Username)}&password={Uri.EscapeDataString(_options.Password)}",
-                Encoding.UTF8,
-                "application/x-www-form-urlencoded"
+            using var request = new HttpRequestMessage(HttpMethod.Post, _options.AuthEndpoint);
+            var formData = new Dictionary<string, string>
+            {
+                { "grant_type", "password" },
+                { "username", _options.Username },
+                { "password", _options.Password }
+            };
+            request.Content = new FormUrlEncodedContent(formData);
+
+            var authHeader =
+                Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_options.ClientId}:{_options.ClientSecret}"));
+            request.Headers.Authorization = new AuthenticationHeaderValue("Basic", authHeader);
+
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var json = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            var accessToken = json["access_token"]?.Value<string>();
+            var expiresIn = json["expires_in"]?.Value<int>() ?? 0;
+
+            if (string.IsNullOrEmpty(accessToken) || expiresIn == 0)
+            {
+                throw new InfrastructureException("Error getting access token");
+            }
+
+            _accessToken = new AccessToken(
+                accessToken,
+                DateTimeOffset.Now.AddSeconds(expiresIn)
             );
 
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", _options.UserAgent);
-
-            var authHeaderValue = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_options.ClientId}:{_options.ClientSecret}"));
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authHeaderValue);
-
-            try
-            {
-                var response = await _httpClient.PostAsync(_options.AuthEndpoint, requestBody);
-                response.EnsureSuccessStatusCode();
-
-                var json = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-                var accessToken = json["access_token"]?.Value<string>();
-                var expiresIn = json["expires_in"]?.Value<int>() ?? 0;
-
-                if (string.IsNullOrEmpty(accessToken) || expiresIn == 0)
-                {
-                    throw new InfrastructureException("Error getting access token");
-                }
-
-                _accessToken = new AccessToken(
-                    accessToken,
-                    DateTimeOffset.Now.AddSeconds(expiresIn)
-                );
-
-                return accessToken;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error getting access token: {message}", ex.Message);
-                throw new InfrastructureException("Error getting access token", inner: ex);
-            }
+            return accessToken;
         }
     }
 }
-

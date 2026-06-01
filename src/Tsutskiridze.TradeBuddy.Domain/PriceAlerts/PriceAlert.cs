@@ -1,5 +1,6 @@
 using SharedKernel;
-using Tsutskiridze.TradeBuddy.Domain.Enums;
+using Tsutskiridze.TradeBuddy.Domain.PriceAlerts.Enums;
+using Tsutskiridze.TradeBuddy.Domain.PriceAlerts.Events;
 using Tsutskiridze.TradeBuddy.Domain.PriceAlerts.ValueObjects;
 
 namespace Tsutskiridze.TradeBuddy.Domain.PriceAlerts;
@@ -55,32 +56,29 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public PriceAlertProcessingResult? ProcessMarketPrice(
-        PriceTick priceTick, 
-        AlertTriggerPolicy policy
-    )
+    public bool ProcessMarketPrice(
+        PriceTick priceTick,
+        AlertTriggerPolicy policy)
     {
         if (!IsActive)
-            return null;
-
+            return false;
         if (!Trigger.IsTriggeredBy(priceTick.Price))
-            return null;
-
+            return false;
         if (IsCoolingDown(priceTick.Timestamp, policy.CooldownWindow))
-            return null;
-
+            return false;
         TriggerNotification(priceTick.Timestamp);
-
         var wasDeactivated = DeactivateAfterNotificationLimit(policy);
-
-        return new PriceAlertProcessingResult(
+        
+        RaiseDomainEvent(new PriceAlertTriggeredDomainEvent(
+            Id,
             ChatId,
             StockId,
             Trigger.Price,
             priceTick.Price,
             Trigger.Direction,
-            wasDeactivated
-        );
+            wasDeactivated,
+            policy.MaxNotifications));
+        return true;
     }
 
     private bool DeactivateAfterNotificationLimit(AlertTriggerPolicy policy)
@@ -100,12 +98,4 @@ public class PriceAlert : Entity<Guid>, IAggregateRoot
 
     private bool IsCoolingDown(DateTime nowUtc, TimeSpan window)
         => AlertCount != 0 && UpdatedAt.HasValue && UpdatedAt.Value >= nowUtc.Subtract(window);
-
-    public sealed record PriceAlertProcessingResult(
-        Guid ChatId,
-        Guid StockId,
-        decimal AlertPrice,
-        decimal CurrentPrice,
-        PriceDirection Direction,
-        bool WasDeactivated);
 }

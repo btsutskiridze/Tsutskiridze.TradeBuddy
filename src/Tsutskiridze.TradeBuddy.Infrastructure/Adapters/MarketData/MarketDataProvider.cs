@@ -1,6 +1,8 @@
 ﻿using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData.Models;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Nasdaq.SymbolDirectory;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.Common.Abstractions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Api;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo.MarketData.Parsing.Abstractions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Adapters.MarketData;
@@ -12,25 +14,38 @@ public class MarketDataProvider : IMarketDataProvider
     private readonly IYahooHistoryPageParser _historyPageParser;
     private readonly IYahooKeyStatisticsPageParser _keyStatisticsPageParser;
     private readonly IYahooFinancialsPageParser _financialsPageParser;
+    private readonly IYahooHistoryApiProvider _historyApiProvider;
+    private readonly IYahooStockQuoteApiProvider _stockQuoteApiProvider;
+    private readonly INasdaqSymbolDirectoryProvider _nasdaqSymbolDirectoryProvider;
     
     public MarketDataProvider(
         IYahooPageLoader pageLoader,
         IYahooQuotePageParser quotePageParser,
         IYahooHistoryPageParser historyPageParser,
         IYahooKeyStatisticsPageParser keyStatisticsPageParser,
-        IYahooFinancialsPageParser financialsPageParser)
+        IYahooFinancialsPageParser financialsPageParser, 
+        IYahooHistoryApiProvider historyApiProvider, 
+        IYahooStockQuoteApiProvider stockQuoteApiProvider,
+        INasdaqSymbolDirectoryProvider nasdaqSymbolDirectoryProvider)
     {
         _pageLoader = pageLoader;
         _quotePageParser = quotePageParser;
         _historyPageParser = historyPageParser;
         _keyStatisticsPageParser = keyStatisticsPageParser;
         _financialsPageParser = financialsPageParser;
+        _historyApiProvider = historyApiProvider;
+        _stockQuoteApiProvider = stockQuoteApiProvider;
+        _nasdaqSymbolDirectoryProvider = nasdaqSymbolDirectoryProvider;
     }
 
     public async Task<bool> StockSymbolExists(string symbol)
     {
         if (!TryNormalizeSymbol(symbol, out var normalizedSymbol))
             return false;
+
+        var nasdaqLookupResult = await _nasdaqSymbolDirectoryProvider.StockSymbolExists(normalizedSymbol);
+        if (nasdaqLookupResult.IsSuccessful)
+            return nasdaqLookupResult.Exists;
 
         var pageContext = await _pageLoader.LoadQuotePageAsync(normalizedSymbol);
         if (pageContext is null)
@@ -80,19 +95,49 @@ public class MarketDataProvider : IMarketDataProvider
         return _financialsPageParser.Parse(pageContext);
     }
 
-    public async Task<StockQuote?> GetStockQuote(string symbol)
+    public async Task<StockQuote?> GetStockQuote(string symbol, CancellationToken ct)
     {
         if (!TryNormalizeSymbol(symbol, out var normalizedSymbol))
             return null;
 
+        var apiQuote = await _stockQuoteApiProvider.GetStockQuote(
+            normalizedSymbol,
+            ct);
+
+        if (apiQuote is not null)
+            return apiQuote;
+
         var pageContext = await _pageLoader.LoadQuotePageAsync(normalizedSymbol);
+
         if (pageContext is null)
             return null;
 
         return _quotePageParser.Parse(pageContext);
     }
 
-    private static bool TryNormalizeSymbol(string? symbol, out string normalizedSymbol)
+    public async Task<IReadOnlyList<MarketCandle>> GetDailyCandles(string symbol, DateOnly from, DateOnly to, CancellationToken ct)
+    {
+        var result = await _historyApiProvider.GetDailyCandles(symbol, from, to, ct);
+
+        return result;
+    }
+    
+    public async Task<MarketHistoryDateRange> GetClosedDailyDateRange(
+        string symbol,
+        CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(symbol))
+            throw new ArgumentException("Invalid symbol provided");
+        
+        var normalizedSymbol = symbol.Trim().ToUpperInvariant();
+        
+        return await _historyApiProvider.GetClosedDailyDateRange(
+            normalizedSymbol,
+            DateTimeOffset.UtcNow,
+            ct);
+    }
+
+    private static bool TryNormalizeSymbol(string symbol, out string normalizedSymbol)
     {
         normalizedSymbol = string.Empty;
 

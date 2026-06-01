@@ -33,7 +33,7 @@ public class GlobalExceptionHandler : IExceptionHandler
 
         if (status == 500)
         {
-            _logger.LogError(exception.Message, exception);
+            _logger.LogError(exception, "Unhandled exception");
         }
 
         var problemDetails = CreateProblemDetails(status, type, message, errors);

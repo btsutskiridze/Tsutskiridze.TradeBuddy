@@ -1,12 +1,11 @@
 ﻿using System.Collections.Immutable;
 using Mediator;
 using SharedKernel.Data;
-using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Services;
 using Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
-using Tsutskiridze.TradeBuddy.Domain.Enums;
 using Tsutskiridze.TradeBuddy.Domain.PriceAlerts;
+using Tsutskiridze.TradeBuddy.Domain.PriceAlerts.Enums;
 using Tsutskiridze.TradeBuddy.Domain.Stocks;
 
 namespace Tsutskiridze.TradeBuddy.Application.Features.PriceAlerts.Queries.GetMyAlerts;
@@ -37,7 +36,7 @@ public sealed class GetMyAlertsHandler : IQueryHandler<MyAlertsQuery, MyAlertsRe
     {
         var chatId = await _activeChatProvider.GetIdAsync(query.ChatId, ct);
         var alerts = await _alerts.ListAsync(new ActiveAlertsByChatIdSpec(chatId), ct);
-        if (alerts.Count == 0) throw new ApplicationLayerException("You have no alerts set.");
+        if (alerts.Count == 0) return new MyAlertsResult([]);
 
         var stockIds = alerts.Select(x => x.StockId).ToList();
         var stocks = (await _stocks.ListAsync(new StocksByIdsSpec(stockIds), ct))

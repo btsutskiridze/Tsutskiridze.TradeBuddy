@@ -2,8 +2,9 @@ using SharedKernel.Events;
 
 namespace SharedKernel;
 
-public record DomainEvent : IDomainEvent
+public abstract record DomainEvent : IDomainEvent
 {
     public Guid Id { get; init; } = Guid.NewGuid();
-    public DateTime OccurredOnUtc { get; init; } = DateTime.UtcNow;
+    public abstract string EventType { get; }
+    public DateTime CreateTime { get; init; } = DateTime.UtcNow;
 }

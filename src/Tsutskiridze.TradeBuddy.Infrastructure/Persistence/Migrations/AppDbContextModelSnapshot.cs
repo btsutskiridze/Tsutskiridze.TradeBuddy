@@ -22,7 +22,99 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Chat", b =>
+            modelBuilder.Entity("SharedKernel.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("DeadAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dead_at");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("event_type");
+
+                    b.Property<int>("EventVersion")
+                        .HasColumnType("integer")
+                        .HasColumnName("event_version");
+
+                    b.Property<string>("Headers")
+                        .HasColumnType("text")
+                        .HasColumnName("headers");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("last_error");
+
+                    b.Property<Guid?>("LockId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("lock_id");
+
+                    b.Property<DateTime?>("LockedUntil")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("locked_until");
+
+                    b.Property<DateTime?>("NextRetryAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("next_retry_at");
+
+                    b.Property<DateTime>("OccurredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("occurred_at");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("payload");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processed_at");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("retry_count");
+
+                    b.Property<string>("SerializeType")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("serialize_type");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id")
+                        .HasName("pk_outbox_messages");
+
+                    b.HasIndex("DeadAt")
+                        .HasDatabaseName("ix_outbox_messages_dead_at")
+                        .HasFilter("dead_at IS NOT NULL");
+
+                    b.HasIndex("LockId")
+                        .HasDatabaseName("ix_outbox_messages_lock_id")
+                        .HasFilter("lock_id IS NOT NULL");
+
+                    b.HasIndex("Status", "NextRetryAt", "OccurredAt")
+                        .HasDatabaseName("ix_outbox_messages_status_next_retry_at_occurred_at");
+
+                    b.ToTable("outbox_messages", (string)null);
+                });
+
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.Chats.Chat", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -65,7 +157,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                     b.ToTable("chats", (string)null);
                 });
 
-            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.PriceAlert", b =>
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.PriceAlerts.PriceAlert", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -114,7 +206,7 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                     b.ToTable("price_alerts", (string)null);
                 });
 
-            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Stock", b =>
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.Stocks.Stock", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -159,23 +251,134 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                     b.ToTable("stocks", (string)null);
                 });
 
-            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.PriceAlert", b =>
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.StrategyMonitor", b =>
                 {
-                    b.HasOne("Tsutskiridze.TradeBuddy.Domain.Aggregates.Chats.Chat", null)
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("ChatId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("chat_id");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("create_time");
+
+                    b.Property<DateOnly?>("LastEvaluatedCandleDate")
+                        .HasColumnType("date")
+                        .HasColumnName("last_evaluated_candle_date");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.Property<Guid>("StockId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("stock_id");
+
+                    b.Property<DateTime?>("StopTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("stop_time");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("symbol");
+
+                    b.Property<string>("Timeframe")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("timeframe");
+
+                    b.Property<int>("TradeStrategyId")
+                        .HasColumnType("integer")
+                        .HasColumnName("trade_strategy_id");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id")
+                        .HasName("pk_strategy_monitors");
+
+                    b.HasIndex("StockId")
+                        .HasDatabaseName("ix_strategy_monitors_stock_id");
+
+                    b.HasIndex("TradeStrategyId")
+                        .HasDatabaseName("ix_strategy_monitors_trade_strategy_id");
+
+                    b.HasIndex("ChatId", "TradeStrategyId", "StockId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_strategy_monitors_active_chat_strategy_stock");
+
+                    b.ToTable("strategy_monitors", (string)null);
+                });
+
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.TradeStrategies.TradeStrategy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("ChatId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("chat_id");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Timeframe")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("timeframe");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id")
+                        .HasName("pk_trade_strategies");
+
+                    b.HasIndex("ChatId")
+                        .HasDatabaseName("IX_trade_strategies_chat_id");
+
+                    b.ToTable("trade_strategies", (string)null);
+                });
+
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.PriceAlerts.PriceAlert", b =>
+                {
+                    b.HasOne("Tsutskiridze.TradeBuddy.Domain.Chats.Chat", null)
                         .WithMany()
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_price_alerts_chats_chat_id");
 
-                    b.HasOne("Tsutskiridze.TradeBuddy.Domain.Aggregates.Stocks.Stock", null)
+                    b.HasOne("Tsutskiridze.TradeBuddy.Domain.Stocks.Stock", null)
                         .WithMany()
                         .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_price_alerts_stocks_stock_id");
 
-                    b.OwnsOne("Tsutskiridze.TradeBuddy.Domain.Aggregates.PriceAlerts.ValueObjects.AlertTrigger", "Trigger", b1 =>
+                    b.OwnsOne("Tsutskiridze.TradeBuddy.Domain.PriceAlerts.ValueObjects.AlertTrigger", "Trigger", b1 =>
                         {
                             b1.Property<Guid>("PriceAlertId")
                                 .HasColumnType("uuid")
@@ -202,6 +405,186 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Migrations
                         });
 
                     b.Navigation("Trigger")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.StrategyMonitor", b =>
+                {
+                    b.HasOne("Tsutskiridze.TradeBuddy.Domain.Chats.Chat", null)
+                        .WithMany()
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_strategy_monitors_chats_chat_id");
+
+                    b.HasOne("Tsutskiridze.TradeBuddy.Domain.Stocks.Stock", null)
+                        .WithMany()
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_strategy_monitors_stocks_stock_id");
+
+                    b.HasOne("Tsutskiridze.TradeBuddy.Domain.TradeStrategies.TradeStrategy", null)
+                        .WithMany()
+                        .HasForeignKey("TradeStrategyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_strategy_monitors_trade_strategies_trade_strategy_id");
+
+                    b.OwnsOne("Tsutskiridze.TradeBuddy.Domain.StrategyMonitoring.ValueObjects.StrategyPositionState", "PositionState", b1 =>
+                        {
+                            b1.Property<int>("StrategyMonitorId")
+                                .HasColumnType("integer")
+                                .HasColumnName("id");
+
+                            b1.Property<decimal?>("ActiveStop")
+                                .HasPrecision(18, 4)
+                                .HasColumnType("numeric(18,4)")
+                                .HasColumnName("active_stop");
+
+                            b1.Property<DateTime?>("EntryDate")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("entry_date");
+
+                            b1.Property<decimal?>("EntryPrice")
+                                .HasPrecision(18, 4)
+                                .HasColumnType("numeric(18,4)")
+                                .HasColumnName("entry_price");
+
+                            b1.Property<decimal?>("HighestClose")
+                                .HasPrecision(18, 4)
+                                .HasColumnType("numeric(18,4)")
+                                .HasColumnName("highest_close");
+
+                            b1.Property<decimal?>("LockedAtr")
+                                .HasPrecision(18, 4)
+                                .HasColumnType("numeric(18,4)")
+                                .HasColumnName("locked_atr");
+
+                            b1.Property<string>("Side")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("position_side");
+
+                            b1.Property<bool>("TrailingActivated")
+                                .HasColumnType("boolean")
+                                .HasColumnName("trailing_activated");
+
+                            b1.HasKey("StrategyMonitorId");
+
+                            b1.ToTable("strategy_monitors");
+
+                            b1.WithOwner()
+                                .HasForeignKey("StrategyMonitorId")
+                                .HasConstraintName("fk_strategy_monitors_strategy_monitors_id");
+                        });
+
+                    b.Navigation("PositionState")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Tsutskiridze.TradeBuddy.Domain.TradeStrategies.TradeStrategy", b =>
+                {
+                    b.HasOne("Tsutskiridze.TradeBuddy.Domain.Chats.Chat", null)
+                        .WithMany()
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_trade_strategies_chats_chat_id");
+
+                    b.OwnsOne("Tsutskiridze.TradeBuddy.Domain.TradeStrategies.ValueObjects.AdxTrendStrengthSettings", "AdxTrendStrength", b1 =>
+                        {
+                            b1.Property<int>("TradeStrategyId")
+                                .HasColumnType("integer")
+                                .HasColumnName("id");
+
+                            b1.Property<int>("NonFallingLookBackBars")
+                                .HasColumnType("integer")
+                                .HasColumnName("adx_non_falling_look_back_bars");
+
+                            b1.Property<int>("Period")
+                                .HasColumnType("integer")
+                                .HasColumnName("adx_period");
+
+                            b1.Property<decimal>("TrendStrengthThreshold")
+                                .HasPrecision(18, 4)
+                                .HasColumnType("numeric(18,4)")
+                                .HasColumnName("adx_trend_strength_threshold");
+
+                            b1.HasKey("TradeStrategyId");
+
+                            b1.ToTable("trade_strategies");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TradeStrategyId")
+                                .HasConstraintName("fk_trade_strategies_trade_strategies_id");
+                        });
+
+                    b.OwnsOne("Tsutskiridze.TradeBuddy.Domain.TradeStrategies.ValueObjects.AtrStopSettings", "AtrStop", b1 =>
+                        {
+                            b1.Property<int>("TradeStrategyId")
+                                .HasColumnType("integer")
+                                .HasColumnName("id");
+
+                            b1.Property<decimal>("InitialStopMultiplier")
+                                .HasPrecision(18, 4)
+                                .HasColumnType("numeric(18,4)")
+                                .HasColumnName("atr_initial_stop_multiplier");
+
+                            b1.Property<int>("Period")
+                                .HasColumnType("integer")
+                                .HasColumnName("atr_period");
+
+                            b1.Property<decimal>("TrailingActivationMultiplier")
+                                .HasPrecision(18, 4)
+                                .HasColumnType("numeric(18,4)")
+                                .HasColumnName("atr_trailing_activation_multiplier");
+
+                            b1.Property<decimal>("TrailingStopMultiplier")
+                                .HasPrecision(18, 4)
+                                .HasColumnType("numeric(18,4)")
+                                .HasColumnName("atr_trailing_stop_multiplier");
+
+                            b1.HasKey("TradeStrategyId");
+
+                            b1.ToTable("trade_strategies");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TradeStrategyId")
+                                .HasConstraintName("fk_trade_strategies_trade_strategies_id");
+                        });
+
+                    b.OwnsOne("Tsutskiridze.TradeBuddy.Domain.TradeStrategies.ValueObjects.EmaTrendSettings", "EmaTrend", b1 =>
+                        {
+                            b1.Property<int>("TradeStrategyId")
+                                .HasColumnType("integer")
+                                .HasColumnName("id");
+
+                            b1.Property<int>("FastPeriod")
+                                .HasColumnType("integer")
+                                .HasColumnName("ema_fast_period");
+
+                            b1.Property<int>("SlowPeriod")
+                                .HasColumnType("integer")
+                                .HasColumnName("ema_slow_period");
+
+                            b1.HasKey("TradeStrategyId");
+
+                            b1.ToTable("trade_strategies");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TradeStrategyId")
+                                .HasConstraintName("fk_trade_strategies_trade_strategies_id");
+                        });
+
+                    b.Navigation("AdxTrendStrength")
+                        .IsRequired();
+
+                    b.Navigation("AtrStop")
+                        .IsRequired();
+
+                    b.Navigation("EmaTrend")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

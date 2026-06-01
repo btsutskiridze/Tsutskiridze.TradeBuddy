@@ -8,6 +8,8 @@ namespace Tsutskiridze.TradeBuddy.Application.Abstractions.MarketData
         Task<List<StockDayPrice>> GetStockPrevDaysClosePrices(string symbol, int? days = null);
         Task<StockOverview?> GetStockOverview(string symbol);
         Task<AnnualReport?> GetStockLastAnnualReport(string symbol);
-        Task<StockQuote?> GetStockQuote(string symbol);
+        Task<StockQuote?> GetStockQuote(string symbol, CancellationToken ct = default);
+        Task<IReadOnlyList<MarketCandle>> GetDailyCandles(string symbol, DateOnly from, DateOnly to, CancellationToken ct = default);
+        Task<MarketHistoryDateRange> GetClosedDailyDateRange(string symbol, CancellationToken ct = default);
     }
 }

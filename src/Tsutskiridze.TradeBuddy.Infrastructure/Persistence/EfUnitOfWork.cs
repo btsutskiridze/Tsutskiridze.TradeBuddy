@@ -1,22 +1,29 @@
 using System.Data;
-using Mediator;
 using Microsoft.EntityFrameworkCore;
-using SharedKernel;
 using SharedKernel.Data;
-using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
+using SharedKernel.Events.DomainEventsDispatching;
+using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 
-public class EfUnitOfWork : IUnitOfWork
+internal class EfUnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _db;
-    private readonly IMediator _mediator;
+    private readonly IDomainEventAccessor _domainEventAccessor;
+    private readonly IDomainEventDispatcher _domainEventDispatcher;
+    private readonly IDbExceptionClassifier _dbExceptionClassifier;
 
-    public EfUnitOfWork(AppDbContext db, IMediator mediator)
+    public EfUnitOfWork(
+        AppDbContext db,
+        IDomainEventAccessor domainEventAccessor,
+        IDomainEventDispatcher domainEventDispatcher,
+        IDbExceptionClassifier dbExceptionClassifier)
     {
         _db = db;
-        _mediator = mediator;
+        _domainEventAccessor = domainEventAccessor;
+        _domainEventDispatcher = domainEventDispatcher;
+        _dbExceptionClassifier = dbExceptionClassifier;
     }
 
     public async Task<IAppDbTransaction> BeginTransactionAsync(
@@ -24,49 +31,25 @@ public class EfUnitOfWork : IUnitOfWork
         CancellationToken ct = default)
     {
         var tx = await _db.Database.BeginTransactionAsync(isolationLevel, ct);
-        
+
         return new EfAppDbTransaction(tx);
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken ct = default)
     {
-        var entitiesWithEvents = _db.ChangeTracker.Entries()
-            .Select(e => e.Entity)
-            .OfType<IHasDomainEvents>()
-            .Where(e => e.DomainEvents.Any())
-            .ToArray();
+        var domainEvents = _domainEventAccessor.GetDomainEvents();
 
-        var events = entitiesWithEvents
-            .SelectMany(entity => entity.DomainEvents)
-            .ToList();
-
-        int result;
         try
         {
-            result = await _db.SaveChangesAsync(ct);
+            _domainEventAccessor.ClearDomainEvents();
+            await _domainEventDispatcher.DispatchAsync(domainEvents, ct);
+
+            var result = await _db.SaveChangesAsync(ct);
+            return result;
         }
-        catch (DbUpdateConcurrencyException ex)
+        catch (DbUpdateException ex) when (_dbExceptionClassifier.Translate(ex) is { } translated)
         {
-            throw new ConcurrencyConflictException(
-                "The data was changed by another process.",
-                ex);
+            throw translated;
         }
-
-        /*
-         *todo:
-         * Introduce an outbox and stop calling SaveChangesAsync
-         * from domain-event handlers.
-         * Persist state and outbox in one transaction;
-         * publish asynchronously.
-         *
-         */
-
-        foreach (var entity in entitiesWithEvents)
-            entity.ClearDomainEvents();
-
-        foreach (var evt in events)
-            await _mediator.Publish(evt, ct);
-
-        return result;
     }
 }

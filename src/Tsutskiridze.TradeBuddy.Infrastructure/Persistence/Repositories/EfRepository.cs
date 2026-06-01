@@ -6,8 +6,17 @@ using SharedKernel.Data;
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Repositories;
 
 //todo: refactor and move those into shared kernel later
-public class EfRepository<TEntity> : EfReadRepository<TEntity>, IRepository<TEntity>
+public class EfRepository<TEntity> : EfRepository<TEntity, Guid>, IRepository<TEntity>
     where TEntity : Entity<Guid>, IAggregateRoot
+{
+    public EfRepository(AppDbContext db) : base(db)
+    {
+    }
+}
+
+public class EfRepository<TEntity, TId> : EfReadRepository<TEntity, TId>, IRepository<TEntity, TId>
+    where TEntity : Entity<TId>, IAggregateRoot
+    where TId : notnull
 {
     protected override bool UseNoTracking => false;
 
@@ -34,7 +43,7 @@ public class EfRepository<TEntity> : EfReadRepository<TEntity>, IRepository<TEnt
         => Set.Update(entity);
 
     public async Task<TEntity?> GetByIdForUpdateAsync(
-        Guid id,
+        TId id,
         CancellationToken ct = default)
     {
         if (Db.Database.CurrentTransaction is null)
@@ -47,7 +56,7 @@ public class EfRepository<TEntity> : EfReadRepository<TEntity>, IRepository<TEnt
         return await GetByIdAsync(id, ct);
     }
 
-    public async Task LockByIdAsync(Guid id, CancellationToken ct)
+    public async Task LockByIdAsync(TId id, CancellationToken ct)
     {
         var entityType = Db.Model.FindEntityType(typeof(TEntity));
 

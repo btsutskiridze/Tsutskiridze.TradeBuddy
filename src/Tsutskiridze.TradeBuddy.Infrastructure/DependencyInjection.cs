@@ -10,11 +10,14 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Gemini;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.GoogleNews;
+using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Nasdaq;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo;
+using Tsutskiridze.TradeBuddy.Infrastructure.Jobs;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
+using Tsutskiridze.TradeBuddy.Infrastructure.Serialization;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure;
 
@@ -25,12 +28,14 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services
+            .AddJsonSerializationOptions()
             .AddPersistence(configuration)
             .AddNotifications()
             .AddRateLimiter(configuration)
             .AddIntegrations(configuration)
             .AddMarketDataServices()
-            .AddNewsServices();
+            .AddNewsServices()
+            .AddJobs(configuration);
 
         return services;
     }
@@ -53,6 +58,7 @@ public static class DependencyInjection
             .AddGoogleNewsIntegration()
             .AddOpenaiIntegration(configuration)
             .AddGeminiIntegration(configuration)
+            .AddNasdaqIntegration()
             .AddYahooIntegration(configuration);
         
         return services;
