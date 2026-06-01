@@ -5,4 +5,7 @@ public interface INasdaqSymbolDirectoryProvider
     Task<NasdaqSymbolLookupResult> StockSymbolExists(
         string symbol,
         CancellationToken ct = default);
+
+    Task<IReadOnlyList<NasdaqListedStock>> GetNasdaqListedStocks(
+        CancellationToken ct = default);
 }

@@ -10,6 +10,7 @@ public static class DependencyInjection
         services.Configure<OutboxProcessorOptions>(configuration.GetSection(OutboxProcessorOptions.SectionName));
 
         services.AddHostedService<DailyStrategyMonitorJob>();
+        services.AddHostedService<TestNasdaqStrategyReportJob>();
         services.AddHostedService<OutboxProcessorJob>();
 
         return services;

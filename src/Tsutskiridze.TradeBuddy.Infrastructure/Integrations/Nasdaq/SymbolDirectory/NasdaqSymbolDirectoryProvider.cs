@@ -46,6 +46,24 @@ public sealed class NasdaqSymbolDirectoryProvider : INasdaqSymbolDirectoryProvid
         }
     }
 
+    public async Task<IReadOnlyList<NasdaqListedStock>> GetNasdaqListedStocks(
+        CancellationToken ct = default)
+    {
+        await _cacheLock.WaitAsync(ct);
+        try
+        {
+            var content = await GetDirectoryContent(NasdaqListedUri, NasdaqListedCachePath, ct);
+
+            return ParseNasdaqListedStocks(content)
+                .OrderBy(x => x.Symbol, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+        }
+        finally
+        {
+            _cacheLock.Release();
+        }
+    }
+
     private async Task<HashSet<string>> GetSymbols(CancellationToken ct)
     {
         await _cacheLock.WaitAsync(ct);
@@ -123,6 +141,28 @@ public sealed class NasdaqSymbolDirectoryProvider : INasdaqSymbolDirectoryProvid
         return symbols;
     }
 
+    private static IReadOnlyList<NasdaqListedStock> ParseNasdaqListedStocks(string content)
+    {
+        var stocks = new List<NasdaqListedStock>();
+
+        foreach (var line in GetDataLines(content))
+        {
+            var columns = line.Split('|');
+            if (columns.Length < 7 || IsTestIssue(columns[3]) || IsEtf(columns[6]))
+                continue;
+
+            var symbol = NormalizeSymbol(columns[0]);
+            var securityName = columns[1].Trim();
+
+            if (string.IsNullOrWhiteSpace(symbol))
+                continue;
+
+            stocks.Add(new NasdaqListedStock(symbol, securityName));
+        }
+
+        return stocks;
+    }
+
     private static HashSet<string> ParseOtherListedSymbols(string content)
     {
         var symbols = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -154,12 +194,22 @@ public sealed class NasdaqSymbolDirectoryProvider : INasdaqSymbolDirectoryProvid
 
     private static void AddSymbol(HashSet<string> symbols, string value)
     {
-        var symbol = value.Trim().ToUpperInvariant();
+        var symbol = NormalizeSymbol(value);
         if (!string.IsNullOrWhiteSpace(symbol))
             symbols.Add(symbol);
     }
 
+    private static string NormalizeSymbol(string value)
+    {
+        return value.Trim().ToUpperInvariant();
+    }
+
     private static bool IsTestIssue(string value)
+    {
+        return string.Equals(value.Trim(), "Y", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsEtf(string value)
     {
         return string.Equals(value.Trim(), "Y", StringComparison.OrdinalIgnoreCase);
     }
