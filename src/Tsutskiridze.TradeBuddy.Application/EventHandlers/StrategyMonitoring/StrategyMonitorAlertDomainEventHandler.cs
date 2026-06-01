@@ -47,7 +47,7 @@ public sealed class StrategyMonitorAlertDomainEventHandler : IDomainEventHandler
             new StrategyMonitorAlertNotification(
                 StrategyMonitorEvaluationSummary.Create(
                     chat.TelegramId,
-                    strategy.Id.ToString(),
+                    strategy.ToString(),
                     domainEvent.Symbol,
                     domainEvent.Evaluation)
             ),
