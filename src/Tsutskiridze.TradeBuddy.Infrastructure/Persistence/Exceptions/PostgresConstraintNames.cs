@@ -7,4 +7,7 @@ internal static class PostgresConstraintNames
 
     public const string StocksSymbol =
         "UX_stocks_symbol";
+
+    public const string IdempotencyRecordUniqueKey =
+        "UX_idempotency_records_key_scope";
 }

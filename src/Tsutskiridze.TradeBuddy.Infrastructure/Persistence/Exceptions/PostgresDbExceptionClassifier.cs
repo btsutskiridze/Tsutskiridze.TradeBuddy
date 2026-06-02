@@ -1,6 +1,8 @@
+using System.Net;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
+using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
 
 namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence.Exceptions;
 
@@ -32,6 +34,9 @@ internal sealed class PostgresDbExceptionClassifier : IDbExceptionClassifier
 
             PostgresConstraintNames.StocksSymbol
                 => new DuplicateStockSymbolException(exception),
+            PostgresConstraintNames.IdempotencyRecordUniqueKey
+                => new InfrastructureException("Idempotent Request is being processed", 
+                    (int)HttpStatusCode.Conflict),
 
             _ => null
         };

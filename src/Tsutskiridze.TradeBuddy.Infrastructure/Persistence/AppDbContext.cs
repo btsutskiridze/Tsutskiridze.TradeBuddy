@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Idempotency;
 using SharedKernel.Outbox;
 using Tsutskiridze.TradeBuddy.Domain.Chats;
 using Tsutskiridze.TradeBuddy.Domain.PriceAlerts;
@@ -18,7 +19,9 @@ namespace Tsutskiridze.TradeBuddy.Infrastructure.Persistence
         public DbSet<PriceAlert> PriceAlerts { get; set; }
         public DbSet<TradeStrategy> TradeStrategies { get; set; }
         public DbSet<StrategyMonitor> StrategyMonitors { get; set; }
+        
         public DbSet<OutboxMessage> OutboxMessages { get; set; }
+        public DbSet<IdempotencyRecord> IdempotencyRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
