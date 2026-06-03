@@ -1,5 +1,7 @@
-﻿using SharedKernel.Data;
+﻿using System.Net;
+using SharedKernel.Data;
 using SharedKernel.Events;
+using SharedKernel.Idempotency;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.Stocks.Specifications;
@@ -16,27 +18,47 @@ public sealed class PriceAlertTriggeredDomainEventHandler
     private readonly IReadRepository<Chat> _chats;
     private readonly IReadRepository<Stock> _stocks;
     private readonly INotificationDispatcher _notifier;
+    private readonly IIdempotency _idemp;
+
     public PriceAlertTriggeredDomainEventHandler(
         IReadRepository<Chat> chats,
         IReadRepository<Stock> stocks,
-        INotificationDispatcher notifier)
+        INotificationDispatcher notifier,
+        IIdempotency idemp)
     {
         _chats = chats;
         _stocks = stocks;
         _notifier = notifier;
+        _idemp = idemp;
     }
+
     public async ValueTask Handle(PriceAlertTriggeredDomainEvent domainEvent, CancellationToken ct)
     {
-        var chat = await _chats.FirstOrDefaultAsync(new ActiveChatTelegramIdsByIdsSpec([domainEvent.ChatId]), ct);
+        await _idemp.Execute(
+            domainEvent.Id.ToString("N"),
+            typeof(PriceAlertTriggeredDomainEvent).FullName!,
+            domainEvent,
+            async (ct2) =>
+            {
+                await IdempAction(domainEvent, ct2);
+                return (int)HttpStatusCode.OK;
+            },
+            ct);
+    }
+
+    private async Task IdempAction(PriceAlertTriggeredDomainEvent domainEvent, CancellationToken ct)
+    {
+        var chat = await _chats.FirstOrDefaultAsync(
+            new ActiveChatTelegramIdsByIdsSpec([domainEvent.ChatId]), ct);
         if (chat?.TelegramId is null)
             return;
-        
+
         var stock = await _stocks.FirstOrDefaultAsync(
             new StockSymbolByIdSpec(domainEvent.StockId), ct
         );
         if (stock is null)
             return;
-        
+
         await _notifier.DispatchAsync(new PriceAlertTriggeredNotification(
             chat.TelegramId,
             stock.Symbol,
