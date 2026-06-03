@@ -93,6 +93,68 @@ internal class IdempotencyService : IIdempotency
         }
     }
 
+    public async Task<int> Execute<TRequest>(string key, string? scope, TRequest request,
+        Func<CancellationToken, Task<int>> idempotentAction,
+        CancellationToken ct)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        key = key.Trim();
+        scope = string.IsNullOrWhiteSpace(scope) ? DefaultScope : scope;
+
+        var now = DateTime.UtcNow;
+        var lockedUntil = now.AddSeconds(LockSeconds);
+
+        var keyHash = ComputeHash(key.Trim());
+        var scopeHash = ComputeHash(scope);
+        var requestHash = RequestHashing.ComputeRequestHash(request);
+        var record = await GetExistingRecord(keyHash, scopeHash, ct);
+
+        if (record is not null)
+        {
+            if (!record.RequestHash.SequenceEqual(requestHash))
+            {
+                throw new InfrastructureException(
+                    "Idempotency key was already used with a different request.",
+                    (int)HttpStatusCode.Conflict
+                );
+            }
+
+            if (TryGetStatusOnlyResult(record, out var statusCode))
+                return statusCode;
+
+            record.ReProcess(ComputeLockedUntil());
+        }
+        else
+        {
+            record = IdempotencyRecord.Started(
+                keyHash,
+                scopeHash,
+                key,
+                scope,
+                requestHash,
+                lockedUntil);
+
+            await _db.IdempotencyRecords.AddAsync(record, ct);
+        }
+
+        await SaveChangesAsync(ct);
+
+        try
+        {
+            var statusCode = await idempotentAction(ct);
+
+            record.Completed("{}", statusCode);
+            await SaveChangesAsync(CancellationToken.None);
+            return statusCode;
+        }
+        catch (BaseException ex) when (ex.StatusCode is >= 400 and < 500)
+        {
+            record.Failed(ex.Message, ex.StatusCode);
+            await SaveChangesAsync(CancellationToken.None);
+            throw;
+        }
+    }
+
     private async Task SaveChangesAsync(CancellationToken ct)
     {
         try
@@ -104,7 +166,7 @@ internal class IdempotencyService : IIdempotency
             throw translated;
         }
     }
-    
+
     private bool TryGetIdempotencyResult<TResult>(
         IdempotencyRecord record,
         out TResult result)
@@ -129,6 +191,32 @@ internal class IdempotencyService : IIdempotency
 
             default:
                 result = default!;
+                return false;
+        }
+    }
+
+    private bool TryGetStatusOnlyResult(
+        IdempotencyRecord record,
+        out int statusCode)
+    {
+        switch (record.Status)
+        {
+            case IdempotencyStatus.Processing when !IsLockedUntilExpired(record.LockedUntil!.Value):
+                throw new InfrastructureException(
+                    "Request is being processed",
+                    (int)HttpStatusCode.Conflict);
+
+            case IdempotencyStatus.Failed:
+                throw new InfrastructureException(
+                    record.Error!,
+                    record.StatusCode!.Value);
+
+            case IdempotencyStatus.Completed:
+                statusCode = record.StatusCode!.Value;
+                return true;
+
+            default:
+                statusCode = default;
                 return false;
         }
     }
