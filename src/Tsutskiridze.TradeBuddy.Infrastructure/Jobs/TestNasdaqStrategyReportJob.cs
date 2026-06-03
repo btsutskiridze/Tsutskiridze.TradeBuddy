@@ -151,7 +151,7 @@ public sealed class TestNasdaqStrategyReportJob : BackgroundService
             .Where(x => 
                 x.TotalStrategyProfitPercent > 40
                 && x.WinningTradeCount > x.LosingTradeCount
-                && x.CurrentEntryDate.HasValue && x.CurrentEntryDate.Value == DateOnly.FromDateTime(DateTime.UtcNow)
+                && x.CurrentEntryDate.HasValue && x.CurrentEntryDate.Value == DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-1))
             )
             .ToArray();
 
