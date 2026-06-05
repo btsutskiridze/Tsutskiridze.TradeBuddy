@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Scalar.AspNetCore;
 using SharedKernel.Validations.Mediator;
 using Tsutskiridze.TradeBuddy.API.Exceptions;
+using Tsutskiridze.TradeBuddy.API.Http;
 using Tsutskiridze.TradeBuddy.Application;
 using Tsutskiridze.TradeBuddy.Application.Behaviors;
 using Tsutskiridze.TradeBuddy.Domain.AlertWatching;
@@ -57,6 +58,8 @@ public static class DependencyInjection
         services.AddProblemDetails();
 
         services.AddHealthChecks();
+
+        services.AddRequestMetadata(configuration);
 
         return services;
     }

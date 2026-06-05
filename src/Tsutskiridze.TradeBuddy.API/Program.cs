@@ -1,4 +1,5 @@
 using Tsutskiridze.TradeBuddy.API;
+using Tsutskiridze.TradeBuddy.API.Http;
 using Tsutskiridze.TradeBuddy.API.Telegram;
 using Tsutskiridze.TradeBuddy.Application;
 using Tsutskiridze.TradeBuddy.Infrastructure;
@@ -19,6 +20,8 @@ if (app.Environment.IsDevelopment())
 {
     await app.ApplyDatabaseMigrationsAsync();
 }
+
+app.UseRequestMetadata();
 
 app.UseExceptionHandler();
 

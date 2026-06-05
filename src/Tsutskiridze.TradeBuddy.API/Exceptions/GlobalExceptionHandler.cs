@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using SharedKernel;
 using SharedKernel.Validations;
+using Tsutskiridze.TradeBuddy.API.Http;
 using Tsutskiridze.TradeBuddy.Application.Common.Exceptions;
 using Tsutskiridze.TradeBuddy.Infrastructure.Exceptions;
 
@@ -37,6 +38,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         }
 
         var problemDetails = CreateProblemDetails(status, type, message, errors);
+        problemDetails.Extensions.Add("correlationId", GetCorrelationId(httpContext));
         problemDetails.Extensions.Add("traceId", GetStackTraceId(httpContext));
 
         httpContext.Response.ContentType = "application/problem+json";
@@ -72,6 +74,12 @@ public class GlobalExceptionHandler : IExceptionHandler
             Detail = message,
             Status = status,
         };
+    }
+
+    private static string GetCorrelationId(HttpContext httpContext)
+    {
+        return httpContext.Items[RequestMetadataItemKeys.CorrelationId] as string
+            ?? httpContext.TraceIdentifier;
     }
 
     private string GetStackTraceId(HttpContext httpContext)
