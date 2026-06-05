@@ -1,5 +1,7 @@
+using System.Net;
 using SharedKernel.Data;
 using SharedKernel.Events;
+using SharedKernel.Idempotency;
 using Tsutskiridze.TradeBuddy.Application.Abstractions.Notifications;
 using Tsutskiridze.TradeBuddy.Application.Features.Chats.Specifications;
 using Tsutskiridze.TradeBuddy.Application.Features.StrategyMonitoring;
@@ -16,18 +18,35 @@ public sealed class StrategyMonitorAlertDomainEventHandler : IDomainEventHandler
     private readonly IReadRepository<Chat> _chats;
     private readonly IReadRepository<TradeStrategy, int> _strategies;
     private readonly INotificationDispatcher _notifier;
+    private readonly IIdempotency _idemp;
 
     public StrategyMonitorAlertDomainEventHandler(
         IReadRepository<Chat> chats,
         IReadRepository<TradeStrategy, int> strategies,
-        INotificationDispatcher notifier)
+        INotificationDispatcher notifier,
+        IIdempotency idemp)
     {
         _chats = chats;
         _strategies = strategies;
         _notifier = notifier;
+        _idemp = idemp;
     }
 
     public async ValueTask Handle(StrategyMonitorAlertDomainEvent domainEvent, CancellationToken ct)
+    {
+        await _idemp.Execute(
+            domainEvent.Id.ToString("N"),
+            typeof(StrategyMonitorAlertDomainEventHandler).FullName!,
+            domainEvent,
+            async ct2 =>
+            {
+                await IdempAction(domainEvent, ct2);
+                return (int)HttpStatusCode.OK;
+            }, ct
+        );
+    }
+
+    private async ValueTask IdempAction(StrategyMonitorAlertDomainEvent domainEvent, CancellationToken ct)
     {
         var chat = await _chats.FirstOrDefaultAsync(
             new ActiveChatTelegramIdsByIdsSpec([domainEvent.ChatId]),

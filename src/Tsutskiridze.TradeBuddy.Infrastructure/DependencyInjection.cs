@@ -5,6 +5,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Adapters.MarketData;
 using Tsutskiridze.TradeBuddy.Infrastructure.Adapters.News;
 using Tsutskiridze.TradeBuddy.Infrastructure.Adapters.Notifications;
 using Tsutskiridze.TradeBuddy.Infrastructure.Adapters.RateLimiting;
+using Tsutskiridze.TradeBuddy.Infrastructure.Idempotency;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.AlphaVantage;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.FinancialModelingPrep;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Finnhub;
@@ -29,6 +30,7 @@ public static class DependencyInjection
     {
         services
             .AddJsonSerializationOptions()
+            .AddIdempotency(configuration)
             .AddPersistence(configuration)
             .AddNotifications()
             .AddRateLimiter(configuration)
