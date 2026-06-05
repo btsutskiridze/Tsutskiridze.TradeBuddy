@@ -57,8 +57,6 @@ public static class DependencyInjection
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
-        services.AddHealthChecks();
-
         services.AddRequestMetadata(configuration);
 
         return services;

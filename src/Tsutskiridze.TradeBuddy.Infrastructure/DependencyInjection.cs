@@ -16,6 +16,7 @@ using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.OpenAI;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Reddit;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Telegram;
 using Tsutskiridze.TradeBuddy.Infrastructure.Integrations.Yahoo;
+using Tsutskiridze.TradeBuddy.Infrastructure.Health;
 using Tsutskiridze.TradeBuddy.Infrastructure.Jobs;
 using Tsutskiridze.TradeBuddy.Infrastructure.Persistence;
 using Tsutskiridze.TradeBuddy.Infrastructure.Serialization;
@@ -37,7 +38,8 @@ public static class DependencyInjection
             .AddIntegrations(configuration)
             .AddMarketDataServices()
             .AddNewsServices()
-            .AddJobs(configuration);
+            .AddJobs(configuration)
+            .AddTradeBuddyHealthChecks(configuration);
 
         return services;
     }

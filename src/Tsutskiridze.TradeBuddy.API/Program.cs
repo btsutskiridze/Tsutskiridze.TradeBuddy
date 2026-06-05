@@ -1,4 +1,5 @@
 using Tsutskiridze.TradeBuddy.API;
+using Tsutskiridze.TradeBuddy.API.Health;
 using Tsutskiridze.TradeBuddy.API.Http;
 using Tsutskiridze.TradeBuddy.API.Telegram;
 using Tsutskiridze.TradeBuddy.Application;
@@ -36,7 +37,7 @@ app.UseCors("AllowSpecificOrigins");
 
 app.MapControllers();
 
-app.MapHealthChecks("/health");
+app.MapHealthChecks();
 
 if (app.Environment.IsDevelopment())
 {

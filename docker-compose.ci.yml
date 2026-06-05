@@ -14,7 +14,7 @@ services:
       - tradebuddy_logs:/app/logs
 
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health/ready || exit 1"]
       interval: 5s
       timeout: 2s
       retries: 20
